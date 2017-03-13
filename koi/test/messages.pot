@@ -1,0 +1,3722 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#: ..\..\tools\..\koi\datalayer\employee_mapping.py:18
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-03 17:47+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ..\..\tools\..\koi\business_charts.py:174
+#: ..\..\tools\..\koi\business_charts.py:302
+msgid "Proportion of direct and indirect hours, monthly"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:199
+msgid "Hours spent on operations per month"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:214
+msgid "Hours on indirect operations"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:245
+msgid "Cost of operations"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:310
+#: ..\..\tools\..\koi\business_charts.py:326
+#: ..\..\tools\..\koi\business_charts.py:411
+#: ..\..\tools\..\koi\business_charts.py:481
+msgid "Target {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:319
+msgid "Number of customers who ordered"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:335
+msgid "Number of created order parts"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:352
+msgid "Order parts value"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:368
+msgid "Preorder parts value"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:381
+msgid "Valuation over time"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:416
+msgid "Custsomer non-conformities"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:466
+#: ..\..\tools\..\koi\business_charts.py:496
+#: ..\..\tools\..\koi\business_charts.py:520
+msgid "Target {}%"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:471
+msgid "Internal non conformities"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:486
+msgid "Done / Planned Hours On Completed Parts"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:501
+#, python-format
+msgid "% completed parts on time (OTD)"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:525
+msgid "OQD"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:652
+msgid "Delta"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:662
+msgid "Number of order parts with a given delivery delay (negative = late)"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:748
+msgid "To bill"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:748
+msgid "Actual cost"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:748
+msgid "Planned cost"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:756
+msgid "Sell price vs cost for delivered units"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:811
+msgid "Planned"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:811
+msgid "Actual"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:817
+msgid "Time spent on completed order parts"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:829
+msgid "Order backlog valuation"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:1107
+msgid "Late order parts"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_charts.py:1108
+msgid ""
+"Percentage of order parts that were completed too late compared to total "
+"number of order parts completed this month"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_functions.py:69
+msgid "No estimate ?"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_functions.py:70
+msgid ""
+"You want to put the order in the state {}. However this order was not a "
+"estimate before. This means that this order will be without a estimate. "
+"Continue anyway ?"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_functions.py:78
+msgid "No estimate sent ?"
+msgstr ""
+
+#: ..\..\tools\..\koi\business_functions.py:79
+msgid ""
+"You want to put the order in the state {}. However it seems you didn't send "
+"any estimate to the customer. Continue anyway ?"
+msgstr ""
+
+#: ..\..\tools\..\koi\ChangeCustomerDialog.py:34
+msgid "Choose customer"
+msgstr ""
+
+#: ..\..\tools\..\koi\ChangeCustomerDialog.py:51
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:1372
+#: ..\..\tools\..\koi\EditCustomerDialog.py:45
+#: ..\..\tools\..\koi\EditCustomerDialog.py:47
+#: ..\..\tools\..\koi\EditCustomerDialog.py:79
+#: ..\..\tools\..\koi\EditCustomerDialog.py:81
+#: ..\..\tools\..\koi\machine\EditMachinesDialog.py:13
+#: ..\..\tools\..\koi\machine\EditMachinesDialog.py:15
+#: ..\..\tools\..\koi\supply\ChooseSupplierDialog.py:59
+#: ..\..\tools\..\koi\supply\EditSupplierDialog.py:18
+#: ..\..\tools\..\koi\supply\EditSupplierDialog.py:20
+#: ..\..\tools\..\koi\user_mgmt\edit_user.py:40
+#: ..\..\tools\..\koi\user_mgmt\edit_user.py:42
+msgid "Name"
+msgstr ""
+
+#: ..\..\tools\..\koi\ChangeCustomerDialog.py:75
+#: ..\..\tools\..\koi\CreateNewOrderDialog.py:110
+msgid "Please choose a customer for the new order"
+msgstr ""
+
+#: ..\..\tools\..\koi\CreateNewOrderDialog.py:31
+msgid "Create new order"
+msgstr ""
+
+#: ..\..\tools\..\koi\CreateNewOrderDialog.py:60
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:102
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:383
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:154
+#: ..\..\tools\..\koi\FindOrder.py:34
+#: ..\..\tools\..\koi\PastOrdersOverview.py:65
+#: ..\..\tools\..\koi\ReprintDeliverySlip.py:50
+#: ..\..\tools\..\koi\WeekOverview.py:82
+msgid "Customer"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:102
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:383
+#: ..\..\tools\..\koi\PastOrdersOverview.py:65
+msgid "# Order"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:102
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:383
+#: ..\..\tools\..\koi\PastOrdersOverview.py:65
+msgid "# Preorder"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:102
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:383
+#: ..\..\tools\..\koi\DeliverySlipView.py:25
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:143
+#: ..\..\tools\..\koi\EditOperationDefinition.py:269
+#: ..\..\tools\..\koi\EditOperationDefinition.py:274
+#: ..\..\tools\..\koi\EditOrderParts.py:1221
+#: ..\..\tools\..\koi\EditOrderParts.py:1246
+#: ..\..\tools\..\koi\OperationsView.py:29
+#: ..\..\tools\..\koi\PastOrdersOverview.py:65
+#: ..\..\tools\..\koi\TModel.py:221 ..\..\tools\..\koi\TModel.py:230
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:67
+#: ..\..\tools\..\koi\reporting\monthly_report.py:76
+#: ..\..\tools\..\koi\reporting\supply_order_report.py:79
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:344
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:257
+msgid "Description"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:102
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:383
+#: ..\..\tools\..\koi\PastOrdersOverview.py:65
+#: ..\..\tools\..\koi\reporting\preorder_report.py:94
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:256
+msgid "Deadline"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:102
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:383
+msgid "Ma. Hours"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:102
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:383
+#: ..\..\tools\..\koi\EditOrderParts.py:1222
+#: ..\..\tools\..\koi\PastOrdersOverview.py:65
+#: ..\..\tools\..\koi\TModel.py:222
+msgid "Qty"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:102
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:383
+#: ..\..\tools\..\koi\PastOrdersOverview.py:65
+#: ..\..\tools\..\koi\charts\indicators_service.py:302
+msgid "Sell price"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:102
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:383
+msgid "Hu. hours"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:102
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:383
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:1254
+msgid "Priority"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:548
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:1179
+#: ..\..\tools\..\koi\PastOrdersOverview.py:400
+msgid "Operations"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:611
+#: ..\..\tools\..\koi\EditOrderParts.py:1612
+#: ..\..\tools\..\koi\gui\MetaFormDialog.py:401
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:129
+msgid "Data were changed"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:612
+#: ..\..\tools\..\koi\EditOrderParts.py:1613
+#: ..\..\tools\..\koi\gui\MetaFormDialog.py:402
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:130
+msgid ""
+"You have changed some of the data in this. Do you want to save before "
+"proceeding ?"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:645
+msgid "Orders for filter"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:656
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:679
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:681
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:215
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:217
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:219
+#: ..\..\tools\..\koi\FindOrder.py:80 ..\..\tools\..\koi\FindOrder.py:83
+#: ..\..\tools\..\koi\FindOrder.py:86
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:163
+msgid "Error in the filter !"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:674
+#: ..\..\tools\..\koi\FindOrder.py:73
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:173
+msgid "Too many results"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:674
+#: ..\..\tools\..\koi\FindOrder.py:73
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:173
+msgid ""
+"The query you've given brought back too many results. Only a part of them is "
+"displayed. Consider refining your query"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:679
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:215
+#: ..\..\tools\..\koi\FindOrder.py:81
+msgid "The filter can't be empty"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:681
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:217
+#: ..\..\tools\..\koi\FindOrder.py:84
+msgid "The filter is too short"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:726
+#: ..\..\tools\..\koi\PastOrdersOverview.py:307
+msgid "Orders for {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:885
+#: ..\..\tools\..\koi\EditOrderParts.py:1527
+#: ..\..\tools\..\koi\PresenceOverview.py:782
+msgid "Copy order parts"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:891
+#: ..\..\tools\..\koi\PresenceOverview.py:788
+msgid "Select all"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:1106
+msgid "Valorisation"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:1110
+msgid "Unit sell price"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:1135
+#: ..\..\tools\..\koi\PastOrdersOverview.py:447
+msgid "Edit order"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:1138
+msgid "Monthly goal"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:1168
+#: ..\..\tools\..\koi\PastOrdersOverview.py:394
+msgid "Orders"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:1265
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:1292
+#: ..\..\tools\..\koi\PastOrdersOverview.py:488
+msgid "Part state to {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:1373
+#: ..\..\tools\..\koi\EditTimeTracksDialog.py:275
+#: ..\..\tools\..\koi\TimeReportView.py:190
+#: ..\..\tools\..\koi\TimeTracksOverview.py:325
+msgid "Duration"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:1374
+#: ..\..\tools\..\koi\clocks\clock_client.py:823
+msgid "Start"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:1375
+#: ..\..\tools\..\koi\EditOperationDefinition.py:283
+#: ..\..\tools\..\koi\machine\EditMachinesDialog.py:16
+msgid "Operation"
+msgstr ""
+
+#: ..\..\tools\..\koi\CurrentOrdersOverview.py:1462
+msgid "Delivery slip {}, <b>{}</b> units"
+msgstr ""
+
+#: ..\..\tools\..\koi\CustomerPlateWidget.py:123
+#: ..\..\tools\..\koi\CustomerPlateWidget.py:128
+msgid "P: {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\CustomerPlateWidget.py:133
+#: ..\..\tools\..\koi\supply\SupplierPlateWidget.py:64
+msgid "F: {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\dao.py:2314 ..\..\tools\..\koi\db_mapping.py:1247
+#: ..\..\tools\..\koi\db_mapping.py:1368
+#: ..\..\tools\..\koi\TimeReportingScanner.py:59
+#: ..\..\tools\..\koi\TimeReportView.py:405
+msgid "Presence"
+msgstr ""
+
+#: ..\..\tools\..\koi\dao.py:3195
+#: ..\..\tools\..\koi\server\json_decorator.py:87
+msgid ""
+"Cannot delete this employee because there are orders for him. Remove the "
+"orders first."
+msgstr ""
+
+#: ..\..\tools\..\koi\dao.py:3834
+msgid "I can't delete the delivery slip {} because it is not the last one."
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:109
+msgid "Preorder"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:112
+msgid "In production"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:115
+msgid "On hold"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:124
+msgid "Non conform"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:127
+msgid "Completed"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:128
+#: ..\..\tools\..\koi\OrderOverview.py:515
+msgid "Aborted"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:212
+msgid "Preorder definition"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:217
+msgid "Preorder sent"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:225
+msgid "Order definition"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:231
+msgid "Order in production"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:236
+msgid "Order production on hold"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:238
+msgid "Order completed"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:246
+msgid "Order aborted"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:540
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:13
+msgid "Holidays"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:541
+msgid "Partial activity"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:542
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:23
+msgid "Unemployment"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:543
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:28
+msgid "Sick leave"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:544
+msgid "Other"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:1209
+msgid "Regular time"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:1210
+msgid "Unemployment time"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:1366
+msgid "Task start "
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:1367
+msgid "Task stop"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:1369
+msgid "Day in"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:1370
+msgid "Day out"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:1371
+msgid "Pause start"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:1372
+msgid "Unemployment start"
+msgstr ""
+
+#: ..\..\tools\..\koi\db_mapping.py:1535
+msgid "Editor can't be empty"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:71
+#: ..\..\tools\..\koi\ReprintDeliverySlip.py:114
+msgid "The delivery slip {} doesn't exist"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:104
+msgid "Delivery slip overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:105
+msgid "Reprint delivery slip"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:112
+msgid "Desactivate delivery slip"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:116
+msgid "Activate delivery slip"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:120
+msgid "Delete delivery slip"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:126
+#: ..\..\tools\..\koi\EditOrderParts.py:1113
+#: ..\..\tools\..\koi\EditTaskActionReportsDialog.py:50
+#: ..\..\tools\..\koi\PresenceOverview.py:799
+#: ..\..\tools\..\koi\TimeReportingScanner.py:543
+#: ..\..\tools\..\koi\TimeReportingScanner.py:550
+#: ..\..\tools\..\koi\TimeReportingScanner.py:858
+#: ..\..\tools\..\koi\TimeReportingScanner.py:873
+#: ..\..\tools\..\koi\TimeTracksOverview.py:346
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:400
+msgid "Action"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:136
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:175
+#: ..\..\tools\..\koi\python.py:389
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:131
+msgid "Delivery slips"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:152
+#: ..\..\tools\..\koi\ReprintDeliverySlip.py:50
+msgid "Slip Nr"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:153
+#: ..\..\tools\..\koi\ReprintDeliverySlip.py:50
+msgid "Date"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:155
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:142
+#: ..\..\tools\..\koi\python.py:351
+#: ..\..\tools\..\koi\ReprintDeliverySlip.py:50
+msgid "Order"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:177
+#: ..\..\tools\..\koi\EditCustomerDialog.py:60
+#: ..\..\tools\..\koi\EditCustomerDialog.py:95
+#: ..\..\tools\..\koi\machine\EditMachinesDialog.py:20
+#: ..\..\tools\..\koi\supply\EditSupplierDialog.py:30
+#: ..\..\tools\..\koi\user_mgmt\edit_user.py:45
+msgid "Detail"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipPanel.py:219
+#: ..\..\tools\..\koi\FindOrder.py:87
+msgid "The filter is too long"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipView.py:24
+msgid "Part"
+msgstr ""
+
+#: ..\..\tools\..\koi\DeliverySlipView.py:26
+msgid "Q. out"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditConfigurationDialog.py:16
+#: ..\..\tools\..\koi\python.py:437
+msgid "Preferences"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditConfigurationDialog.py:28
+msgid "Fonts"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditConfigurationDialog.py:29
+msgid "Server's IP address"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditConfigurationDialog.py:71
+msgid "Restart needed"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditConfigurationDialog.py:72
+msgid ""
+"The modifications you have requested needs a restart of the application to "
+"be applied. They will take effect when you restart the application."
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:48
+#: ..\..\tools\..\koi\supply\EditSupplierDialog.py:21
+msgid "Phone"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:49
+#: ..\..\tools\..\koi\supply\EditSupplierDialog.py:22
+msgid "Phone 2"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:50
+#: ..\..\tools\..\koi\supply\EditSupplierDialog.py:23
+msgid "Fax"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:51
+#: ..\..\tools\..\koi\supply\EditSupplierDialog.py:24
+msgid "E-Mail"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:52
+#: ..\..\tools\..\koi\supply\EditSupplierDialog.py:25
+msgid "Address 1"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:54
+#: ..\..\tools\..\koi\supply\EditSupplierDialog.py:27
+msgid "Country"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:55
+#: ..\..\tools\..\koi\supply\EditSupplierDialog.py:28
+msgid "Notes"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:58
+#: ..\..\tools\..\koi\EditOperationDefinition.py:270
+msgid "ID"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:60
+msgid "Edit customer"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:60
+#: ..\..\tools\..\koi\python.py:343
+msgid "Customers"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:82
+msgid "Picture"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:83
+#: ..\..\tools\..\koi\machine\EditMachinesDialog.py:17
+msgid "Active"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:84
+msgid "Login"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:85
+#: ..\..\tools\..\koi\session\LoginDialog.py:34
+msgid "Password"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:86
+#: ..\..\tools\..\koi\user_mgmt\edit_user.py:43
+msgid "Roles"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:95
+msgid "Employee edit"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditCustomerDialog.py:95
+#: ..\..\tools\..\koi\python.py:426
+msgid "Employees"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:32
+#: ..\..\tools\..\koi\EditOrderParts.py:2323
+#: ..\..\tools\..\koi\EditOrderParts.py:2327
+msgid "Empty order"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:33
+msgid "There's nothing to report on a delivery slip !"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:37
+msgid "All parts completed"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:38
+msgid ""
+"All the parts of the order are already completed (either because one "
+"explictely marked them as completed/aborted or because the quantities out "
+"are equal to the planned quantities), making a delivery slip is not needed"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:42
+msgid "No work done"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:43
+msgid ""
+"You're trying to create a delivery slip for parts of an order where no work "
+"was actually done.\n"
+"I'll let you do it although it doesn't make much sense."
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:69
+msgid "Delete the last delivery slip"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:95
+msgid "You're about to delete the delivery slip number {}. Do you confirm ?"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:103
+msgid "Unable to delete the last delivery slip"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:116
+msgid "No delivery slip to delete !"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:117
+msgid "There are no delivery slip to delete"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:126
+msgid "Create delivery slip"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:144
+msgid "Qty plan."
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:145
+msgid "Qty so far"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:146
+msgid "Qty out now"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:156
+msgid "Close the order"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:182
+msgid "(customer number <b>{}</b>)"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:184
+msgid ""
+"Creating a new delivery slip for order <b>{}</b>{} of customer <b>{}</b>"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:283
+msgid "For {} {}, quantity {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:293
+msgid ""
+"You requested to create a new delivery slip. However, you didn't encode any "
+"quantities"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:298
+msgid "One quantity is too big"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:298
+msgid ""
+"Pay attention ! On some parts, you gave a quantity out that will make the "
+"total quantity out bigger than what was ordered. You must either change the "
+"quantity out or change the planned quantity."
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:302
+msgid ""
+"Some of the parts you want to make a delivery slip for have a null sell "
+"price. This is not an error but you may want to double check that situation."
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:306
+msgid ""
+"<b>You're about to make a new delivery slip. This can't be reversed, please "
+"confirm.\n"
+" Here are the quantities you're going to record"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:319
+msgid "Error while creating the delivery slip"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditDeliverySlipDialog.py:320
+msgid "The delivery slip was not created due to an unexpected error."
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:58
+msgid "Start date"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:59
+msgid "End date"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:60
+msgid "Cost"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:75
+msgid "New period"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:79
+msgid "Delete last period"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:158
+#: ..\..\tools\..\koi\gui\ProxyModel.py:129
+#: ..\..\tools\..\koi\gui\ProxyModel.py:893
+#: ..\..\tools\..\koi\gui\ProxyModel.py:935
+msgid "{} can't be empty"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:202
+msgid "Add a period for an operation definition"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:210
+#: ..\..\tools\..\koi\SpecialActivityDialog.py:29
+#: ..\..\tools\..\koi\SpecialActivityDialog.py:87
+#: ..\..\tools\..\koi\TimeReportingScanner.py:546
+#: ..\..\tools\..\koi\TimeReportingScanner.py:551
+#: ..\..\tools\..\koi\TimeReportingScanner.py:867
+#: ..\..\tools\..\koi\TimeReportingScanner.py:874
+#: ..\..\tools\..\koi\TimeTracksOverview.py:326
+msgid "Start time"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:216
+msgid "Hourly cost"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:243
+msgid "The given cost is not valid"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:244
+msgid "The given cost doesn't look like a cost"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:250
+msgid "The given date is not valid"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:251
+msgid "Please check the syntax and that the date exists"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:273
+msgid "Short ID"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:275
+msgid "Imputable"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:276
+msgid "On orders"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:277
+msgid "On operations"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:278
+msgid "Periods"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:281
+#: ..\..\tools\..\koi\python.py:435
+msgid "Edit operations"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOperationDefinition.py:282
+msgid "All operations"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:112
+#: ..\..\tools\..\koi\EditOrderParts.py:769
+#: ..\..\tools\..\koi\translators.py:307
+msgid "Cde: {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:115
+#: ..\..\tools\..\koi\EditOrderParts.py:771
+#: ..\..\tools\..\koi\translators.py:310
+msgid "Dev.: {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:752
+#: ..\..\tools\..\koi\EditOrderParts.py:1158
+msgid "Last edit by : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1019
+msgid "The documents are associated to an empty order part."
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1020
+msgid "If you leave the part empty, they won't be saved"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1110
+msgid "< cust"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1111
+msgid "< active"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1112
+msgid "<"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1114
+msgid ">"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1115
+msgid "> active"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1116
+msgid "> cust"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1117
+#: ..\..\tools\..\koi\OrderOverview.py:560 ..\..\tools\..\koi\PostView.py:529
+#: ..\..\tools\..\koi\PresenceOverview.py:801
+#: ..\..\tools\..\koi\WeekOverview.py:165
+msgid "Find"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1122
+msgid "Order status"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1130
+msgid "State"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1138
+msgid "Customer order ID :"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1151
+msgid "State "
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1154
+msgid "Estimate sent on {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1154
+msgid "Estimate not sent."
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1211
+#: ..\..\tools\..\koi\ReprintDeliverySlip.py:43
+msgid "Slip number"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1212
+msgid "Order part"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1213
+#: ..\..\tools\..\koi\reporting\delivery_slip_report.py:78
+#: ..\..\tools\..\koi\reporting\order_confirmation_report.py:201
+#: ..\..\tools\..\koi\reporting\preorder_report.py:94
+#: ..\..\tools\..\koi\reporting\supply_order_report.py:79
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:345
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:258
+msgid "Quantity"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1224 ..\..\tools\..\koi\TModel.py:223
+msgid "Q.Ex"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1225 ..\..\tools\..\koi\TModel.py:224
+msgid "D/line"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1228 ..\..\tools\..\koi\TModel.py:225
+msgid ""
+"Total\n"
+"H.Pl"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1230 ..\..\tools\..\koi\TModel.py:226
+msgid ""
+"Total\n"
+"H.Done"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1237 ..\..\tools\..\koi\TModel.py:227
+#: ..\..\tools\..\koi\reporting\monthly_report.py:76
+msgid ""
+"Sell\n"
+"price"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1245
+#: ..\..\tools\..\koi\OperationsView.py:28 ..\..\tools\..\koi\TModel.py:229
+msgid "Op."
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1248
+#: ..\..\tools\..\koi\OperationsView.py:30 ..\..\tools\..\koi\TModel.py:231
+msgid "Value"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1252
+#: ..\..\tools\..\koi\OperationsView.py:31 ..\..\tools\..\koi\TModel.py:232
+msgid "Planned time"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1255
+#: ..\..\tools\..\koi\OperationsView.py:33 ..\..\tools\..\koi\TModel.py:233
+msgid "Imputations"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1292
+msgid "Values"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1296
+msgid "Unit cost"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1300
+msgid "Order part state"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1314
+msgid "Total selling price"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1318
+msgid "Part price"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1322
+msgid "H. planned"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1326
+msgid "H. done"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1409
+msgid "No comments"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1414
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:413
+msgid "Comments"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1489
+#: ..\..\tools\..\koi\EditOrderParts.py:1501
+#: ..\..\tools\..\koi\EditOrderParts.py:1513
+msgid "Previous order"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1495
+#: ..\..\tools\..\koi\EditOrderParts.py:1507
+#: ..\..\tools\..\koi\EditOrderParts.py:1519
+msgid "Next order"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1533
+msgid "Paste order parts"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1539
+#: ..\..\tools\..\koi\OperationsView.py:64
+msgid "Copy operations"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1545
+msgid "Paste operations"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1558
+msgid "Save order"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1559
+msgid "Print operations"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1560
+msgid "Print as preorder"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1561
+msgid "Print as preorder 2"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1562
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:297
+msgid "Activity report"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1563
+msgid "Order confirmation report"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1566
+#: ..\..\tools\..\koi\gui\MetaFormDialog.py:124
+msgid "Delete"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1568
+msgid "Change customer"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1569
+msgid "Change estimate date"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1570
+msgid "Audit report"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1628
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:302
+msgid "No order or non-saved order selected"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1629
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:303
+msgid "You can only delete an order that has already been saved"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1645
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:286
+msgid "About to delete order {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1647
+msgid "About to delete preorder {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1649
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:288
+msgid "Are you sure ?"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1653
+msgid "There was an error while deleting the order"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1660
+msgid "A part of the order already have time reported on it"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1661
+msgid ""
+"You can only delete an order if none of its parts has time reported on it"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1663
+msgid "You can only delete an order if it is the last one."
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1664
+msgid ""
+"Orders have an order number which cannot be remove because of accounting "
+"rules"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1731
+msgid "In order part description <b>{}</b>"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1779
+msgid "Can't set material price or planned hours when no operation is chosen"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1781
+msgid "Planned hours can only be set for imputable operations"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1783
+msgid "Material price can only be set for material operations"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1800
+msgid "In order part operational <b>{}</b>"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1807
+msgid "On line <b>{}</b> : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1818
+#: ..\..\tools\..\koi\gui\dialog_utils.py:455
+#: ..\..\tools\..\koi\gui\dialog_utils.py:471
+#: ..\..\tools\..\koi\gui\dialog_utils.py:456
+#: ..\..\tools\..\koi\gui\dialog_utils.py:472
+msgid "Some of the data you entered are not valid"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:1986
+#: ..\..\tools\..\koi\EditTaskActionReportsDialog.py:137
+msgid "There was an error while saving your data"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:2323
+msgid "You can't print the bill of operations if the order is empty"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:2327
+msgid "You can't print the bill of operations if the order has no operations"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:2331
+msgid "Printing a bill of operations for a part in non appropriate state"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:2332
+msgid ""
+"The order seems to not be ready for production, are your sure you want to "
+"print its bill of operations ?"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:2402
+msgid "State change on printing"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:2403
+msgid ""
+"If you intend to send this estimate to the customer, I can switch its state "
+"to \"{}\". If you disagree, we'll leave the state as it is."
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:2410
+msgid "Set estimate sent date on printing"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:2411
+msgid ""
+"If you intend to send this estimate to the customer, I can give it today as "
+"the send date"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:2496
+msgid ""
+"Please pick a date corresponding to the moment which you sent the estimate "
+"to your customer. Choose no date if you want to tell that then estimate was "
+"not sent."
+msgstr ""
+
+#: ..\..\tools\..\koi\EditOrderParts.py:2499
+msgid ""
+"Please pick a date corresponding to the moment which you sent the estimate "
+"to your customer. You must set a valid date because the current state of the "
+"order is {}."
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTaskActionReportsDialog.py:19
+msgid "Task actions records"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTaskActionReportsDialog.py:44
+#: ..\..\tools\..\koi\EditTimeTracksDialog.py:269
+#: ..\..\tools\..\koi\FindOrder.py:34
+#: ..\..\tools\..\koi\TimeTracksOverview.py:323
+msgid "Order Part"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTaskActionReportsDialog.py:47
+#: ..\..\tools\..\koi\EditTimeTracksDialog.py:272
+#: ..\..\tools\..\koi\TimeReportingScanner.py:56
+#: ..\..\tools\..\koi\TimeReportingScanner.py:871
+#: ..\..\tools\..\koi\TimeTracksOverview.py:324
+#: ..\..\tools\..\koi\TimeTracksOverview.py:343
+msgid "Task"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTaskActionReportsDialog.py:51
+#: ..\..\tools\..\koi\TimeTracksOverview.py:344
+msgid "Hour"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTaskActionReportsDialog.py:52
+#: ..\..\tools\..\koi\TimeTracksOverview.py:327
+msgid "Recorded at"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTaskActionReportsDialog.py:53
+#: ..\..\tools\..\koi\TimeTracksOverview.py:347
+msgid "Origin"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTaskActionReportsDialog.py:54
+#: ..\..\tools\..\koi\TimeTracksOverview.py:348
+msgid "Editor"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTaskActionReportsDialog.py:88
+msgid "Time recordings for <b>{}</b> on <b>{}</b>"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTimeTracksDialog.py:212
+msgid "You can't delete this row"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTimeTracksDialog.py:213
+msgid ""
+"You cannot delete this line because it was automatically created from time "
+"recordings. If you really want to delete it, then you must delete its time "
+"recordings. After doing so, the program will automatically conclude that the "
+"time record is not necessary anymore"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTimeTracksDialog.py:216
+msgid "You can't modify this row"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTimeTracksDialog.py:217
+msgid ""
+"You cannot update this line because it was automatically created from time "
+"recordings. If you really want to change the time spent on the task, you "
+"need to create another row with the same task and a positive or negative "
+"amount of hours if you want to add or remove hours"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTimeTracksDialog.py:246
+msgid "Time spent on tasks"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTimeTracksDialog.py:258
+msgid ""
+"On the table below you can have two kinds of line. The grey line which shows "
+"the time spent on a task computed on the basis of the actual time "
+"recordings. Since those are computed automaticaly, you can't change them. "
+"The other lines in black, are those that you will encode have encoded "
+"yourself. They represent hours to add or remove to those of the grey lines. "
+"So, for example, if you want to remove 3 hours on a task, you encode the "
+"task with a duration of three hours."
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTimeTracksDialog.py:276
+#: ..\..\tools\..\koi\TimeReportingScanner.py:862
+#: ..\..\tools\..\koi\TimeReportingScanner.py:872
+msgid "Machine"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTimeTracksDialog.py:302
+msgid "Sum of durations"
+msgstr ""
+
+#: ..\..\tools\..\koi\EditTimeTracksDialog.py:355
+msgid "Timesheet for <b>{}</b> on <b>{}</b>"
+msgstr ""
+
+#: ..\..\tools\..\koi\FindOrder.py:16 ..\..\tools\..\koi\python.py:334
+msgid "Find order"
+msgstr ""
+
+#: ..\..\tools\..\koi\FindOrder.py:23
+msgid "Search"
+msgstr ""
+
+#: ..\..\tools\..\koi\FindOrder.py:34
+msgid "Preorder Nr"
+msgstr ""
+
+#: ..\..\tools\..\koi\FindOrder.py:34
+msgid "Order Nr"
+msgstr ""
+
+#: ..\..\tools\..\koi\FindOrder.py:34
+msgid "Customer Nr"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:66
+msgid "{} months before"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:67
+#: ..\..\tools\..\koi\PresenceOverview.py:798
+#: ..\..\tools\..\koi\TimeTracksOverview.py:303
+msgid "Today"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:68
+msgid "{} months after"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:127
+msgid "Valuation last month"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:128
+msgid ""
+"The current month valuation is computed\n"
+"for order parts which were started and not finished on the last day of the "
+"previous\n"
+"month."
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:132
+msgid "Valuation this month"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:133
+msgid ""
+"The current month valuation is computed\n"
+"for order parts which are started (that is, hours or actual production have "
+"been reported\n"
+"for them) and not finished."
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:137
+msgid "To facture"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:138
+msgid ""
+"Compute the value of the delivered parts. The\n"
+"value is the product of the quantities out by the sell price.\n"
+"It is computed for deliveries which were completed in the given\n"
+"month (so for which the last quantity was produced during\n"
+"the month, regardless of the status of the order)"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:144
+msgid "Turnover"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:145
+msgid "Is to facture - valuation last month + valuation this month"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:147
+msgid "Total indirect hours"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:212
+msgid "Monthly accounting state - {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:214
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:322
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:367
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:525
+#: ..\..\tools\..\koi\PostView.py:275
+msgid "Collecting data..."
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:283
+msgid "Financial KPI"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:300
+msgid "Monthly accounting state"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:303
+msgid "Financial values for the month"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:305
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:687
+msgid "Trends"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:410
+msgid "ISO KPI"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:422
+msgid "Commercial"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:451
+msgid "Recompute"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:452
+msgid "Export to Excel"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:522
+msgid "Production KPI from {} to {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:670
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:684
+msgid "Production KPI"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:731
+msgid "Time related KPI"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthlyReportOverview.py:758
+msgid "Financial overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthTimeCorrectionDialog.py:23
+#: ..\..\tools\..\koi\MonthTimeCorrectionDialog.py:24
+msgid "Correction for month"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthTimeCorrectionDialog.py:29
+msgid "Correction (hours)"
+msgstr ""
+
+#: ..\..\tools\..\koi\MonthTimeCorrectionDialog.py:48
+msgid "Correction for {} on {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\OrderOverview.py:53
+msgid "Please give a new name"
+msgstr ""
+
+#: ..\..\tools\..\koi\OrderOverview.py:278
+#: ..\..\tools\..\koi\OrderOverview.py:592
+msgid "Orders overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\OrderOverview.py:483
+msgid "Order Overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\OrderOverview.py:505 ..\..\tools\..\koi\python.py:408
+msgid "Production"
+msgstr ""
+
+#: ..\..\tools\..\koi\OrderOverview.py:506
+msgid "Order that are in production (as specified by their state)"
+msgstr ""
+
+#: ..\..\tools\..\koi\OrderOverview.py:508
+msgid "Preorders"
+msgstr ""
+
+#: ..\..\tools\..\koi\OrderOverview.py:510
+msgid "Dormant"
+msgstr ""
+
+#: ..\..\tools\..\koi\OrderOverview.py:511
+msgid ""
+"Orders that are either on hold or to be defined (as specified by their state)"
+msgstr ""
+
+#: ..\..\tools\..\koi\OrderOverview.py:512
+msgid "Finished"
+msgstr ""
+
+#: ..\..\tools\..\koi\OrderOverview.py:513
+msgid "Orders that were marked as completed this month"
+msgstr ""
+
+#: ..\..\tools\..\koi\OrderOverview.py:516
+msgid "Orders that were prematurely cancelled"
+msgstr ""
+
+#: ..\..\tools\..\koi\OrderOverview.py:556
+msgid "Prev. month"
+msgstr ""
+
+#: ..\..\tools\..\koi\OrderOverview.py:557
+msgid "Next. month"
+msgstr ""
+
+#: ..\..\tools\..\koi\OrderWorkflowDialog.py:220
+msgid "Order workflow"
+msgstr ""
+
+#: ..\..\tools\..\koi\PastOrdersOverview.py:65
+#: ..\..\tools\..\koi\reporting\monthly_report.py:76
+msgid "Hours"
+msgstr ""
+
+#: ..\..\tools\..\koi\PostView.py:265
+msgid "{}x{}={}h, rest:{}h"
+msgstr ""
+
+#: ..\..\tools\..\koi\PostView.py:387
+msgid "{} - Estimated to do : {}h; done : {}h"
+msgstr ""
+
+#: ..\..\tools\..\koi\PostView.py:411
+msgid "Started"
+msgstr ""
+
+#: ..\..\tools\..\koi\PostView.py:421 ..\..\tools\..\koi\PostView.py:454
+#: ..\..\tools\..\koi\translators.py:136 ..\..\tools\..\koi\translators.py:204
+msgid "{}h"
+msgstr ""
+
+#: ..\..\tools\..\koi\PostView.py:444
+msgid "Not started yet"
+msgstr ""
+
+#: ..\..\tools\..\koi\PostView.py:502
+msgid "Post overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\PostView.py:510
+msgid "Refresh"
+msgstr ""
+
+#: ..\..\tools\..\koi\PostView.py:512
+msgid "By deadline"
+msgstr ""
+
+#: ..\..\tools\..\koi\PostView.py:514
+msgid "By hours left to do"
+msgstr ""
+
+#: ..\..\tools\..\koi\PostView.py:534
+msgid "Posts Overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\PostView.py:560
+msgid "Posts"
+msgstr ""
+
+#: ..\..\tools\..\koi\PostView.py:561
+msgid "Workload"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:119
+msgid "Work on {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:170
+msgid ""
+"This\n"
+"month"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:170
+msgid "Before"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:201
+msgid "Year"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:202
+msgid "Month"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:334
+#: ..\..\tools\..\koi\TimeTracksOverview.py:102
+#: ..\..\tools\..\koi\TimeTracksOverview.py:281
+msgid "Employee"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:337
+msgid "Correction"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:338
+#: ..\..\tools\..\koi\clocks\clock_client.py:824
+msgid "Total"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:339
+msgid "Days off"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:668
+#: ..\..\tools\..\koi\PresenceOverview.py:726
+#: ..\..\tools\..\koi\TimeTracksOverview.py:208
+#: ..\..\tools\..\koi\TimeTracksOverview.py:249
+msgid "Can't edit"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:668
+#: ..\..\tools\..\koi\PresenceOverview.py:726
+#: ..\..\tools\..\koi\TimeTracksOverview.py:208
+#: ..\..\tools\..\koi\TimeTracksOverview.py:249
+msgid "You must first select a day/person."
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:759
+msgid "Presence overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:797
+#: ..\..\tools\..\koi\TimeTracksOverview.py:302
+msgid "Month before"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:800
+#: ..\..\tools\..\koi\TimeTracksOverview.py:304
+msgid "Month after"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:810
+#: ..\..\tools\..\koi\TimeTracksOverview.py:335
+#: ..\..\tools\..\koi\TimeTracksOverview.py:354
+msgid "Edit"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:811
+msgid "Month correction"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:823
+msgid "Presence Overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:828
+msgid "Overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:845
+msgid "Day"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:1008
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:14
+msgid "Day off"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:1009
+msgid "Set day off"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:1013
+msgid "Set one day"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:1016
+msgid "Set half day"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:1019
+msgid "Set period"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:1026
+msgid "Set time off for {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\PresenceOverview.py:1034
+msgid "Remove day off"
+msgstr ""
+
+#: ..\..\tools\..\koi\PrintPreorderDialog.py:25
+msgid "Print preorder"
+msgstr ""
+
+#: ..\..\tools\..\koi\PrintPreorderDialog.py:33
+msgid ""
+"Here you can give a small message that will be printed togetehr with the "
+"preorder."
+msgstr ""
+
+#: ..\..\tools\..\koi\PrintPreorderDialog.py:37
+msgid "Header text"
+msgstr ""
+
+#: ..\..\tools\..\koi\PrintPreorderDialog.py:42
+msgid "Footer text"
+msgstr ""
+
+#: ..\..\tools\..\koi\PrintPreorderDialog.py:64
+msgid ""
+"Sir,\n"
+"Please find your preorder below as discussed earlier. Please send us a "
+"signed copy to complete the order.\n"
+"Best regards"
+msgstr ""
+
+#: ..\..\tools\..\koi\PrintPreorderDialog.py:69
+msgid ""
+"Best regards,\n"
+"\n"
+"the company team."
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:145
+msgid "Contacting updates server"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:147
+msgid "Loading database URL"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:166
+msgid "Can't connect to the main server"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:167
+msgid ""
+"I was unable to contact the main server (located here : {}). It is not 100% "
+"necessary to do so but that's not normal either. You should tell your "
+"administrator about that. I will now allow you to change the network address "
+"of the server I know in the preferences panel."
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:189
+msgid "Can't initialize the database connection"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:190
+msgid "I have tried this url : {}. And got this problem : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:199
+msgid "Checking DB connection"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:207
+msgid "Can't connect to the database"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:208
+msgid ""
+"<b>This program is not usable without a database and will therefore shut "
+"down now.</b> You should verify if the server is running because this "
+"situation can affect all the users of the system. It is a good idea to "
+"<b>call the system administrator now </b> because this error should not "
+"happen."
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:215
+msgid "Loading additional data"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:320
+msgid "Create supply order"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:324
+msgid "Supply order overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:328
+msgid "Edit suppliers"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:332
+msgid "Supply"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:338 ..\..\tools\..\koi\python.py:399
+msgid "Show order overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:342
+msgid "Edit customers"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:346
+msgid "Create order"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:353
+msgid "Show presence overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:354
+msgid "Print badges"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:355
+msgid "Print non billable barcodes"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:356
+msgid "Print machines barcodes"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:357
+msgid "Print presence barcodes"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:359
+#: ..\..\tools\..\koi\TimeReportingScanner.py:52
+msgid "Time tracking"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:370
+msgid "Create new delivery slip"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:374
+msgid "Show delivery slips"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:400
+msgid "Show posts view"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:401
+msgid "Print plant status"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:402
+msgid "Global financial overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:403
+msgid "Global production overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:404
+msgid "ISO indicators overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:425
+msgid "Edit employees"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:436
+msgid "Edit machines"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:438
+msgid "Document templates"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:439
+msgid "Parameters"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:445
+msgid "Detach tab"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:449
+msgid "Remove tab"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:456
+msgid "Windows"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:458
+msgid "Help page"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:459
+msgid "About {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:460
+msgid "Help"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:470
+msgid "Quit"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:564
+msgid "Unable to show the order"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:614
+msgid "No supplier defined"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:614
+msgid "Before creating an order, you must first create a supplier"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:640
+msgid "No customer defined"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:640
+msgid "Before creating an order, you must first create a customer"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:852
+msgid ""
+"There's no selected order. We can't create a delivery slip without that."
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:929
+msgid "There was a serious problem while accessing the database"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:930
+msgid "This problem might require you to contact your local administrator"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:989
+msgid "Not authorized"
+msgstr ""
+
+#: ..\..\tools\..\koi\python.py:989
+msgid ""
+"You are not authorized to use this program. Please check with your system "
+"administrator."
+msgstr ""
+
+#: ..\..\tools\..\koi\ReprintDeliverySlip.py:33
+msgid "Print a delivery slip"
+msgstr ""
+
+#: ..\..\tools\..\koi\ReprintDeliverySlip.py:108
+msgid "The delivery slip number {} is not valid"
+msgstr ""
+
+#: ..\..\tools\..\koi\ReprintDeliverySlip.py:118
+msgid "Something wrong happened while printing"
+msgstr ""
+
+#: ..\..\tools\..\koi\SpecialActivityDialog.py:30
+#: ..\..\tools\..\koi\SpecialActivityDialog.py:88
+msgid "End time"
+msgstr ""
+
+#: ..\..\tools\..\koi\SpecialActivityDialog.py:66
+#: ..\..\tools\..\koi\gui\MetaFormDialog.py:373
+msgid "Some of the data you encoded is not right"
+msgstr ""
+
+#: ..\..\tools\..\koi\SpecialActivityDialog.py:80
+msgid "Edit holidays"
+msgstr ""
+
+#: ..\..\tools\..\koi\SpecialActivityDialog.py:89
+msgid "Type"
+msgstr ""
+
+#: ..\..\tools\..\koi\SpecialActivityDialog.py:119
+msgid "Editing holidays for {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\SpecialActivityDialog.py:133
+msgid "The start time must be before than the end time"
+msgstr ""
+
+#: ..\..\tools\..\koi\SpecialActivityDialog.py:144
+msgid "Validation failed"
+msgstr ""
+
+#: ..\..\tools\..\koi\SpecialActivityDialog.py:151
+#: ..\..\tools\..\koi\gui\MetaFormDialog.py:385
+#: ..\..\tools\..\koi\gui\MetaFormDialog.py:388
+msgid "There was an error while saving"
+msgstr ""
+
+#: ..\..\tools\..\koi\TaskService.py:206
+msgid "The order part {} does not exist !"
+msgstr ""
+
+#: ..\..\tools\..\koi\TaskService.py:218
+msgid "The order {} does not exist !"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:54
+msgid "Delete report"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:57
+msgid "Add time"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:60
+msgid "Add presence report"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:62
+msgid "All"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:313
+msgid "Time reporting scanner"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:317
+msgid ""
+"The picture below show the various actions reported for the employee "
+"(vertical lines). It also show the time spent on tasks (coloured bars). "
+"Right click on any timeline to add new actions or delete existing ones. "
+"Click anywhere else to add actions on task which are not shown below. The "
+"green bar shows the presence of the employee during the day; it doesn't show "
+"actual work. The actual work is shown on the blue bars."
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:520
+msgid "Time records for {} on {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:586
+msgid "In field {} : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:728
+#: ..\..\tools\..\koi\TimeReportingScanner.py:745
+msgid "Time reporting only on orders ready for production"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:748
+#: ..\..\tools\..\koi\gui\ProxyModel.py:692
+msgid "The order or order part with number {} doesn't exist."
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:845
+msgid "identifier"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:870
+msgid "Identifier"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:908
+msgid "Start time is not valid"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:912
+msgid "Type of task is not valid"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportingScanner.py:916
+msgid "No task selected"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportView.py:276
+msgid "On {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportView.py:278
+msgid "Edited by {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportView.py:289
+msgid ", on {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeReportView.py:418
+msgid "Absence"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeTracksOverview.py:64
+msgid "Hours worked on the {} by {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeTracksOverview.py:89
+msgid "Time Records Overview - {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeTracksOverview.py:306
+msgid "Time Records Overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeTracksOverview.py:315
+msgid "Hours worked per person"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeTracksOverview.py:336
+msgid "Total times on day"
+msgstr ""
+
+#: ..\..\tools\..\koi\TimeTracksOverview.py:355
+msgid "Time records"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:9 ..\..\tools\..\koi\translators.py:88
+msgid "Monday"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:9 ..\..\tools\..\koi\translators.py:88
+msgid "Tuesday"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:9 ..\..\tools\..\koi\translators.py:88
+msgid "Wednesday"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:9 ..\..\tools\..\koi\translators.py:88
+msgid "Thursday"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:9 ..\..\tools\..\koi\translators.py:88
+msgid "Friday"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:9 ..\..\tools\..\koi\translators.py:88
+msgid "Saturday"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:9 ..\..\tools\..\koi\translators.py:88
+msgid "Sunday"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:10 ..\..\tools\..\koi\translators.py:122
+msgid "January"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:10 ..\..\tools\..\koi\translators.py:122
+msgid "February"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:10 ..\..\tools\..\koi\translators.py:122
+msgid "March"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:10 ..\..\tools\..\koi\translators.py:122
+msgid "April"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:10 ..\..\tools\..\koi\translators.py:122
+msgid "May"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:11 ..\..\tools\..\koi\translators.py:123
+msgid "June"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:11 ..\..\tools\..\koi\translators.py:123
+msgid "July"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:11 ..\..\tools\..\koi\translators.py:123
+msgid "August"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:11 ..\..\tools\..\koi\translators.py:123
+msgid "September"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:11 ..\..\tools\..\koi\translators.py:123
+msgid "October"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:12 ..\..\tools\..\koi\translators.py:124
+msgid "November"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:12 ..\..\tools\..\koi\translators.py:124
+msgid "December"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:139
+msgid "{:0>02}m"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:150
+msgid "h"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:199
+msgid "{}h{:0>02}m"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:201
+msgid "{}:{:0>02}"
+msgstr ""
+
+#: ..\..\tools\..\koi\translators.py:210
+msgid "{}h{:0>02}"
+msgstr ""
+
+#: ..\..\tools\..\koi\WeekOverview.py:82
+msgid "# Ord."
+msgstr ""
+
+#: ..\..\tools\..\koi\WeekOverview.py:163
+msgid "Week before"
+msgstr ""
+
+#: ..\..\tools\..\koi\WeekOverview.py:164
+msgid "Week after"
+msgstr ""
+
+#: ..\..\tools\..\koi\WeekOverview.py:171
+msgid "Deadlines Overview"
+msgstr ""
+
+#: ..\..\tools\..\koi\charts\indicators_service.py:302
+msgid "Remaining"
+msgstr ""
+
+#: ..\..\tools\..\koi\charts\indicators_service.py:302
+msgid "Consumed"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:301
+msgid "Task doesn't exist"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:663
+#: ..\..\tools\..\koi\server\clock_client.py:1131
+#: ..\..\tools\..\koi\server\clock_client.py:1231
+msgid "There's more... Scan again !"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:684
+#: ..\..\tools\..\koi\server\clock_client.py:1229
+msgid "Scan an operation"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:696
+msgid "Ongoing tasks :"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:728
+#: ..\..\tools\..\koi\server\clock_client.py:1213
+msgid "Warning ! Task without customer !"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:751
+#: ..\..\tools\..\koi\server\clock_client.py:1243
+msgid "Good morning !"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:753
+#: ..\..\tools\..\koi\server\clock_client.py:1245
+msgid "Good evening !"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:782
+msgid "Check with management"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:802
+msgid "Your status"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:808
+msgid "Day started on {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:813
+msgid "Hours : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:863
+#: ..\..\tools\..\koi\server\clock_client.py:1501
+#: ..\..\tools\..\koi\server\clock_client.py:1556
+#: ..\..\tools\..\koi\server\clock_client.py:1581
+msgid "You're beginning the task"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:868
+#: ..\..\tools\..\koi\server\clock_client.py:1521
+#: ..\..\tools\..\koi\server\clock_client.py:1566
+#: ..\..\tools\..\koi\server\clock_client.py:1586
+msgid "You've finished the task"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:873
+#: ..\..\tools\..\koi\server\clock_client.py:487
+#: ..\..\tools\..\koi\server\clock_client.py:1591
+msgid "Clock in !"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:877
+#: ..\..\tools\..\koi\server\clock_client.py:492
+#: ..\..\tools\..\koi\server\clock_client.py:1595
+msgid "Clock out !"
+msgstr ""
+
+#: ..\..\tools\..\koi\clocks\clock_client.py:923
+#: ..\..\tools\..\koi\server\clock_client.py:1647
+msgid "Non billable task !"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\connection.py:43
+#: ..\..\tools\..\koi\datalayer\database_session.py:197
+msgid " A ping was successful (so host is up, database is down)"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\connection.py:45
+#: ..\..\tools\..\koi\datalayer\database_session.py:199
+msgid " A ping was not successful (so host is down)"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\connection.py:50
+#: ..\..\tools\..\koi\datalayer\database_session.py:204
+msgid "Ping failed, the host is down."
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\customer_dao.py:46
+msgid ""
+"Cannot delete this customer because there are orders for him. Remove the "
+"orders first."
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\employee_mapping.py:24
+msgid "View time tracks"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\employee_mapping.py:25
+msgid "Modify time tracks"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\employee_mapping.py:26
+msgid "Modify parameters"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\employee_mapping.py:28
+msgid "Change monthly timetracks correction"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\employee_mapping.py:29
+msgid "View financial information"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\employee_mapping.py:30
+msgid "View prices"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\employee_mapping.py:31
+msgid "View audit trail"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\employee_mapping.py:32
+msgid "Modify the documents templates"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\operation_definition_dao.py:40
+msgid ""
+"Can't add a new period after an operation definition period that was already "
+"terminated"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\parser_utils.py:94
+#: ..\..\tools\..\koi\datalayer\query_parser.py:174
+#: ..\..\tools\..\koi\datalayer\supply_order_query_parser.py:188
+msgid "the date you provided ({}) is not valid"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\parser_utils.py:132
+#: ..\..\tools\..\koi\datalayer\query_parser.py:271
+#: ..\..\tools\..\koi\datalayer\supply_order_query_parser.py:229
+msgid "syntax error"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\parser_utils.py:143
+#: ..\..\tools\..\koi\datalayer\parser_utils.py:145
+#: ..\..\tools\..\koi\datalayer\query_parser.py:534
+#: ..\..\tools\..\koi\datalayer\query_parser.py:536
+#: ..\..\tools\..\koi\datalayer\supply_order_query_parser.py:412
+#: ..\..\tools\..\koi\datalayer\supply_order_query_parser.py:414
+msgid "parsing error"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\parser_utils.py:265
+#: ..\..\tools\..\koi\datalayer\query_parser.py:51
+#: ..\..\tools\..\koi\datalayer\supply_order_query_parser.py:51
+msgid "Parsing failed for text : {} {}, possible completions are : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\parser_utils.py:267
+#: ..\..\tools\..\koi\datalayer\query_parser.py:53
+#: ..\..\tools\..\koi\datalayer\supply_order_query_parser.py:53
+msgid "Parsing failed for text : {} {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\parser_utils.py:477
+#: ..\..\tools\..\koi\datalayer\query_parser.py:765
+#: ..\..\tools\..\koi\datalayer\supply_order_query_parser.py:639
+msgid "There was an error ({}) while parsing the request around '{}'"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\parser_utils.py:479
+#: ..\..\tools\..\koi\datalayer\query_parser.py:767
+#: ..\..\tools\..\koi\datalayer\supply_order_query_parser.py:641
+msgid "There was an error ({}) while parsing the request."
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\quality.py:60
+msgid "Non conform customer"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\quality.py:61
+msgid "Non conform intern"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\quality.py:62
+msgid "Non conform supplier"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:437
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:607
+msgid "Cat."
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:438
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:608
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:66
+msgid "Filename"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:439
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:609
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:69
+msgid "Actions"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:661
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:663
+msgid "Documents"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:672
+msgid "Add documents from the template library"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:808
+msgid "The file is empty"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:812
+msgid "Can't open the file located at {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:827
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:157
+msgid "Uploading"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:835
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:186
+msgid "There was a problem while uploading the file to the server"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:886
+msgid "Downloading"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:895
+msgid "There was a problem while downloading the file from the server"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:933
+msgid "Save a document"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:941
+msgid "Add a document"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:977
+msgid "There was a problem while uploading the template to the server"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:1001
+msgid "Can't open file"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:1001
+msgid "I'm unable to open the file"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:1009
+msgid "Deleting a document"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:1010
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:139
+msgid "Are you sure you want to remove {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:1014
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:146
+msgid "There was an error while deleting a document"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\docs_collection_widget.py:1040
+msgid "Categories"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:68
+msgid "Horse Ref."
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:134
+msgid "Confirmation for deleting reference template"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:135
+msgid ""
+"You're about to delete a reference template document. These documents are "
+"used by some parts of this program. Deleting them will break those parts. So "
+"you should immediately upload another template with the same reference. OK "
+"to proceed ?"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:138
+msgid "Deleting a template"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:166
+msgid "There was a problem while uploading the file {} to the server"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:176
+msgid "Replacing"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:218
+msgid "Replacing a Horse reference document"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:219
+msgid ""
+"You're about to replace a reference document ({}, {}). This can potentially "
+"break the program. You should make a copy of the current version of that "
+"document before proceeding. Do you still want to go on ?"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:545
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:547
+msgid "Templates library"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\templates_collection_widget.py:549
+msgid ""
+"Here you can add or remove templates documents from the library. If needed, "
+"you can change their name and add a description. If you want to replace a "
+"reference document (one with a special Horse reference, then simply drag and "
+"drop the document on the appropriate row"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\template_select_dialog.py:51
+msgid "Select a template"
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\template_select_dialog.py:67
+msgid "Please select one or more template."
+msgstr ""
+
+#: ..\..\tools\..\koi\doc_manager\template_select_dialog.py:70
+msgid "Documents Templates"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\AboutBox.py:16
+msgid "About {}..."
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\AboutBox.py:24
+msgid ""
+"This program is given to you with a few important\n"
+"freedoms and duties as specified in the license below. <b>We believe they "
+"will help to make a better world</b>. They are\n"
+"also <b>legally binding</b> (see Free Software Foundation's website), so "
+"make sure you read the license\n"
+"carefully. We give you the right to\n"
+"<ul>\n"
+"<li>run the program,</li>\n"
+"<li>inspect it to make sure it is safe to use,</li>\n"
+"<li>modify it to suit your needs,</li>\n"
+"<li>distribute copies of it,</li>\n"
+"</ul>\n"
+"as long as you give those freedoms and duties to anybody you give this "
+"program to.\n"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\ask_date.py:32
+msgid "Pick a date"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\ComboDelegate.py:399
+msgid "Can't be empty"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\ComboDelegate.py:406
+msgid "Below lower bound"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\ComboDelegate.py:408
+#: ..\..\tools\..\koi\gui\ComboDelegate.py:411
+msgid "Error while parsing data"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\dialog_utils.py:322
+msgid "Error !"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\dialog_utils.py:330
+msgid "Additional information :"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\dialog_utils.py:348
+msgid "There are several errors"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\dialog_utils.py:356
+msgid "Warning !"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\dialog_utils.py:364
+msgid "The data have been changed."
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\dialog_utils.py:364
+msgid "Do you want to save your changes?"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\dialog_utils.py:377
+msgid "Server error code is {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\dialog_utils.py:400
+#: ..\..\tools\..\koi\gui\dialog_utils.py:418
+#: ..\..\tools\..\koi\server\admin_gui.py:1101
+#: ..\..\tools\..\koi\gui\dialog_utils.py:419
+msgid "Please confirm"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\dialog_utils.py:427
+#: ..\..\tools\..\koi\gui\dialog_utils.py:428
+msgid "Information"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\dialog_utils.py:437
+#: ..\..\tools\..\koi\gui\dialog_utils.py:450
+#: ..\..\tools\..\koi\gui\dialog_utils.py:466
+#: ..\..\tools\..\koi\gui\dialog_utils.py:438
+#: ..\..\tools\..\koi\gui\dialog_utils.py:451
+#: ..\..\tools\..\koi\gui\dialog_utils.py:467
+msgid "On line <b>{}</b>:"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\dialog_utils.py:500
+#: ..\..\tools\..\koi\gui\dialog_utils.py:501
+msgid "A bit of help"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\editors.py:151
+msgid "Invalid syntax"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\horse_panel.py:225
+#: ..\..\tools\..\koi\gui\horse_panel.py:418
+msgid "The company"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\MetaFormDialog.py:113
+msgid "New"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\MetaFormDialog.py:119
+msgid "Save"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\MetaFormDialog.py:510
+msgid "There was an error while deleting"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\MetaFormDialog.py:516
+msgid "You have selected nothing for delete."
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:34
+msgid "Choose filter's name"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:36
+msgid "Please give a name to the filter"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:89
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:101
+msgid "Filter"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:92
+msgid "Save filter"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:95
+msgid "Save filter as"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:98
+msgid "Delete filter"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:110
+msgid "Filter :"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:125
+msgid "Query :"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:135
+msgid "Shared"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:159
+msgid "The filter's query can't be empty"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:250
+msgid ""
+"There was a problem while loading the filter. It may have been deleted by "
+"its owner"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:266
+msgid "The filter you want to delete was never saved"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:271
+msgid "You can't delete the filter because it doesn't belong to you."
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:278
+msgid "There was a problem while deleting the filter."
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:295
+msgid ""
+"There is already a filter with that name. You must delete it first if you "
+"want to use that name."
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:313
+msgid "This is not your filter !"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\PersistentFilter.py:313
+msgid "OK to save it under another name ?"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\ProxyModel.py:232
+msgid "Zone {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\ProxyModel.py:673
+#: ..\..\tools\..\koi\gui\ProxyModel.py:690
+msgid "Time reporting is not possible on preorders"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\ProxyModel.py:2649
+msgid "Insert row"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\ProxyModel.py:2655
+msgid "Append row"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\ProxyModel.py:2661
+msgid "Delete row"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\ProxyModel.py:2667
+msgid "Move row up"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\ProxyModel.py:2673
+msgid "Move row down"
+msgstr ""
+
+#: ..\..\tools\..\koi\gui\ProxyModel.py:2679
+msgid "Delete cell"
+msgstr ""
+
+#: ..\..\tools\..\koi\machine\EditMachinesDialog.py:18
+msgid "Zone"
+msgstr ""
+
+#: ..\..\tools\..\koi\machine\EditMachinesDialog.py:20
+msgid "Machine edit"
+msgstr ""
+
+#: ..\..\tools\..\koi\machine\EditMachinesDialog.py:20
+msgid "Machines"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:15
+msgid "Unpaid day off"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:16
+msgid "Free day"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:19
+msgid "Over time"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:20
+msgid "Recuperation"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:24
+msgid "Unemployment short"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:27
+msgid "Work accident"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:33
+msgid "HOL"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:35
+msgid "OFF"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:37
+msgid "UOFF"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:39
+msgid "FRE"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:41
+msgid "OVT"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:43
+msgid "REC"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:45
+msgid "UNE"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:47
+msgid "UNES"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:49
+msgid "ACC"
+msgstr ""
+
+#: ..\..\tools\..\koi\people_admin\people_admin_mapping.py:51
+msgid "SICK"
+msgstr ""
+
+#: ..\..\tools\..\koi\quality\NonConformityDialog.py:192
+msgid "Kind"
+msgstr ""
+
+#: ..\..\tools\..\koi\quality\NonConformityDialog.py:196
+msgid "Type :"
+msgstr ""
+
+#: ..\..\tools\..\koi\quality\NonConformityDialog.py:208
+msgid "Description :"
+msgstr ""
+
+#: ..\..\tools\..\koi\quality\NonConformityDialog.py:275
+msgid "Remove non conformity"
+msgstr ""
+
+#: ..\..\tools\..\koi\quality\NonConformityDialog.py:276
+msgid "Please confirm you want to remove the issue {} ({})"
+msgstr ""
+
+#: ..\..\tools\..\koi\quality\NonConformityDialog.py:294
+msgid "{} ({})"
+msgstr ""
+
+#: ..\..\tools\..\koi\quality\NonConformityDialog.py:350
+msgid "Non conformity"
+msgstr ""
+
+#: ..\..\tools\..\koi\quality\NonConformityDialog.py:357
+msgid "Add"
+msgstr ""
+
+#: ..\..\tools\..\koi\quality\NonConformityDialog.py:358
+msgid "Remove"
+msgstr ""
+
+#: ..\..\tools\..\koi\quality\NonConformityDialog.py:400
+msgid ""
+"<p>Please fill in some details about the non conformity. This non conformity "
+"is concerns</p> <p> <b>{}</b> : {}</p>"
+msgstr ""
+
+#: ..\..\tools\..\koi\quality\NonConformityDialog.py:412
+msgid "Create a non conformity"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\audit_order_report.py:46
+msgid "What"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\audit_order_report.py:46
+msgid "Who"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\audit_order_report.py:46
+msgid "When"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\audit_order_report.py:69
+msgid "There's no audit information for this order."
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\audit_order_report.py:75
+msgid "Order audit {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\delivery_slip_report.py:59
+msgid "Delivery slip <b>{}</b>"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\delivery_slip_report.py:70
+msgid "!!! This delivery slip has been DEACTIVATED !!!"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\delivery_slip_report.py:74
+msgid "Order number <b>{}</b>"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\delivery_slip_report.py:78
+#: ..\..\tools\..\koi\reporting\order_confirmation_report.py:201
+#: ..\..\tools\..\koi\reporting\preorder_report.py:94
+msgid "Reference"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\delivery_slip_report.py:78
+#: ..\..\tools\..\koi\reporting\order_confirmation_report.py:201
+#: ..\..\tools\..\koi\reporting\preorder_report.py:94
+#: ..\..\tools\..\koi\reporting\production_status_detailed_report.py:78
+msgid "Designation"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\delivery_slip_report.py:111
+msgid ""
+"Sauf avis contraire stipule ci-dessus, les marchandises circulent aux<br/> "
+"frais du client et a ses risques et perils."
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\delivery_slip_report.py:113
+msgid "Les frais de port seront portes en facture."
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\delivery_slip_report.py:118
+msgid "Signature :"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\delivery_slip_report.py:118
+msgid "Reception date :"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\machine_barcodes.py:139
+msgid "Without zone"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\machine_barcodes.py:194
+msgid "Machines bar codes"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\monthly_report.py:76
+msgid "Ord."
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\monthly_report.py:76
+msgid "Qties"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\monthly_report.py:76
+msgid ""
+"To bill\n"
+"this month"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\monthly_report.py:76
+msgid "Encours"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\monthly_report.py:192
+msgid "Monthly financial report"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:57
+msgid "Order activity report"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:62
+msgid "Customer : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:63
+msgid "Order number : {} (Horse ID:{})"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:64
+msgid "Preorder number : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:65
+msgid "Customer number : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:66
+msgid "Creation date : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:67
+msgid "Completion : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:68
+msgid "Current state : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:70
+msgid "Activity synthesis"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:99
+msgid "No work reported"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:108
+msgid "<b>QUAL !</b>"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:109
+msgid "<b>{}</b> on {} by {} : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:135
+msgid "There are no delivery slip"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:140
+msgid "Delivery slip {} created on {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:143
+msgid "{} : {} unit(s)"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:145
+msgid "Delivery slip {} DESACTIVATED"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:148
+msgid "Quality"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:151
+msgid "There are no quality issues"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:157
+msgid "Issue <b>{}</b> created on {} by {} : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:169
+#: ..\..\tools\..\koi\reporting\preorder_report.py:73
+msgid "Preorder {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_activity_report.py:193
+msgid "Order Activity Report"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_confirmation_report.py:59
+#: ..\..\tools\..\koi\reporting\preorder_report.py:175
+msgid "Signature"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_confirmation_report.py:162
+msgid "We have well received your order {} and thank you heartily."
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_confirmation_report.py:168
+msgid "Confirmation of order {}, your ref. : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_confirmation_report.py:172
+msgid "Confirmation of order {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_confirmation_report.py:201
+#: ..\..\tools\..\koi\reporting\preorder_report.py:94
+msgid "Unit Price"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_confirmation_report.py:201
+#: ..\..\tools\..\koi\reporting\preorder_report.py:94
+msgid "Price"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_report.py:176
+#: ..\..\tools\..\koi\reporting\order_report.py:503
+msgid "Quantity : {} - Deadline: {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\preorder_report.py:70
+msgid "Preorder {}, your ref. : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\production_status_detailed_report.py:77
+msgid "NOrd"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\production_status_detailed_report.py:77
+msgid "Customer (d/l-Price)"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\production_status_detailed_report.py:77
+msgid "Tot"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\production_status_detailed_report.py:78
+msgid "QLft"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\production_status_detailed_report.py:212
+msgid "Order production details"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\rlab.py:268
+#: ..\..\tools\..\koi\reporting\utils.py:152
+msgid "Page {} of {}, printed on {} by {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\rlab.py:481
+msgid "Employees badges"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\rlab.py:532
+msgid "Non billable tasks"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\rlab.py:576
+msgid "There currently are no unbillable operations defined"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\rlab.py:588
+msgid "Presence tasks"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\rlab.py:596
+msgid "Clock IN"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\rlab.py:605
+msgid "Clock OUT"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\supply_order_report.py:62
+msgid "Order number <b>{}</b>, your ref. : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\supply_order_report.py:66
+msgid "Delivery date : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\supply_order_report.py:79
+msgid "Ref."
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\supply_order_report.py:79
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:346
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:259
+msgid "Unit price"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\supply_order_report.py:114
+msgid "Daniel Dumont<br/>Administrateur delegue"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\supply_order_report.py:115
+msgid "Pierre Jodogne<br/>Superviseur de production"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\admin_gui.py:359
+msgid "Please select a backup file"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\admin_gui.py:783
+msgid "Setting IP addresse in client zip"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\admin_gui.py:784
+msgid "The IP address configured in the zipped client ({}) is not the "
+msgstr ""
+
+#: ..\..\tools\..\koi\server\admin_gui.py:785
+#: ..\..\tools\..\koi\server\admin_gui.py:793
+msgid "same as the one you gave ({}). Maybe the server has "
+msgstr ""
+
+#: ..\..\tools\..\koi\server\admin_gui.py:786
+#: ..\..\tools\..\koi\server\admin_gui.py:794
+msgid "changed network. Should I fix that ?"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\admin_gui.py:791
+msgid "Setting IP addresse in server configuration"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\admin_gui.py:792
+msgid "The IP address configured for the server ({}) is not the "
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:84
+msgid "Scan identity badge first"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:504
+msgid "The operation definition with {} is unknown"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:527
+#: ..\..\tools\..\koi\server\clock_client.py:608
+msgid "Bad state"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:618
+msgid "Nothing to do with operation {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:657
+msgid "The machine {} is not allowed for the operation"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:660
+msgid "Machine barcode makes no sense here"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:731
+msgid "Unrecognized barcode"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1133
+msgid "Scan an operation to start !"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1143
+msgid "Ongoing tasks"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1162
+msgid "You have no ongoing task"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1252
+msgid "Please scan your badge"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1351
+msgid "Your activity"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1394
+msgid "Part {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1411
+msgid "Task selection"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1421
+msgid "You're working on this task !"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1423
+msgid "You're working on this task with {} machines!"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1445
+msgid "You are already working on that operation !"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1452
+msgid "Other people on this operation : "
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1490
+msgid "Select a machine to start on this operation"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1492
+#: ..\..\tools\..\koi\server\clock_client.py:1494
+msgid "Select current machine to stop"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1495
+msgid "Select another machine to start"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\clock_client.py:1632
+msgid "Select a machine"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:67
+msgid "General failure. Guru meditation. {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:69
+msgid "The task {} is not imputable"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:70
+msgid "Operation definition {} is not imputable"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:71
+msgid "There's no employee with id= {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:72
+msgid "The barcode syntax is valid but I can't make sense of it : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:73
+msgid "Encountered an error '{}' while recording presence for employee_id : {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:74
+msgid "The barcode syntax is incorrect {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:75
+msgid "The operation {} is unknown"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:76
+msgid "The operation definition {} is unknown"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:77
+msgid "The order part {} is not in production"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:79
+msgid "Invalid parameter {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:80
+msgid "The number of parameters is invalid. I expected {}, you gave {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:82
+msgid "Too much off time on the {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:84
+msgid "File name cannot be empty"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:85
+msgid "Cannot print an empty report"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:88
+msgid "Database error {}"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:89
+msgid ""
+"Operation {} is not imputable *or* order part {} is not in production *or* "
+"is not known"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:90
+msgid ""
+"The machine you want {} is not compatible with those ({}) associated to the "
+"operation"
+msgstr ""
+
+#: ..\..\tools\..\koi\server\json_decorator.py:91
+msgid "The machine with ID {} is not known"
+msgstr ""
+
+#: ..\..\tools\..\koi\session\LoginDialog.py:21
+msgid "{} Login"
+msgstr ""
+
+#: ..\..\tools\..\koi\session\LoginDialog.py:33
+msgid "User ID"
+msgstr ""
+
+#: ..\..\tools\..\koi\session\LoginDialog.py:35
+msgid "Remember me"
+msgstr ""
+
+#: ..\..\tools\..\koi\session\LoginDialog.py:42
+msgid "Please identify yourself"
+msgstr ""
+
+#: ..\..\tools\..\koi\session\LoginDialog.py:87
+msgid "You can't log"
+msgstr ""
+
+#: ..\..\tools\..\koi\session\LoginDialog.py:87
+msgid "The user or password is not valid."
+msgstr ""
+
+#: ..\..\tools\..\koi\stock\stock_overview.py:108
+msgid "Item Nr"
+msgstr ""
+
+#: ..\..\tools\..\koi\stock\stock_overview.py:109
+msgid "Fullname"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\ChooseSupplierDialog.py:42
+msgid "Choose supplier"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\ChooseSupplierDialog.py:89
+msgid "Please choose a supplier for the new order"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplierDialog.py:30
+msgid "Edit supplier"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplierDialog.py:30
+msgid "Suppliers"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:213
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:411
+msgid "Supply order"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:222
+msgid "<h1>Ref. : {}</h1>"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:232
+msgid "The date is not valid"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:248
+msgid "The data are not correct"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:276
+msgid "Error while saving"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:276
+msgid "There was an unexpected error while saving your data"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:360
+msgid "Print supply order"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:366
+msgid "Save supply order"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:372
+msgid "Deactivate supply order"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:376
+msgid "Next supplier's order"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:382
+msgid "Previous supplier's order"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:388
+msgid "Change supplier"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:434
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:203
+msgid "Delivery date"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:439
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:208
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:260
+msgid "Creation date"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\EditSupplyOrderPanel.py:444
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:213
+msgid "Supplier's reference"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\SupplierPlateWidget.py:23
+msgid "Phone : /"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\SupplierPlateWidget.py:25
+msgid "Fax : /"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:237
+msgid "Supply Orders"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:244
+msgid "Supply orders"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:254
+msgid "Part Nr"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:255
+msgid "Supplier"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:280
+msgid "Supply order parts"
+msgstr ""
+
+#: ..\..\tools\..\koi\supply\SupplyOrderOverview.py:283
+msgid "Supply order detail"
+msgstr ""
+
+#: ..\..\tools\..\koi\user_mgmt\edit_user.py:45
+msgid "User class edit"
+msgstr ""
+
+#: ..\..\tools\..\koi\user_mgmt\edit_user.py:45
+msgid "User Class"
+msgstr ""
+
+#: ..\..\tools\..\koi\datalayer\migrations\migrate_to_1_6_0.py:53
+msgid "Order confirmation letter template"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_confirmation\order_confirmation_report2.py:26
+msgid "Order confirmation template"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_confirmation\order_confirmation_report2.py:35
+#: ..\..\tools\..\koi\reporting\preorder\preorder_report.py:35
+msgid ""
+"The template document with reference <code>{}</code> was not found. Check "
+"your templates."
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\order_confirmation\plugin.py:55
+#: ..\..\tools\..\koi\reporting\order_confirmation\plugin.py:57
+msgid "Order confirmation"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\preorder\preorder_report.py:27
+msgid "Preorder letter template"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\preorder\preorder_report.py:42
+msgid "Can't print a preorder report for an order that is/was not a preorder"
+msgstr ""
+
+#: ..\..\tools\..\koi\reporting\preorder\preorder_report.py:91
+msgid ""
+"Unable to open the report template (reference : '{}'). You should check in "
+"the document templates : does it exist ? Is it a .docx document ?"
+msgstr ""

@@ -1,0 +1,227 @@
+QWidget#zwhite {
+ background: red;
+ background-color: green;
+}
+
+CommentsWidget#zwhite {
+ background: red;
+ background-color: green;
+}
+
+QWidget#VerticalSeparator {
+  border: 0px solid #00FF00;
+  background: red;
+  padding: 0px;
+  width: 1px;
+}
+
+QWidget#zeroBorder {
+ padding: 2px;
+ border: 2px solid #FF0000;
+ margin: 2px;
+  background:orange;
+}
+
+QFrame#NavigationBar {
+  border: 1px solid #B0B030;
+  border-radius: 4px;
+  background: #FFDD77;
+  padding: 3px;
+}
+
+
+QFrame#HorseSubFrame {
+ border: 1px solid #7070a0;
+ border-radius: 4px;
+ background-color: QLinearGradient( x1:0, y1:0, x2:0, y2:1, stop: 0 #f8f8ff, stop: 1 #c0c0ff);
+}
+
+QFrame#HorseRegularFrame {
+ border: 1px solid #7070a0;
+ border-radius: 4px;
+ background-color: #ffffff;
+ padding: 0px;
+}
+
+
+QFrame#HorseTightFrame {
+ border: 1px solid #7070a0;
+ border-radius: 4px;
+ background-color: #ffffff;
+ padding: 0px;
+}
+
+QLabel#HorseCustomerPlateTitle {
+  color:#000060;
+  /* font-family:"Roboto"; */
+  font-size: 12pt;
+  font-weight:bold;
+}
+
+QLabel#TitleWidgetLabel { /* For the big tab titles, with the /// symbol */
+  font-family:"Roboto";
+  font-size: 16pt;
+  font-weight:bold;
+  color:#505070;
+}
+
+QLabel#subtitle { /* For various panels */
+  font-family:"Roboto";
+  font-size: 14pt;
+  color:#404080;
+}
+
+QLabel#important {
+ font-weight:bold;
+}
+
+
+QStatusBar {
+background:#e0e0e0;
+}
+
+QDialog {
+ background: white;
+}
+
+QTableView {
+  background:white;
+}
+
+QLabel {
+ background: transparent;
+ border:0;
+}
+
+QSplitter::handle:vertical {
+   border-radius: 3px;
+   height: 3px;
+   border:1px solid black;
+   background: qlineargradient(
+     x1:0, y1:0, x2:1, y2:0,
+     stop:0 orange,
+     stop:0.45 orange,
+     stop:0.5 white,
+     stop:0.55 orange,
+     stop:1 orange );
+}
+
+QSplitter::handle:horizontal {
+   border-radius: 3px;
+   height: 3px;
+   border:1px solid black;
+   background: qlineargradient(
+     x1:0, y1:0, x2:0, y2:1,
+     stop:0 orange,
+     stop:0.45 orange,
+     stop:0.5 white,
+     stop:0.55 orange,
+     stop:1 orange );
+}
+
+QHeaderView {
+ background: white;
+ border-radius: 0px;
+ background: qlineargradient(
+   x1:0, y1:0, x2:0, y2:1,
+   stop:0 #d0d0d0,
+   stop:1 #ffffff );
+ border-bottom: 1px solid #808080;
+}
+
+QTabWidget::pane {
+  color:white;
+  background:white;
+  border-bottom: 1px solid #808080;
+}
+
+
+QTabBar::tab {
+  color:white;
+  background:grey;
+  height: 1.8em;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-right: 1px solid black;
+  border-top: 1px solid black;
+}
+
+QTabBar::tab:selected {
+ color:black;
+ background:white;
+}
+
+QHeaderView::section {
+ background: transparent;
+ border-radius: 0px;
+ color: black;
+ padding: 3px;
+ border:1px solid #b0b0b0;
+ font:bold;
+}
+
+QPushButton {
+ color: white;
+ border: 1px solid black;
+ border-radius: 3px;
+ padding: 5px;
+ background: qlineargradient(
+   x1:0, y1:0, x2:0, y2:1,
+   stop:0 #bec1d2,
+   stop: 0.4 #717990,
+   stop: 0.5 #5c637d
+   stop:1 #78879e
+ );
+
+ font:bold;
+}
+
+
+
+QPushButton:!enabled {
+ color: grey;
+ border: 1px solid black;
+ border-radius: 3px;
+ padding: 5px;
+ background: qlineargradient(
+   x1:0, y1:0, x2:0, y2:1,
+   stop:0 #bec1d2,
+   stop: 0.4 #717990,
+   stop: 0.5 #5c637d
+   stop:1 #78879e
+ );
+
+ font:bold;
+}
+
+
+QPushButton:pressed {
+background: qlineargradient(
+  x1:0, y1:0, x2:0, y2:1,
+  stop:0 #68778e,
+  stop: 0.4 #5c637d
+  stop: 0.5 #717990,
+  stop:1 #bec1d2
+ );
+ color: white;
+ border: 1px solid white;
+}
+
+
+QPushButton#specialMenuButton {
+ color: white;
+ border: 1px solid black;
+ border-radius: 3px;
+ padding: 5px;
+ background: qlineargradient(
+   x1:0, y1:0, x2:0, y2:1,
+   stop:   0 #00ff00,
+   stop: 0.4 #719079,
+   stop: 0.5 #5c7d63
+   stop:   1 #789e87
+ );
+
+ font:bold;
+}
