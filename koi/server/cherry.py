@@ -357,7 +357,10 @@ img {background-color:white;}
 
     @cherrypy.expose
     def database(self):
-        return configuration.get("Database","url")
+        if type( configuration.get("Database","url")) == list:
+            return ",".join(configuration.get("Database", "url"))
+        else:
+            return configuration.get("Database","url")
 
     @cherrypy.expose
     def version(self):

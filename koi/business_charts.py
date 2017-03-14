@@ -526,7 +526,7 @@ class ValuationThisMonth(KPIView):
 
     def __init__(self, parent, remote_indicators_service):
         self._remote_indicators_service = remote_indicators_service
-        super(ValuationThisMonth, self).__init__( _("Valuation this month"), parent)
+        super(ValuationThisMonth, self).__init__( _("Valuation WIP this month"), parent)
         self.setToolTip(_("""The current month valuation is computed
 for order parts which are started (that is, hours or actual production have been reported
 for them) and not finished."""))
@@ -570,5 +570,5 @@ class RunningValuationChart(ChartWidget):
     def __init__(self,parent,remote_indicators_service):
         self._remote_indicators_service = remote_indicators_service
         s = LinesChart(None)
-        super( RunningValuationChart, self).__init__(parent, s, _("Production valuation"))
+        super( RunningValuationChart, self).__init__(parent, s, _("Work-in-progress valuation"))
 

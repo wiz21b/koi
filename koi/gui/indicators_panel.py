@@ -16,7 +16,7 @@ from koi.date_utils import month_before, month_after
 from koi.gui.dialog_utils import KPIView, SubFrame, make_progress, NavBar, TitleWidget
 from koi.gui.horse_panel import HorsePanel
 from koi.reporting.utils import make_temp_file, open_xlsx
-
+from koi.translators import date_to_my
 
 class IndicatorsPanel(HorsePanel):
 
@@ -38,6 +38,7 @@ class IndicatorsPanel(HorsePanel):
         return all_indictors
 
     def _layout_indicators(self, indicators):
+        subframes = []
         ind_vlayout = QVBoxLayout()
 
         for line in indicators:
@@ -48,16 +49,19 @@ class IndicatorsPanel(HorsePanel):
             for ind in line[1:]:
 
                 if type(ind) == list:
-                    hboxlayout.addLayout( self._layout_indicators(ind) )
+                    deeper_layout, deeper_subframes = self._layout_indicators(ind)
+                    subframes += deeper_subframes
+                    hboxlayout.addLayout( deeper_layout )
                 else:
                     hboxlayout.addWidget(ind)
 
             hboxlayout.addStretch()
-            s = SubFrame(line[0],hboxlayout,self)
+            s = SubFrame( line[0],hboxlayout,self)
+            subframes.append(s)
 
             ind_vlayout.addWidget(s)
 
-        return ind_vlayout
+        return ind_vlayout, subframes
 
     @Slot()
     def _clear_cache(self):
@@ -82,6 +86,11 @@ class IndicatorsPanel(HorsePanel):
             progress.setValue(progress.value() + 1)
             ind.repaint()
 
+        for sf in self._sub_frames:
+            if sf.original_title():
+                sf.set_title(
+                    sf.original_title().replace( "%MONTH%",
+                                                 date_to_my( self.month_chooser.base_date, full=True)))
 
     @Slot()
     def _export_to_excel(self):
@@ -116,7 +125,7 @@ class IndicatorsPanel(HorsePanel):
             row += 2 # Space between kpi's
             progress.setValue( progress.value() + 1)
 
-        name = make_temp_file('iso_kpi_','xlsx')
+        name = make_temp_file('indicators_','xlsx')
         workbook.save(name)
         open_xlsx(name)
 
@@ -127,10 +136,9 @@ class IndicatorsPanel(HorsePanel):
         self.remote_indicators_service = remote_indicators_service
 
         self.month_chooser = MonthChooser( self.MONTHS_STEP)
-        month_before, month_today, month_after = self.month_chooser.navbar_tuples()
+        month_before, month_today, month_after = self.month_chooser.navbar_buttons_tuples()
         self.month_chooser.month_changed.connect(self._month_changed)
-
-        self.set_panel_title(title)
+        self.set_panel_title( title)
 
         self.indicators = indicators
 
@@ -145,8 +153,14 @@ class IndicatorsPanel(HorsePanel):
 
         self.title_box = TitleWidget(title, self, navigation)  # + date.today().strftime("%B %Y"),self)
         vlayout.addWidget(self.title_box)
-        vlayout.addLayout(self._layout_indicators(self.indicators))
+
+        # Pay attention, subframes holds a reference to each
+        # subframe widget !
+
+        ind_layout, self._sub_frames = self._layout_indicators(self.indicators)
+        vlayout.addLayout( ind_layout)
         self.setLayout(vlayout)
+
 
 
 class MonthChooser(QObject):
@@ -167,7 +181,7 @@ class MonthChooser(QObject):
         self._activate_buttons()
         self.month_changed.emit(self.base_date)
 
-    def navbar_tuples(self):
+    def navbar_buttons_tuples(self):
         # FIXME Ownership issues !
         # 1. we create those buttons
         # 2. they're added to a navbar layout. That layout takes ownership

@@ -234,13 +234,22 @@ class SubTitleWidget(QWidget):
         self.setContentsMargins(0,0,0,0)
 
 class SubFrame(QFrame):
+    """ The first time the title is given, it is rememebered
+    as the original title. This allows to update this title
+    later on, for example if this title is actually a template
+    for title.
+    """
+
     def __init__(self,title,content_widget_or_layout,parent,right_layout=None):
         super(SubFrame,self).__init__(parent)
+
+        self._original_title = title
+
         self.setFrameShape(QFrame.Panel)
         self.setFrameShadow(QFrame.Sunken)
         self.setObjectName("HorseSubFrame")
 
-        if title != None:
+        if title:
             self.title_widget = SubTitleWidget(title,self,right_layout)
         else:
             self.title_widget = None
@@ -255,10 +264,20 @@ class SubFrame(QFrame):
         elif content_widget_or_layout:
             vlayout2.addWidget(content_widget_or_layout)
 
-        vlayout2.setStretch(0,0)
-        vlayout2.setStretch(1,1)
+        if self.title_widget:
+            vlayout2.setStretch(0,0)
+            vlayout2.setStretch(1,1)
 
         self.setLayout(vlayout2)
+
+    def original_title(self):
+        return self._original_title
+
+    def title(self):
+        if self.title_widget:
+            return self.title_widget.set_title(t)
+        else:
+            return None
 
     def set_title(self,t):
         if self.title_widget:

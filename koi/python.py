@@ -170,16 +170,25 @@ try:
     mainlog.debug("Loading DB connection string from '{}'".format(url))
     response = urlopen(url,timeout=5)
     db_url = response.read().decode('ascii')
+    mainlog.debug("Got it ! ({})".format(db_url))
+
+    if ',' in db_url:
+        db_url = db_url.split(',')
+
     if db_url != configuration.base_configuration['Database']['url']:
+        mainlog.debug("Replacing old DB url")
         # Ther DB url advertised by the server always takes
         # priority
+
+
         configuration.base_configuration['Database']['url'] = db_url
         mainlog.info("The DB url has changed, so I save it locally.")
         configuration.save()
 
 except Exception as e:
     mainlog.error(e)
-    mainlog.error("I was unable to get the DB URL from the server, so I'll continue with the file configuration")
+    mainlog.error( "I was unable to get the DB URL from the server {}, so I'll continue with the file configuration".format(
+        configuration.get("DownloadSite","url_database_url")))
     showErrorBox( _("Can't connect to the main server"),
                   _("I was unable to contact the main server (located here : {}). It is not 100% necessary to do so but that's not normal either. You should tell your administrator about that. I will now allow you to change the network address of the server I know in the preferences panel.").format(configuration.get("DownloadSite","url_database_url")))
 
@@ -541,8 +550,8 @@ class MainWindow (QMainWindow, KoiBase):
 
         list_actions = [ (_("Edit operations"),self.editOperationDefinitions,None,[RoleType.modify_parameters]),
                          (_("Edit machines"),self.editMachines,None,[RoleType.modify_parameters]),
-                         (_("Preferences"),self.editPreferences,None,None),
-                         (_("Document templates"),self.editDocumentTemplates,None,None) ] # [RoleType.modify_document_templates]
+                         (_("Document templates"),self.editDocumentTemplates,None,None),
+                         (_("Preferences"), self.editPreferences, None, None) ] # [RoleType.modify_document_templates]
         self._make_menu( "/main_menu/parameters", _("Parameters"), list_actions, self)
 
         self.tab_trail = []

@@ -37,7 +37,7 @@ def disconnect_db():
 def init_db_session(db_url,metadata=None,echo_query=False,autocommit=False):
     global _config
 
-    mainlog.debug(">> Init DB session " + str(db_url))
+    mainlog.debug("Init DB session " + str(db_url))
 
     if 'session' in _config:
         raise Exception("Sorry, but you're trying ot double initialize the db session")
@@ -55,6 +55,7 @@ def init_db_session(db_url,metadata=None,echo_query=False,autocommit=False):
     else:
         mainlog.debug("Regular DB URL")
 
+    mainlog.debug("Creating engine to {} with params {}".format(db_url, params))
     engine = create_engine(db_url,
                            encoding='utf-8',
                            echo=False or echo_query,
@@ -72,8 +73,6 @@ def init_db_session(db_url,metadata=None,echo_query=False,autocommit=False):
 
     _config['session_factory'] = sessionmaker(bind=engine,autocommit=autocommit)
     _config['session'] = scoped_session(_config['session_factory'])
-
-    mainlog.debug("SQLA's session is initialized")
 
 
 def reopen_session():

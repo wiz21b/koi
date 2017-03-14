@@ -45,7 +45,7 @@ class EditConfigurationDialog(QDialog):
         host_or_ip = ""
         if config:
             if config.get("DownloadSite","base_url"):
-                r = re.compile('http://([^:]+):.*')
+                r = re.compile('https?://([^:]+):.*')
                 host_or_ip = r.match( config.get("DownloadSite","base_url")).groups()[0]
 
             elif config.database_url:

@@ -320,7 +320,7 @@ class BusinessComputationsService:
         # mainlog.debug("encours_on_params: qty_produced={},qty_ordered={},hours_consumed={},hours_planned={},unit_price={},material_price={}".format(qty_produced,qty_ordered,hours_consumed,hours_planned,unit_price,material_price))
 
         if unit_price > 0:
-            return material_price + qty_produced * float(unit_price)
+            return float(material_price) + float(qty_produced) * float(unit_price)
         else:
             return self.dao.order_part_dao.value_work_on_order_part_up_to_date(
                 order_part_id, ref_date)

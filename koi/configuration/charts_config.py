@@ -41,10 +41,11 @@ class ISOIndicatorsWidget(IndicatorsPanel):
 class FinancialIndicatorsWidget(IndicatorsPanel):
 
     def __init__(self,parent, remote_indicators_service):
-        super(FinancialIndicatorsWidget,self).__init__(parent, remote_indicators_service, _("Global financial overview"),
+        super(FinancialIndicatorsWidget,self).__init__(parent, remote_indicators_service,
+                                                       _("Global financial overview"),
              [
                  [
-                     _("Financial values for the month"),
+                     _("Financial values for %MONTH%"),
                      [
                          ["",
                           ToBillThisMonth(None, remote_indicators_service),
@@ -53,7 +54,8 @@ class FinancialIndicatorsWidget(IndicatorsPanel):
                           TurnOverThisMonth(None, remote_indicators_service)]
                      ],
 
-                     RunningValuationChart(None, remote_indicators_service)
+                     RunningValuationChart(None, remote_indicators_service),
+                     SoldeCarnetCommande(None, remote_indicators_service),
                      # ValuationLastMonth(None, remote_indicators_service),
                  ],
                  [
@@ -61,7 +63,6 @@ class FinancialIndicatorsWidget(IndicatorsPanel):
                     ToFacturePerMonthChart(None, remote_indicators_service),
                     DirectWorkCostEvolutionChart(None, remote_indicators_service, mini=0, maxi=100000),
                     IndirectWorkEvolutionChart(None, remote_indicators_service, mini=0, maxi=100000),
-                    SoldeCarnetCommande(None, remote_indicators_service),
                  ],
              ] )
 

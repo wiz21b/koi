@@ -117,7 +117,7 @@ class Configuration(object):
             mainlog.error("Could not find the package_version file in {}".format(resource_dir))
             self.this_version = StrictVersion("1.0.0")
 
-    def set_server_network_address(self, ip_or_host, port=8079, overwrite=False):
+    def set_server_network_address(self, ip_or_host, port=443, overwrite=False):
 
         # actual_ip = None
         # try:
@@ -125,7 +125,7 @@ class Configuration(object):
         # except Exception as ex:
         #     raise Exception(_("Invalid IP address : {}").format(ip))
 
-        base = "http://{}:{}".format(ip_or_host, port)
+        base = "https://{}:{}".format(ip_or_host, port)
         mainlog.info("Server base address is {}.".format(base))
 
         if overwrite or not self.get("DownloadSite", "url_version"):
