@@ -247,7 +247,6 @@ class MainWindow (QMainWindow):
         cfg['Database']['url'] = pg_url
         cfg['DownloadSite']['url_file'] = 'http://{}:{}/file'.format(host,port)
         cfg['DownloadSite']['url_version'] = 'http://{}:{}/version'.format(host,port)
-        cfg['DownloadSite']['url_database_url'] = 'http://{}:{}/database'.format(host,port)
         cfg.write()
 
 
@@ -576,11 +575,11 @@ mount -t cifs -ousername={},password={} {} /tmp/backup_win
 
         db_url = None
         try:
-            self._log("Looking for advertised DB version at {}".format(configuration.get("DownloadSite","url_database_url")))
-            response = urlopen(configuration.get("DownloadSite","url_database_url"),timeout=2)
+            self._log("Looking for advertised DB version at {}".format(configuration.database_url_source()))
+            response = urlopen(configuration.database_url_source(),timeout=2)
             db_url = response.read()
         except Exception as ex:
-            self._log_error("Unable to connect to the web server. Is it running ? I tried to get the databse url from it. If the server is running, check the configuration at DownloadSite/url_database_url and verify it's good.")
+            self._log_error("Unable to connect to the web server. Is it running ? I tried to get the databse url from it. If the server is running, check the configuration at DownloadSite/base_url and verify it's good.")
 
             HOST = guess_server_public_ip()
             self._log("Looking again for advertised DB version at {}".format(HOST))

@@ -163,34 +163,14 @@ splash_msg( u"{} - ".format(configuration.this_version) + _("Contacting updates 
 
 splash_msg( _("Loading database URL"))
 try:
-    # os.environ['USERNAME']
-    # response = urllib2.urlopen(configuration.get("DownloadSite","url_database_url"),timeout=1)
-
-    url = configuration.get("DownloadSite","url_database_url")
-    mainlog.debug("Loading DB connection string from '{}'".format(url))
-    response = urlopen(url,timeout=5)
-    db_url = response.read().decode('ascii')
-    mainlog.debug("Got it ! ({})".format(db_url))
-
-    if ',' in db_url:
-        db_url = db_url.split(',')
-
-    if db_url != configuration.base_configuration['Database']['url']:
-        mainlog.debug("Replacing old DB url")
-        # Ther DB url advertised by the server always takes
-        # priority
-
-
-        configuration.base_configuration['Database']['url'] = db_url
-        mainlog.info("The DB url has changed, so I save it locally.")
-        configuration.save()
-
+    configuration.load_database_param()
 except Exception as e:
     mainlog.error(e)
     mainlog.error( "I was unable to get the DB URL from the server {}, so I'll continue with the file configuration".format(
-        configuration.get("DownloadSite","url_database_url")))
+        configuration.database_url_source))
     showErrorBox( _("Can't connect to the main server"),
-                  _("I was unable to contact the main server (located here : {}). It is not 100% necessary to do so but that's not normal either. You should tell your administrator about that. I will now allow you to change the network address of the server I know in the preferences panel.").format(configuration.get("DownloadSite","url_database_url")))
+                  _("I was unable to contact the main server (located here : {}). It is not 100% necessary to do so but that's not normal either. You should tell your administrator about that. I will now allow you to change the network address of the server I know in the preferences panel.").format(
+                      configuration.database_url_source))
 
     splash.repaint()
 
@@ -212,7 +192,8 @@ try:
 except Exception as e:
     mainlog.error(e)
     showErrorBox( _("Can't initialize the database connection"),
-                  _("I have tried this url : {}. And got this problem : {}").format(configuration.get("DownloadSite","url_database_url"), str(e)))
+                  _("I have tried this url : {}. And got this problem : {}").format(
+                      configuration.database_url, str(e)))
     splash.repaint()
 
 from koi.db_mapping import Order,OrderPart

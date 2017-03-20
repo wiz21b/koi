@@ -14,6 +14,7 @@ from reportlab.lib.units import cm,inch
 from reportlab.platypus import Paragraph,BaseDocTemplate
 from reportlab.platypus.flowables import Flowable,PageBreak
 
+from koi.utils import make_temp_file
 from koi.translators import date_to_dmy,crlf_to_br,EURO_SIGN
 from koi.session.UserSession import user_session
 from koi.Configurator import resource_dir,configuration
@@ -384,14 +385,7 @@ def customer_PDF(name="form_letter.pdf"):
 
 
 def make_pdf_filename(prefix_tmpfile):
-    tmpfile = tempfile.mkstemp(prefix=prefix_tmpfile, suffix='.PDF')
-    os.close(tmpfile[0]) # Close the handle
-    return tmpfile[1]
-
-def make_temp_file(prefix_tmpfile, extension):
-    tmpfile = tempfile.mkstemp(prefix=prefix_tmpfile, suffix='.' + extension)
-    os.close(tmpfile[0]) # Close the handle
-    return tmpfile[1]
+    return make_temp_file(prefix=prefix_tmpfile, suffix='.PDF')
 
 def make_home_file( filename):
     return os.path.join( os.path.expanduser("~"), filename)

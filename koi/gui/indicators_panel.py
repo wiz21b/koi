@@ -15,8 +15,9 @@ from koi.dao import dao
 from koi.date_utils import month_before, month_after
 from koi.gui.dialog_utils import KPIView, SubFrame, make_progress, NavBar, TitleWidget
 from koi.gui.horse_panel import HorsePanel
-from koi.reporting.utils import make_temp_file, open_xlsx
+from koi.reporting.utils import open_xlsx
 from koi.translators import date_to_my
+from koi.utils import make_temp_file
 
 class IndicatorsPanel(HorsePanel):
 

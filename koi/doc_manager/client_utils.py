@@ -2,17 +2,15 @@ import tempfile
 import os.path
 import re
 import sys
-if sys.version[0] == "2":
-    from urllib2 import build_opener,ProxyHandler,HTTPHandler,HTTPSHandler
-    from httplib import HTTPConnection
-else:
-    from urllib.request import build_opener,ProxyHandler,HTTPHandler,HTTPSHandler
-    from http.client import HTTPConnection, OK
+
+from urllib.request import build_opener,ProxyHandler,HTTPHandler,HTTPSHandler
+from http.client import HTTPConnection, HTTPSConnection, OK
 
 from pymediafire import MultiRead
 
 from koi.base_logging import mainlog
 from koi.Configurator import configuration
+from koi.utils import download_file
 
 
 class Wrap(MultiRead):
@@ -62,7 +60,12 @@ def upload_document(path, progress_tracker=None, file_id = 0, post_url = '/uploa
 
     host,port = extract_host_port(configuration.get("DownloadSite","base_url"))
     mainlog.debug(u"Upload to {}:{}{} (determined from DownloadSite/base_url : {})".format(host,port,post_url,configuration.get("DownloadSite","base_url")))
-    h = HTTPConnection(host,port)
+
+    if configuration.get("DownloadSite","base_url").startswith('https'):
+        h = HTTPSConnection(host,port)
+    else:
+        h = HTTPConnection(host, port)
+
     h.putrequest('POST', post_url)
 
     h.putheader('content-type', mr.content_type())
@@ -120,6 +123,8 @@ def remove_documents(doc_ids):
         url = configuration.get("DownloadSite","base_url") + "/remove_file?file_id={}".format(doc_id)
         urlopener.open(url)
 
+
+
 def download_document(doc_id, progress_tracker = None, destination = None):
     """ Download document to a given or temporary file. The temporary file
     name reflects the original name and extension.
@@ -130,60 +135,8 @@ def download_document(doc_id, progress_tracker = None, destination = None):
     file if you need to.
     """
 
-    urlopener = build_opener(
-        HTTPHandler(),
-        HTTPSHandler())
-
     url = configuration.get("DownloadSite","base_url") + "/download_file?file_id={}".format(doc_id)
-    mainlog.debug(u"Downloading from {}".format(url))
-    datasource = urlopener.open(url)
-
-    content_disposition_download_regex = re.compile("attachment; +filename=\"([^\"]+)\"")
-
-    server_filename = content_disposition_download_regex.match(datasource.info()['Content-Disposition']).group(1)
-
-    if not server_filename:
-        raise Exception("Missing file name in download")
-
-    # FIXME there's a nasty encoding issue here...
-    # The filename is expected to be unicode, but I've doubts on that...
-
-    # try:
-    #     server_filename = server_filename.decode('utf-8')
-    # except Exception as ex:
-    #     mainlog.exception(ex)
-    #     try:
-    #         server_filename = server_filename.decode('iso-8859-1')
-    #     except Exception as ex:
-    #         # Pray it works :-)
-    #         pass
-
-    if destination:
-        outfile_name = destination
-    else:
-        outfile_name = os.path.join( tempfile.gettempdir(), server_filename)
-
-    mainlog.debug(u"Storing file in {}".format(outfile_name))
-
-    out = open(outfile_name,'wb')
-    total_downloaded = 0
-
-    while True:
-        d = datasource.read(8192)
-        total_downloaded += len(d)
-        if progress_tracker:
-            progress_tracker(total_downloaded)
-
-        # self.logger.debug(u"Downloaded {} bytes".format(len(d)))
-        if not d:
-            break
-        else:
-            out.write( d)
-            out.flush()
-    out.close()
-
-    mainlog.debug(u"Downloaded {}".format(outfile_name))
-    return outfile_name
+    return download_file( url, progress_tracker, destination)
 
 
 from koi.doc_manager.documents_service import documents_service

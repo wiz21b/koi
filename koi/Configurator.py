@@ -10,6 +10,7 @@ import logging
 import ipaddress
 import shutil
 import socket
+from urllib.request import urlopen
 
 from distutils.version import StrictVersion
 
@@ -62,7 +63,11 @@ class Configuration(object):
 
     @property
     def update_url_version(self):
-        return self.get("DownloadSite","url_version")
+        return self.get("DownloadSite","base_url") + "/version"
+
+    @property
+    def database_url_source(self):
+        return self.get("DownloadSite","base_url") + "/database"
 
     @property
     def update_url_file(self):
@@ -112,7 +117,7 @@ class Configuration(object):
             v = f.read().strip()
             f.close()
             self.this_version = StrictVersion(v)
-            mainlog.info(u"Located version file in {}, version is {}".format(resource_dir,self.this_version))
+            mainlog.debug("Located version file in {}, version is {}".format(resource_dir,self.this_version))
         except:
             mainlog.error("Could not find the package_version file in {}".format(resource_dir))
             self.this_version = StrictVersion("1.0.0")
@@ -131,23 +136,39 @@ class Configuration(object):
         if overwrite or not self.get("DownloadSite", "url_version"):
             self.set("DownloadSite", "url_version", base + "/version")
         else:
-            mainlog.info("Leaving url_version as it is")
+            mainlog.debug("Leaving url_version as it is")
 
         if overwrite or not self.get("DownloadSite", "base_url"):
             self.set("DownloadSite", "base_url", base)
         else:
-            mainlog.info("Leaving base_url as it is")
+            mainlog.debug("Leaving base_url as it is")
 
         if overwrite or not self.get("DownloadSite", "url_file"):
             self.set("DownloadSite", "url_file",    base + "/file")
         else:
-            mainlog.info("Leaving url_file as it is")
+            mainlog.debug("Leaving url_file as it is")
 
-        if overwrite or not self.get("DownloadSite", "url_database_url"):
-            self.set("DownloadSite", "url_database_url", base + "/database")
-        else:
-            mainlog.info("Leaving url_database_url as it is")
+    def load_database_param(self):
 
+        # This will raise exceptions if connection fails.
+
+        url = self.database_url_source
+        mainlog.debug("Loading DB connection string from server at '{}'".format(url))
+        response = urlopen(url, timeout=5)
+        db_url = response.read().decode('ascii')
+        mainlog.debug("Connection string is ({})".format(db_url))
+
+        if ',' in db_url:
+            db_url = db_url.split(',')
+
+        if db_url != self.base_configuration['Database']['url']:
+            mainlog.debug("Replacing old DB url")
+            # The DB url advertised by the server always takes
+            # priority
+
+            self.base_configuration['Database']['url'] = db_url
+            mainlog.info("The DB url has changed, so I save it locally.")
+            self.save()
 
     def load_network_param(self):
         """ Load the network parameters. The priority is the config file first,
@@ -166,7 +187,7 @@ class Configuration(object):
             return
 
         # if string_represents_ip_address(ip_address):
-        mainlog.info("net.cfg file was read. Server is there : {}".format(ip_address))
+        mainlog.debug("net.cfg file was read. Server is there : {}".format(ip_address))
 
         if ":" in ip_address:
             host, port = ip_address.split(":")
@@ -235,7 +256,7 @@ class Configuration(object):
         config_path = os.path.normpath(os.path.join(os.getcwd(),config_path))
 
         mainlog.info("Reading configuration file -> {}".format(config_path))
-        mainlog.info("Reading configuration spec file -> {}".format(config_spec))
+        mainlog.debug("Reading configuration spec file -> {}".format(config_spec))
 
         if not os.path.exists(config_path):
             mainlog.error("Configuration file not found at {}".format(config_path))
@@ -266,7 +287,7 @@ class Configuration(object):
     def save(self):
         mainlog.debug("Saving configuration in {}".format(self.base_configuration.filename))
         self.base_configuration.write()
-        mainlog.debug("Done aving configuration")
+        mainlog.debug("Configuration saved")
 
 
 def package_dir():
@@ -347,7 +368,7 @@ def load_configuration(config_file = None, config_spec = 'config-check.cfg'):
     # The spec file is always loaded from the resource directory
     global configuration
 
-    mainlog.info(u"load_configuration : config_file is {}".format(config_file))
+    mainlog.debug("load_configuration : config_file is {}".format(config_file))
     spec = os.path.join( resource_dir, config_spec)
     configuration.load_version()
 

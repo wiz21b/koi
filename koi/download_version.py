@@ -22,7 +22,7 @@ import re
 
 
 from koi.Configurator import mainlog,configuration,get_data_dir,resource_dir
-
+from koi.utils import download_file, make_temp_file
 
 
 
@@ -37,42 +37,16 @@ def extractAll(zipName,tmp_dir = ""):
         else:
             z.extract(f,tmp_dir)
 
-def download_file(url, destination_file):
-    mainlog.info("Downloading new version to {}".format(destination_file))
-    mainlog.debug("Opening {}".format(url))
-
-    u = urlopen(url)
-    f = open(destination_file, 'wb')
-    meta = u.info()
-
-    file_size = int(meta["Content-Length"])
-
-    file_size_dl = 0
-    block_sz = 8192
-    while True:
-        buffer = u.read(block_sz)
-        if not buffer:
-            break
-
-        file_size_dl += len(buffer)
-        f.write(buffer)
-
-        # status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
-        # status = status + chr(8)*(len(status)+1)
-        # print status,
-
-    f.close()
-
 
 def get_server_version(url_version):
     try:
         response = urlopen(url_version,timeout=5)
         html = response.read().decode('ascii')
         version = StrictVersion(html.strip())
-        mainlog.info("Version advertised by server : {}".format(str(version)))
+        mainlog.debug("Version advertised by server : {}".format(str(version)))
         return version
     except Exception as e:
-        mainlog.warn("I was unable to get the version from server {}".format(url_version))
+        mainlog.error("I was unable to get the version from server {}".format(url_version))
         mainlog.error(e)
         return None
 
@@ -90,15 +64,15 @@ def find_highest_installed_version():
 
     codename = configuration.get("Globals","codename")
 
+    mainlog.debug("Looking for new version of '{}' in {}".format( codename, get_data_dir()))
+
     select = re.compile(codename + r'-([0-9]+\.[0-9]+\.[0-9]+)$')
-    mainlog.debug(select)
 
     highest_version = None
 
     for dirname in os.listdir(get_data_dir()):
         res = select.match(dirname)
         if res:
-            mainlog.debug(dirname)
             d = os.path.join(get_data_dir(), dirname)
             if os.path.isdir(d):
                 version = StrictVersion(res.group(1))
@@ -121,7 +95,7 @@ def upgrade_process( args):
 
 
     this_version = configuration.this_version # the one of this very code
-    mainlog.info("This version is {}".format(this_version))
+    mainlog.debug("Client version is {}".format(this_version))
 
     if args.no_update:
         mainlog.info("Skipping update process because --no-update is set")
@@ -159,15 +133,15 @@ def upgrade_process( args):
 
         if getattr(sys, 'frozen', False):
             # Frozen
-            mainlog.info("Fixing Qt import on frozen exe {}".format(os.path.normpath(os.getcwd())))
+            mainlog.debug("Fixing Qt import on frozen exe {}".format(os.path.normpath(os.getcwd())))
             _setupQtDirectories(os.path.normpath(os.getcwd()) )
         else:
-            mainlog.info("Fixed Qt import on NON frozen exe")
+            mainlog.debug("Fixed Qt import on NON frozen exe")
             _setupQtDirectories()
 
         return
 
-    next_version = get_server_version(configuration.update_url_version) # available on the server (abd maybe already downloaded)
+    next_version = get_server_version( configuration.update_url_version ) # available on the server (abd maybe already downloaded)
     current_version = find_highest_installed_version() # one we have downloaded in the past
 
     mainlog.info("This version is {}, last downloaded version = {}, version available on server = {}".format(this_version,current_version, next_version))
@@ -185,9 +159,8 @@ def upgrade_process( args):
     if next_version and (not current_version or next_version > current_version):
 
         try:
-            tmpfile = tempfile.mkstemp(prefix='NewVersion_'+version_to_str(next_version), suffix='.zip')[1]
-
-            download_file(configuration.update_url_file,tmpfile)
+            tmpfile = make_temp_file(prefix='NewVersion_'+version_to_str(next_version), suffix='.zip')
+            download_file( configuration.update_url_file, tmpfile)
 
             newdir = os.path.join(get_data_dir(), "{}-{}".format(codename, version_to_str(next_version)))
             extractAll(tmpfile,newdir)

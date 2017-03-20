@@ -28,9 +28,9 @@ def make_basic_config(ip):
     cfg['Database']['url'] = "postgresql://horse_clt:HorseAxxess@{}:5432/horsedb".format(ip)
 
     cfg['DownloadSite'] = {}
+    cfg['DownloadSite']['base_url'] = ip
     cfg['DownloadSite']['url_file'] = ip + "/file"
     cfg['DownloadSite']['url_version'] = ip + "/version"
-    cfg['DownloadSite']['url_database_url'] = ip + "/database"
 
     txt = ""
     for l in cfg.write():
@@ -46,9 +46,9 @@ def copy_config(server_cfg):
     cfg['Database']['url'] = server_cfg.get('Database','url')
 
     cfg['DownloadSite'] = {}
+    cfg['DownloadSite']['base_url'] = server_cfg.get('DownloadSite','base_url')
     cfg['DownloadSite']['url_file'] = server_cfg.get('DownloadSite','url_file')
     cfg['DownloadSite']['url_version'] = server_cfg.get('DownloadSite','url_version')
-    cfg['DownloadSite']['url_database_url'] = server_cfg.get('DownloadSite','url_database_url')
 
     txt = ""
     for l in cfg.write():

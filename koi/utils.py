@@ -1,6 +1,11 @@
 __author__ = 'stc'
 
+from urllib.request import build_opener, HTTPHandler, HTTPSHandler
+import re
 from datetime import datetime, timedelta
+import tempfile
+import os
+
 from koi.Configurator import mainlog
 
 
@@ -134,3 +139,99 @@ class CacheResult(SourceFunctionDecorator):
             self.__cache[args] = value
             self.__expiration[args] = datetime.now() + self.expire_time
             return value
+
+
+def make_temp_file(prefix = None, extension = None):
+    """ The temporary  file won't be deleted """
+
+    if extension:
+        extension = "." + extension
+
+    if not prefix:
+        prefix = 'koi_'
+
+    handle, absolute_path = tempfile.mkstemp(prefix=prefix, suffix=extension)
+    os.close( handle) # Make sure we can open the  file any way we want
+    return absolute_path
+
+
+
+content_disposition_download_regex = re.compile("attachment; +filename=\"([^\"]+)\"")
+
+def download_file(url, progress_tracker = None, destination = None):
+    """ Download document from url.
+
+    :param progress_tracker: a progress tacker
+    :param destination: Where to store the file (full path, with filename). If omitted,
+    then we'll try to get the filename advertised by the server. If that fails,
+    we take a temporary file name
+    :return: the full path to the downloaded file. You'll have to delete that
+    file if you need to.
+    """
+
+    mainlog.debug(u"Downloading from {}".format(url))
+
+    urlopener = build_opener(
+        HTTPHandler(),
+        HTTPSHandler())
+
+    datasource = urlopener.open(url)
+
+    meta = datasource.info()
+
+    server_filename = None
+    if 'Content-Disposition' in meta:
+        match = content_disposition_download_regex.match(meta[ 'Content-Disposition'])
+        if match:
+            server_filename = match.group(1)
+
+    if "Content-Length" in meta:
+        file_size = int( meta[ "Content-Length"])
+    else:
+        file_size = None
+
+    # FIXME there's a nasty encoding issue here...
+    # The filename is expected to be unicode, but I've doubts on that...
+
+    # try:
+    #     server_filename = server_filename.decode('utf-8')
+    # except Exception as ex:
+    #     mainlog.exception(ex)
+    #     try:
+    #         server_filename = server_filename.decode('iso-8859-1')
+    #     except Exception as ex:
+    #         # Pray it works :-)
+    #         pass
+
+    if destination:
+        outfile_name = destination
+    elif server_filename:
+        outfile_name = os.path.join( tempfile.gettempdir(), server_filename)
+    else:
+        outfile_name = make_temp_file()
+
+
+    mainlog.debug( "Storing file in {}".format(outfile_name))
+
+    total_downloaded = 0
+
+    with open(outfile_name,'wb') as out:
+        while True:
+            d = datasource.read(8192)
+
+            if d:
+                out.write( d)
+            else:
+                break
+
+            total_downloaded += len(d)
+            if progress_tracker:
+                progress_tracker(total_downloaded)
+
+
+    mainlog.debug( "Downloaded {}".format(outfile_name))
+
+    if file_size and total_downloaded and file_size != total_downloaded:
+        mainlog.warn("The number of bytes downloaded differs from the advertised content length ()".format(file_size))
+
+    return outfile_name
