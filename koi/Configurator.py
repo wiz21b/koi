@@ -130,7 +130,12 @@ class Configuration(object):
         # except Exception as ex:
         #     raise Exception(_("Invalid IP address : {}").format(ip))
 
-        base = "https://{}:{}".format(ip_or_host, port)
+        if port == 443:
+            protocol = 'https'
+        else:
+            protocol = 'http'
+
+        base = "{}://{}:{}".format(protocol, ip_or_host, port)
         mainlog.info("Server base address is {}.".format(base))
 
         if overwrite or not self.get("DownloadSite", "url_version"):

@@ -36,6 +36,7 @@ parser.add_argument('--finish-update', default=False, help='Continue the update 
 parser.add_argument('--console', action='store_true', default=False, help='Activate console output')
 parser.add_argument('--debug', action='store_true', default=False, help='Verbose debug output output')
 parser.add_argument('--dev', action='store_true', default=False, help='Equals --console --debug --no-update')
+parser.add_argument('--echo-sql', action='store_true', default=False, help='Show SQL statements')
 parser.add_argument('--no-update', action='store_true', default=False, help='Run without trying to update')
 # parser.add_argument('--watchdog-file', action='store_true', default="watchdog", help='Watch dog file')
 args = parser.parse_args()
@@ -188,7 +189,7 @@ from koi.datalayer.database_session import init_db_session,session
 from koi.datalayer.connection import check_db_connection
 
 try:
-    init_db_session(configuration.database_url, metadata, False or configuration.echo_query)
+    init_db_session(configuration.database_url, metadata, args.echo_sql)
 except Exception as e:
     mainlog.error(e)
     showErrorBox( _("Can't initialize the database connection"),

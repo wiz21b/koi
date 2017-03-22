@@ -263,6 +263,7 @@ class OrderOverviewWidget(HorsePanel):
 
     @Slot(QModelIndex)
     def order_part_activated_slot(self,order_part_id):
+        mainlog.debug("order_part_activated_slot : {}".format(order_part_id))
         order_part = dao.order_part_dao.find_by_id(order_part_id)
         self.order_part_activated_signal.emit(order_part)
 

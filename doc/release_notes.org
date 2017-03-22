@@ -1,0 +1,353 @@
+* Version 1.11.8 July 2016
+- fixed useless debugging logging
+
+* Version 1.11.7 July 2016
+- fixed translations
+
+* Version 1.11.6 July 2016
+- Fixing issue with order parts which are 'preorder' when they have produced quantities attached to them
+- Avoid making delivery slip on order without quantities
+- fixed some copy paste issues
+- fixed a crash in some lines chart
+
+* Version 1.11.5 June 2016
+- Fixing order confirmation
+
+* Version 1.11.4 April 2016
+- koi-ification
+
+* Version 1.11.3 April 2016
+- Fixing a bug where the presence overview is broken when a user is desactivated
+- adding pagination information to order report
+
+* Version 1.11.2 17 February 2016
+- fixes
+
+* Version 1.11.1 8 February 2016
+- drag/drop buckets for files
+- quality "non conformity" reporting
+- ISO charts
+
+* Version 1.10.2 11 January 2016
+- Legal text is now more faithful to the GNU GPLv3
+- Bug fix
+
+* Version 1.10.1 24 September 2015
+- Allow duration entry with format h:m
+- Allow to change the supplier of a supply order
+
+* Version 1.10.0 22 September 2015
+- New "on time delivery" graph
+
+* Version 1.8.0 30 June 2015
+- Preorder as Word documents
+- Renabled icons for add/remove lines in supply order
+
+* Version 1.7.0 17 June 2015
+- Added DoneHours and PlannedHours in order part queries
+- Order part queries now support basic arithmetic
+- Small order part's work overview on orders overview
+- On the workshop overview, a bold cell on the right means 60% of part is done
+
+* Version 1.6.1 20 May 2015
+- fixes
+
+* Version 1.6.0 19 May 2015
+- Order confirmation document
+- Support for Word reports
+- fixes
+
+* Version 1.5.0 28 April 2015
+- Allow comments on orders (see below documents' tab)
+- Allow order prioritisation
+- various fixes
+
+* Version 1.4.4 14 April 2015
+- fixes
+- improvements to day off/time reporting overview
+
+* Version 1.4.3 31 March 2015
+- fixes off by 23h59m59 seconds in the financial KPI graphics
+- fix regression on month/day translations
+
+* Version 1.4.2 28 March 2015
+- Now one can see presences in the future (so that one can add days off in the future)
+- Fixed encoding issue on r-preorder report
+- Fixed DLL import
+- Added preliminary support for half day off
+
+* Version 1.4.1
+- Fixed customer creation
+
+* Version 1.3.6 13 March 2015
+- Removed client name from mode op and clock client
+- Added clocks zones
+- Numerous fixes to clock client
+- Improved error language choice : in english for tech people, translated in GUIs
+
+* Version 1.3.5 2 March 2015
+- fixed copy paste
+- improved machines listing/report
+
+* Version 1.3.4 24 February 2015
+- Added operation position in timetrack recording
+
+* Version 1.3.3
+- Fixed clock
+- Changed clock look and feel
+
+* Version 1.3.2
+- fixed copy/paste
+
+* Version 1.3.1
+- fixed search in order overview
+
+* Version 1.3.0 17 February 2015
+- Added full blown timetracking
+- Added json server code , so now I can work with client/server application
+
+* Version 1.2.3 27 November 2014
+- Fix role handling
+- Added "view time records" role besides modify time records
+
+* Version 1.2.2 25 November 2014
+- Fixed delete document
+- Improved encoding support in document manager
+- Incorporated ply to avoid import/versioning issues
+- Fixed automatic upgrade (once more...)
+
+* Version 1.2.1 18 November 2014
+- Full filtering for delivery slips
+- Full filtering for supply orders
+- Documents stored on server now have human readable names (easier to read backups)
+- Several small performances improvements
+- More Python 3 compatibility
+- Bug fixes
+
+* Version 1.1.1 24 October 2014
+- Fixes to backup
+- Better ordering in supply order view
+- Now when coming from search, a part is scrolled to to be shown
+
+* Version 1.1.0 14 October 2014
+- Support for file attachment in order part
+- Better GUI for employee, operation and customer edit
+- Supplier order now accepts multi-line descriptions
+- First pass for Python3 support (most stuff works, except deploy)
+- Moved to cherrypy for the web server
+- Hopefully fixed auto update mechanism
+
+* Version 1.0.51 1 September 2014
+- Fixes presentation in supply order print
+- Fixed search (broken index strings, fixed update code)
+- Fixed supply order filters
+- Improved presentation of headers in GUI a bit
+- Improved load performance
+- Added supply order company references (1A, 1B, strictly ordered labelling, etc.)
+
+* Version 1.0.50 Simple minds, August 2014
+- Added supplier management
+- Added supply order editing, overview
+- Added "solde carnet de commande" graph
+- Added type of non-work "activities" (holidays, unemployment,...)
+- Allow the user to complete an order when making a delivery slip
+- Fixed search on too long numbers (searching for 12345678912345 was leading to an error)
+- Fixed disappearing '&' in preorder reports
+- In the find dialog, the order have priority over preorders
+
+* Version 1.0.49 30/6/2014
+- Administrative GUI
+- MS Windows installer
+
+* Version 1.0.48
+- Fixed bug in task action report ancoding : unable to give order part label with more than one letter
+- Merging install program from branch 1_0_43
+
+* Version 1.0.47 Fixes 12/6/2014
+- Refresh edit order screen when a delivery slip is created
+- fixed some state transitions
+
+* Version 1.0.46 Golgotha, again 5/6/2014
+- delivery slips can now be desactivated
+- delivery slips now have their own overview
+- better graphics in financial and production views
+- an audit trail now records updates on order, it is only visible by user with the appropriate role
+- copy paste now allows to copy order parts as well as operations
+- valuation computation changed :
+   - zero priced parts are valued as their operation's cost
+   - cancelled order parts are *directly* removed for the valuation
+- posts view has been updated
+- search/find now work as expected
+- lots of fixes, refactorings
+
+* Version 1.0.45 Delta Force 16/4/2014
+- much more statistics
+- fixed preorder report so that the title bar doesn't get screwed
+- reduced font size in preorder report to pack more things on a single page
+- allow a user to be deactivated. In that case it doesn't show up in the timetracking
+- one can copy from the order overview through menu and paste into the edit order screen
+
+* Version 1.0.44 Super powers 27/3/2014
+- Added a powerful order parts filter with autocomplete
+- Work around for dropdown box that don't disappear
+- Fix for order parts with more than one letter in their labels (such as 101AB)
+- Removed general condition from delivery slips print
+
+* Version 1.0.42
+- It is now possible to hide prices (so, hidden from various reports, no access to delivery slips)
+
+* Version 1.0.41 Fixes
+- Reallow to create order without preorder
+- Swapped order and preorder column in current orders view
+- Adding a part to a completed order marks that order as ready for production
+- Now one can have more than 26 parts in an order
+
+* Version 1.0.40 Fixes 29/1/2014
+- Fixed state transition
+- Now displaying preorder number in the orders overview
+
+* Version 1.0.39 Order parts now have states 27/1/2014
+- The "state" is at the order part level (instead of the order level); therefore it is not possible to change the state on the edit order screen.
+- Unhandled exceptions are now properly logged
+- More robust delivery slip creation
+- Small fixes here and there
+
+* Version 1.0.38 Improvements (9/1/2014)
+- On the preorder print, the customer's reference is now shown
+- The file server can now read a user parameter when called. With that we can identify who's using Horse.
+- Less pg_locks left open
+- BUG : Find an an order part with its complete ID now works (for example, 4300A).
+
+* Version 1.0.37 Improvements (12/2013)
+- One can now change the customer of an order
+- Navigation is now tab based
+- New "order aborted" state
+- Support for copy/paste in order edit screen
+
+* Version 1.0.36 Fixes
+- added a monthly financial report
+- Show done/planned hours and total sell price in edit orders view
+- Better colours highlighting while editing timetracks
+- Duration are now shown with 2 decimals everywhere
+- Highlight some more strange situations in Current orders view
+- improved activity (ISO) report to display the delivery slips
+- better production plant report (stronger separation between orders), bug fixes
+- Customers now have a fax
+- Duration computations are now correct when there is off time between task reports
+- fixed valuations, turnover computations in the global financial overview
+
+* Version 1.0.34 Fixes (17/11/2013)
+- operation definition : enforce unique short id's; enforce at least one period; various Qt fixes
+- delivery slips : fix GUI, fix reports for unicode
+- in financial statistics, temporary fix for the accounting of done hours
+- other small fixes
+
+* Version 1.0.33
+- temporary fix for operation which happen to have no period (that should not happen...)
+
+* Version 1.0.32 A new hope (5 Nov. 2013)
+- Added hours done on operations per employee in order overview
+- Allow to browse order overview in the past (with appropriate filters)
+- Better contextual menu in the order overview
+- Removed material price and valuation of parts in order view
+- Changed unit price to total order price in order view; allow ordering on that
+- Better presentation in reprint delivery slip
+- Bug fixed deploy to MediaFire
+- Fixed detach/reattach window behaviour
+- Fixed crash on clone operations
+- order part positions are constraint => DB UPDATE
+- order parts can be flagged as monthly goal => DB UPDATE
+- two dozens of other small fixes and improvements
+
+* Version 1.0.31 Golgotha (1 Oct. 2013)
+- Completely redone order overview (now showing operation view and allow order edit)
+- Added a "global financial overview" dialog that shows financial information (to authorized people only)
+- Double click on presence cell opens timetrack edit dialog
+- When editing timetracks, the sum of durations is displayed
+- When printing a preorder, one can add a comment on top of the paper
+- Added basic support for holidays
+- Show unit price when printing a preorder
+- Show who has printed a preorder
+- Removed selling price, computed price, etc.
+- Simplified data access on legacy files
+- (not a bug) To enter special character, use the "ALT+xxxx" combination
+  Explanations : http://windows.microsoft.com/fr-fr/windows-vista/using-special-characters-character-map-frequently-asked-questions
+  For example :
+   - Typing "Alt" and "0165" gives : ¥
+   - Alt+0216 gives : Ø
+- various clean ups on the build scripts
+- many bug fixes
+
+* Version 1.0.30
+- Improved indexes on ORDERS table
+
+* Version 1.0.29
+- fixed timetracks editing session handling (to avoid ultra frequent queries to the DB)
+
+* Version 1.0.28
+- tiny fixes + better manual
+
+* Version 1.0.27
+- :bug: Impossible de supprimer de commande !
+- :improvement: specific customoers menu
+
+* Version 1.0.26
+- :improvement: "Changer" l'étape de work flow => mettre le bouton dans les actions et enlever le système d'encodage double
+- :bug: order overview: les échéances ne sont pas en rouge ?
+- :bug: scanner CIVINO n'affiche pas les titres des commandes
+- :bug: La vue workflow ne zoome pas en big fonte
+- :bug: postviews: fin dbutton is not green
+- :bug: PKI grandes fontes : les indicateur ne sont pas centrés
+- :bug: activity report : trnaslate menu;
+- :bug: traduction de total unbill hours
+- :bug: activity report : si pas de n° de devis, afficher "-"
+
+* Version 1.0.25
+
+- Ajouté rapport d'activité par commande
+- Ajouté "find" button sur tous les panneaux
+- Ajouté "quick view" d'une commande sur la vue par semaine + ajouté raccourci clavier
+- Amélioré le "login" avec un "rememeber me" (pas activé pour le moment)
+- plein de corrections en tous genres
+- Fixed managed by code
+- :bug: In findorder, I think the commits/session.close() are nto correct
+- :bug: Dans le print des devis, les arrondis ne sont pas corrects car je ne fixe pas bien le nombre de décimales pour le calcul (à cause du moneyfmt)
+- :bug: Create a new preorder (don't save), change to "reay for prod" (do not save), print operations (it will auto save), the order number is not displayed
+- :bug: in edit employee dialog, modifying an employee then moving to another forgets the modification (without any warning)
+- :bug: Quand je click "OK" lors de l'édition des opérations, il faut que ça sauve
+- :bug: Si j'édite un employee et que dès que le dialogue est montré je clicke sur "OK" il me dit qu'il y a des changements
+- :bug: quand j'édite un client puis que je déplace la sélection, on ne me propose pas de sauver (c'est déconnecté mais cache !)
+- :bug: When editing customer, changing the listed name doesn't update the list
+- :bug: Si je rentre un pointage erroné, j'ai un dialog d'erreur. Si je clicke OK tout le dialogue de pointage se ferme et j'ai une runtime C++ error...
+- Corrigé le dialogue d'encodage des timetracks
+- :bug: multipage preorder print won't work ?
+- :improvement: If click on a post in the post view, then show order detail
+
+* Version 1.0.23
+- done TODO :bug: when leaving the employee edit dialog, the program always ask for confirmation of modification
+- done TODO utiliser des enumm dans les champs du db_mapping qui en ont besoin
+- done TODO Bien tester les périodes des définitions d'opérations car il reste des bugs/fonctionnalités manquantes
+- done TODO :bug: quan dje sauve un nouveau client, employee,, opdef, on perd sa séletion après la sauvegarde
+- done TODO :bug: retest print delivery
+- done TODO :bug: review delivery slip creation + order auto-complete, it fails right now
+- cannot reproduce TODO :bug: scénario : 7h00 prsence, 8h00 pointage out, 9h00 imputation sur tâche => truc bizarre au niveau du timetrack présence
+* Version 1.0.18
+- done TODO :bug: reordering operations right after save doesn't work
+
+* Version 1.0.17
+- done TODO :bug: pgup,pgdn don't work anymore on editorderparts
+- done TODO :bug: Installing from scratch crashed because of missing URL in config file
+- done TODO :bug: delete d'un des ordperpart (=> eroerdering)
+- done TODO :bug: De "commande terminée" on peut passer à "commande en production" et pas à "commande en définition"
+- done TODO :improvement: pointeuse resets after 10 seconds
+- done TODO :bug: les modèles opérations proposées dans la création d'opération sont erronés : il ne faut pas les indirects etc !
+- done TODO :bug: when saving order, more than one parts get selected
+- done TODO :bug: when swapping the first row of an order part, the corresponding operations disappear
+- done TODO :bug: verify that findoperation dialog doesn't hold the session (and clone operations safely)
+- done TODO :bug: copy/paste mode op copie aussi les imputations !!!
+- done TODO :bug: The find dialog doesn't find everything
+- done TODO :bug: Operation definition drop down gives blank line when one hits page down repeatedly
+- done TODO :bug: When you create a new order, the customer list is truncated
+- done TODO :improvement: preorder label should stay when we have an accounting label
+- done TODO La mise à jour fonctionne-t-elle si la DB est down ?
+- done TODO :improvement: Make window detach more explicit

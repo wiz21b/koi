@@ -810,6 +810,7 @@ class CurrentOrdersOverviewWidget(QWidget):
 
             # order_part = dao.order_part_dao.find_by_id(self.order_part_id)
 
+            mainlog.debug("_trigger_future_order_part_id : triggered !")
             self.operations_view.fill_order_part(self.order_part_id)
             self.employee_view.set_order_part_id(self.order_part_id)
 
@@ -1218,7 +1219,7 @@ class CurrentOrdersOverviewWidget(QWidget):
 
         self.table_view.setContextMenuPolicy(Qt.CustomContextMenu)
         self.table_view.customContextMenuRequested.connect(self.popup_parts)
-        self.operations_view.view.selectionModel().currentChanged.connect(self.operation_selection_changed)
+        # self.operations_view.view.selectionModel().currentChanged.connect(self.operation_selection_changed)
         # self.table_view.selectionModel().currentChanged.connect(self.order_part_selected)
         self.table_view.selectionModel().selectionChanged.connect(self.selection_changed)
 
@@ -1373,8 +1374,12 @@ class CurrentOrdersOverviewWidget(QWidget):
             op = model.objects[current.row()]
 
             if op and op.operation_id:
+
+                mainlog.debug("operation_selection_changed : loading employees")
                 employees = dao.operation_dao.last_employees_on_operation(op.operation_id)
+                mainlog.debug("operation_selection_changed : loading employees - 2")
                 employees = [ (emp, duration_to_hm(hours))  for emp, hours in employees]
+                mainlog.debug("operation_selection_changed : loading employees - 3")
                 # self.employee_view.set_model(employees)
                 return
 
@@ -1447,6 +1452,7 @@ class PartActivityView(QWidget):
     def _load_events(self, order_part_id):
         events = DictOfDict()
 
+        mainlog.debug("CurrentOrdersOverview._load_events")
         works = dao.order_part_dao.work_done_on_part(order_part_id)
         slips = dao.delivery_slip_part_dao.slips_for_order_part(order_part_id)
         quality = dao.quality_dao.find_by_order_part_id(order_part_id)
@@ -1472,8 +1478,11 @@ class PartActivityView(QWidget):
             self._draw( self._events_cache)
 
     def set_order_part_id(self, order_part_id):
+        mainlog.debug("CurrentOrdersOVerview.set_order_part_id")
         self._events_cache = self._load_events( order_part_id)
+        mainlog.debug("CurrentOrdersOVerview.set_order_part_id - draw")
         self._draw( self._events_cache)
+        mainlog.debug("CurrentOrdersOVerview.set_order_part_id - draw complete")
 
     def _draw(self, events):
 

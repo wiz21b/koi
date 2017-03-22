@@ -229,7 +229,7 @@ class Devnull(object):
 
 logging.basicConfig(level=logging.DEBUG, stream=Devnull(), format='%(asctime)s [%(levelname)s] %(message)s')
 mainlog = logging.getLogger('MainLog')
-mainlog.setLevel(logging.ERROR)
+mainlog.setLevel(logging.INFO)
 
 # mainlog.debug("Clearing handler {} ".format(mainlog.handlers))
 for h in mainlog.handlers:

@@ -58,7 +58,7 @@ def init_db_session(db_url,metadata=None,echo_query=False,autocommit=False):
     mainlog.debug("Creating engine to {} with params {}".format(db_url, params))
     engine = create_engine(db_url,
                            encoding='utf-8',
-                           echo=False or echo_query,
+                           echo=echo_query,
                            poolclass=NullPool,
                            connect_args=params)
 

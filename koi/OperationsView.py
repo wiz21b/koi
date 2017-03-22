@@ -74,15 +74,19 @@ class OperationsOverviewWidget(QWidget):
         """
 
         if order_part_id:
+            mainlog.debug("fill_order_part : triggered !")
             operations = dao.operation_dao.find_by_order_part_id_frozen(order_part_id)
+            mainlog.debug("fill_order_part : build model !")
             self.model.buildModelFromObjects(operations)
+            mainlog.debug("fill_order_part : build model complete !")
             self.view.verticalHeader().setResizeMode(QHeaderView.ResizeToContents)
         else:
             self.model.clear()
 
         ndx = self.model.index(0,0)
+        mainlog.debug("fill_order_part : setCurrentIndex !")
         self.view.setCurrentIndex(ndx)
-
+        mainlog.debug("fill_order_part : setCurrentIndex done!")
 
     @Slot()
     def copy_operations_slot(self):

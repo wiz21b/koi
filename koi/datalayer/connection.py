@@ -16,12 +16,12 @@ def check_db_connection(db_url):
     if not db_url:
         return False
 
-    mainlog.info("check_db_connection: Trying to connect to the database")
+    mainlog.debug("check_db_connection: Trying to connect to the database")
     try:
         session().connection().execute("SELECT count(*) from {}.employees".format(DATABASE_SCHEMA))
-        mainlog.info("check_db_connection: Executed query")
+        mainlog.debug("check_db_connection: Executed query")
         session().commit()
-        mainlog.info("check_db_connection: commited")
+        mainlog.debug("check_db_connection: commited")
 
         return True
     except Exception as ex:
