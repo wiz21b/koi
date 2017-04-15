@@ -1,0 +1,5 @@
+koi/test/.cache/**/*
+.viminfo
+.idea
+*~
+**/__pycache__
