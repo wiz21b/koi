@@ -10,15 +10,6 @@ It is therefore aimed at "agile" companies. If you want strict workflow, choose 
 
 It is in production use since a few years (so, yes, it is battle tested).
 
-How to install
-==============
-
-On Windows, download the server installer from [here](html/koi_server.exe). Run it as administrator.
-Next, download the [client](html/koi_client.exe), run it on the same PC.
-
-For the impatient, you can download a demo [here](html/koi_client_demo.exe)
-
-
 Business
 ========
 
