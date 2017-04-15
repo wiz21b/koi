@@ -1,4 +1,6 @@
+import logging
 import decimal
+from datetime import datetime
 from collections import OrderedDict
 from datetime import date, timedelta
 
@@ -6,7 +8,7 @@ from koi.Configurator import mainlog
 from koi.configuration.business_functions import business_computations_service
 from koi.datalayer.RollbackDecorator import RollbackDecorator
 from koi.datalayer.database_session import session
-from koi.date_utils import month_before,month_after,date_to_pg,timestamp_to_pg,_last_moment_of_month,_first_moment_of_month
+from koi.date_utils import month_before,month_after,date_to_pg,timestamp_to_pg,_last_moment_of_month,_first_moment_of_month,ts_to_date, day_period_to_ts
 from koi.db_mapping import OrderPart
 from koi.utils import CacheResult
 from koi.dao import dao
@@ -31,6 +33,10 @@ def _standard_period2(begin = None, end = None):
 
     begin = _first_moment_of_month(begin)
     end = _last_moment_of_month(end)
+
+    if end.date() > date.today():
+        end = datetime.now()
+
     duration_in_months = month_diff( begin, end)
 
     # mainlog.debug("From {} to {}, {} months".format(begin,end, duration))
@@ -164,11 +170,11 @@ class IndicatorsService:
     """
 
     def __init__(self):
-        self._turnover_computation_cache = None
+        self._turnover_computation_cache = dict()
 
     #@JsonCallable([])
     def clear_caches(self):
-        self._turnover_computation_cache = None
+        self._turnover_computation_cache = dict()
 
         for attr_name in dir(self):
             if "chart" in attr_name:
@@ -190,7 +196,7 @@ class IndicatorsService:
     #@JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def solde_carnet_commande_chart(self, begin= None, end = None):
+    def solde_carnet_commande_chart(self, begin : datetime = None, end : datetime = None):
         """It's the delta between
         the value of the work accomplished on
         and the expected sell price of
@@ -1020,6 +1026,7 @@ order by days, short_id""".format(timestamp_to_pg(begin), duration, timestamp_to
     def to_facture_per_month_chart(self, begin = None, end = None):
         begin,end,duration = _standard_period2(begin,end)
 
+        mainlog.debug("to_facture_per_month_chart {} - {}".format(begin, end))
         r = session().connection().execute("""
 with dates as  (
 	select date '{}' + generate_series(0, {}) * (interval '1' month) AS day
@@ -1032,7 +1039,7 @@ billable as (
 	join delivery_slip_parts as sp on sp.order_part_id = p.order_part_id
 	join delivery_slip as s on s.delivery_slip_id = sp.delivery_slip_id
 	join orders as ord on ord.order_id = p.order_id
-	where s.active = true and s.creation between timestamp '{}' and timestamp '{}'
+	where s.active and s.creation between timestamp '{}' and timestamp '{}'
 	group by m
 ),
 actual_cost as (
@@ -1126,223 +1133,43 @@ left join data on data.m = dates.month
 
     def _compute_turnover_info(self, begin_date : date):
         global dao
-        if not self._turnover_computation_cache:
-            self._turnover_computation_cache = dao.order_dao.compute_turnover_on( begin_date)
-        return self._turnover_computation_cache
+        mainlog.debug("_compute_turnover_info. to {}".format(begin_date))
+        if begin_date not in self._turnover_computation_cache:
+            # self._turnover_computation_cache[begin_date] = dao.order_dao.compute_turnover_on( begin_date)
+            self._turnover_computation_cache[begin_date] = dao.order_part_dao.compute_turnover_on( begin_date)
+        return self._turnover_computation_cache[begin_date]
 
     @CacheResult
     def to_bill_this_month_indicator(self, begin=None, end=None):
-        to_facture, encours_this_month, encours_previous_month, turnover = self._compute_turnover_info(begin)
+        to_facture, encours_this_month, encours_previous_month, turnover = self._compute_turnover_info(end)
         return to_facture
 
 
     @CacheResult
     def valuation_this_month_indicator(self, begin=None, end=None):
-        to_facture, encours_this_month, encours_previous_month, turnover = self._compute_turnover_info(begin)
+        to_facture, encours_this_month, encours_previous_month, turnover = self._compute_turnover_info(end)
         mainlog.debug("valuation_this_month_indicator = {}".format(encours_this_month))
         return encours_this_month
 
 
     @CacheResult
     def valuation_last_month_indicator(self, begin=None, end=None):
-        to_facture, encours_this_month, encours_previous_month, turnover = self._compute_turnover_info(begin)
+        to_facture, encours_this_month, encours_previous_month, turnover = self._compute_turnover_info(end)
         return encours_previous_month
 
 
     @CacheResult
     def turn_over_indicator(self, begin=None, end=None):
-        to_facture, encours_this_month, encours_previous_month, turnover = self._compute_turnover_info(begin)
+        to_facture, encours_this_month, encours_previous_month, turnover = self._compute_turnover_info(end)
         return turnover
 
 
 
     @CacheResult
     def valution_production_chart(self, begin, end):
-        begin,end,duration = _standard_period2( begin, end)
 
-        duration_in_days = (end - begin).days
-        mainlog.debug("From {} to {}, Duration in days = {}".format(begin,end,duration_in_days))
-
-        r = session().connection().execute("""
-with
-events_q_out as (
-	select
-	   cast( date_trunc('day',s.creation) as date) as day,
-	   sp.order_part_id,
-	   sp.quantity_out
-	from delivery_slip_parts sp
-	join delivery_slip as s on s.delivery_slip_id = sp.delivery_slip_id
-	where s.active = true
-),
-events_work as (
-	select
-	    cast( date_trunc('day',timetracks.start_time) as date) as day,
-	    order_part_id,
-	    timetracks.duration
-	from production_files pf
-	join operations op on op.production_file_id = pf.production_file_id
-	join tasks_operations on tasks_operations.operation_id = op.operation_id
-	join timetracks on timetracks.task_id = tasks_operations.task_id and timetracks.duration > 0
-),
-all_events as (
-     -- we're interested in what happens for a given part on a given day.
-     -- for that, we collapse all data on each days (so if we have 1 qty out
-     -- and one done hour on the same day, then they both must appear on the
-     -- same row). That's why we sum over grouped dates.
-	select day, order_part_id, sum(quantity_out) as quantity_out, sum(duration) as done_hours
-	from (
-		select day, order_part_id, quantity_out, 0 as duration
-		from events_q_out
-		union all
-		select day, order_part_id, 0, duration
-		from events_work
-	) merged_data
-	-- filter out useless events. Do that early to remove as much computations
-	-- as possible
-	where day <= date '{}'
-	group by order_part_id, day
-),
-last_event as (
-	select
-	    least(
-            CASE
-                WHEN part.completed_date IS NOT NULL
-                THEN
-                   -- completed order parts leave the valuation computation
-                   greatest( data.max_date, part.completed_date)
-                ELSE part.completed_date -- data.max_date
-            END,
-            date '{}') as day,
-		part.order_part_id
-	from horse.order_parts part
-	-- parts without events won't have a completion date ?!
-	join (select order_part_id,
-	             max(day) as max_date
-	      from all_events
-	      group by order_part_id) data on data.order_part_id = part.order_part_id
-	-- where state in ( 'completed', 'aborted')
-),
-merged_last_event as (
-    select
-        order_part_id,
-        day,
-        sum(all_data.quantity_out) quantity_out,
-        sum(all_data.done_hours) done_hours
-    from (
-        select day, order_part_id, quantity_out, done_hours
-        from all_events
-        union all
-        select day, order_part_id, 0, 0 -- this may introduce double dates
-        from last_event
-    ) as all_data
-    group by order_part_id, day
-)
-select
-    order_part_id,
-    day,
-    -- We use the fact this specific partition will accumulate values in its series.
-    sum( merged_last_event.quantity_out) over (partition by order_part_id  order by merged_last_event.day) quantity_out,
-    sum( merged_last_event.done_hours)   over (partition by order_part_id  order by merged_last_event.day) done_hours
-from merged_last_event
-order by order_part_id, day asc -- This ordering is crucial for the python part.
-
-
-        """.format( timestamp_to_pg(end), timestamp_to_pg(end))).fetchall()
-
-        valuations = OrderedDict()
-
-        if len(r) == 0:
-            i = date(begin.year, begin.month, begin.day)
-            end = date(end.year, end.month, end.day)
-            while i <= end:
-                valuations[i] = 0
-                i = i + timedelta(days=1)
-
-        if len(r) > 0   :
-
-            # Preinitialise the mapping so that we don't have to check
-            # for the existence of a given date before adding items.
-            #first_date = min([row.day for row in r])
-            first_date = date(begin.year, begin.month, begin.day)
-
-
-            i = first_date
-            end = date(end.year, end.month, end.day)
-            while i <= end:
-                valuations[i] = 0
-                i = i + timedelta(days=1)
-
-            # i = date(end.year, end.month, end.day)
-            # while i >= first_date:
-            #     valuations[i] = 0
-            #     i = i + timedelta(days=-1)
-
-            # We'll need quick access to parts
-            parts = dict()
-
-            all_ids = list(set([row.order_part_id for row in r])) # list/set to compress the array
-
-            # We use a step because the IN clause doesn't accept as many integer as we want.
-
-            step = 100
-            ndx = 0
-            while ndx < len(all_ids):
-                parts_ids = set( all_ids[ndx:ndx+step])
-                for part in session().query(OrderPart).filter( OrderPart.order_part_id.in_(parts_ids)).all():
-                    parts[ part.order_part_id] = part
-                    # mainlog.debug("Part {} completed_date = {}".format(part.order_part_id, part.completed_date))
-                ndx += step
-
-            # Now we compute the sum of valuations on each day
-
-            last_date = None
-            last_valuation = 0
-            last_order_part_id = None
-
-            mainlog.debug("valution_production_chart")
-            mainlog.debug( sorted(list(set([row.order_part_id for row in r]))))
-
-            for row in r:
-
-                # mainlog.debug("Row {}".format(row))
-
-                if last_order_part_id != row.order_part_id:
-                    last_order_part_id = row.order_part_id
-                    last_date = None
-                    last_valuation = 0
-
-
-                if last_date:
-
-                    # Copy the last valuation over several days because it's constant
-                    # on that period.
-
-                    i = last_date + timedelta(days=1) # skip last date, it's already accounted for.
-                    while i < row.day: # Don't go till new date, it will be accounted for afterwards.
-                        if i in valuations:
-                            if i == date(2016, 3, 31):
-                                mainlog.debug(
-                                    "valuation on {} for {} is {}".format(i, last_order_part_id, last_valuation))
-                            valuations[i] += last_valuation
-                        i = i + timedelta(days=1)
-
-                part = parts[row.order_part_id]
-                last_valuation = business_computations_service.encours_on_params(
-                    row.quantity_out, part.qty, row.done_hours, part.total_estimated_time, part.sell_price, part.material_value, row.order_part_id, row.day
-                )
-
-                # mainlog.debug("Valuation {}".format(last_valuation))
-
-                if row.day in valuations:
-                    if row.day == date(2016,3,31):
-                        mainlog.debug("On basis of {}".format( (row.quantity_out, part.qty, row.done_hours, part.total_estimated_time, part.sell_price, part.material_value, row.order_part_id, row.day) ))
-                        mainlog.debug("valuation on {} for {} is {}".format(row.day, row.order_part_id, last_valuation))
-                    valuations[ row.day] += last_valuation
-
-                last_date = row.day
-
-            # for k in sorted(valuations.keys()):
-            #     mainlog.debug("{} {}".format(k,valuations[k]))
+        mainlog.debug("valution_production_chart : from {} to {}".format(begin, end))
+        valuations = dao.order_part_dao.wip_valuation_over_time(begin, end)
 
         x_legends, values = to_serie( valuations.items() )
         return GraphData(x_legends, [''], [ values ])

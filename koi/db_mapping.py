@@ -786,7 +786,8 @@ class OrderPart(Base):
 
     def __repr__(self):
         # return "{}".format(self.sell_price)
-        return u"OrderPart #{} [{}] {} qty_ordrd={} deadline:{} sell:{} completed:{} state:{} label:".format(self.position, self.order_part_id,self.description,self.qty,self.deadline or '/',self.sell_price,self.completed_date or '/',self.state, self.label or '/')
+        return u"OrderPart #{} [{}] {} qty_ordrd={}(tex:{})  deadline:{} sell:{} completed:{} state:{} label:{}".format(
+            self.position, self.order_part_id,self.description,self.qty, self._tex, self.deadline or '/',self.sell_price,self.completed_date or '/',self.state, self.label or '/')
 
 
 
@@ -1310,6 +1311,9 @@ class DeliverySlip(Base):
 
     creation = Column('creation', TIMESTAMP, nullable=False,unique=True,index=True)
 
+
+    def __repr__(self):
+        return "Active {}, creation:{}".format(self.active, self.creation)
 
 
 class DeliverySlipPart(Base):

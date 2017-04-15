@@ -385,7 +385,7 @@ def customer_PDF(name="form_letter.pdf"):
 
 
 def make_pdf_filename(prefix_tmpfile):
-    return make_temp_file(prefix=prefix_tmpfile, suffix='.PDF')
+    return make_temp_file(prefix=prefix_tmpfile, extension='.PDF')
 
 def make_home_file( filename):
     return os.path.join( os.path.expanduser("~"), filename)

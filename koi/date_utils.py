@@ -52,8 +52,8 @@ def month_after(d, nmonth=1):
 
 
 def month_before(d, nmonth = 1):
-    """ Shift a given date/datetime nmonth in the past.
-    If the new day is not in the month, then it is pulled
+    """ Shift a given date/datetime nmonth months in the past.
+    If the new day is not in the new month, then it is pulled
     to the last day of the month.
     """
 
@@ -144,6 +144,11 @@ def day_period(date_ref):
     return begin, end
 
 
+def day_period_to_ts(begin, end):
+    begin = datetime(begin.year,begin.month,begin.day,0,0,0)
+    end = datetime(end.year,end.month,end.day,23,59,59,999999) # FIXME If the DB gives more than microseconds, then we have a problem
+    return begin, end
+
 def month_period_as_date( base_date):
     d_start = date(base_date.year,
                    base_date.month,
@@ -154,3 +159,12 @@ def month_period_as_date( base_date):
                  calendar.monthrange(base_date.year,base_date.month)[1])
 
     return d_start, d_end
+
+
+def compute_overlap(A_start, A_end, B_start, B_end):
+    latest_start = max(A_start, B_start)
+    earliest_end = min(A_end, B_end)
+    if latest_start <= earliest_end:
+        return latest_start,earliest_end
+    else:
+        return None

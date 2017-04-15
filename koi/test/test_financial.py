@@ -1,10 +1,11 @@
-
+import math
 import datetime
 import unittest
 
 from PySide.QtGui import QApplication
 
 from koi.Configurator import mainlog, init_i18n
+
 init_i18n()
 
 from koi.PotentialTasksCache import PotentialTasksCache
@@ -383,21 +384,37 @@ class TestFinancial(TestBase):
 
         # python test_financial.py TestFinancial.test_deactivate_delivery_slip_charts
 
+        slip = dao.delivery_slip_part_dao.find_by_id(self.delivery_slip1)
+        assert slip.active == True
+
         chart = ToFacturePerMonthChart(None, self.remote_indicators_service)
         chart._gather_data(date(2012,1,1),date(2012,12,31))
 
-        self.assertEqual([[2*self.order_with_work.parts[0].sell_price + 3*self.order_with_work.parts[1].sell_price, 500, 777], [4431.0, 2975.1, 1455.9], [0.0, 0.0, 0.0]],
+        self.assertEqual([[0,
+                           0,
+                           float(2*self.order_with_work.parts[0].sell_price + 3*self.order_with_work.parts[1].sell_price),
+                           500,
+                           777,0,0,0,0,0,0,0],
+                          [0,0,4431.0, 2975.1, 1455.9,0,0,0,0,0,0,0],
+                          [0,0,0.0, 0.0, 0.0,0,0,0,0,0,0,0]],
                          chart.chart.data)
 
-        slip = dao.delivery_slip_part_dao.find_by_id(self.delivery_slip1)
-        assert slip.active == True
+        # Deactivate the delivery slip now
         dao.delivery_slip_part_dao.deactivate(self.delivery_slip1)
+        slip = dao.delivery_slip_part_dao.find_by_id(self.delivery_slip1)
+        assert slip.active == False
+        self.remote_indicators_service.clear_caches()
 
-        # Check deactived slip
         chart._gather_data(date(2012,1,1),date(2012,12,31))
 
+
+        mainlog.debug("- "*80)
+        mainlog.debug(slip)
         # We in fact cleared the first month of the query by deactivating the first slip
-        self.assertEqual([[5*self.order_with_work.parts[0].sell_price, 777], [2975.1, 1455.9], [0.0, 0.0]],
+        # To bill"),_("Actual cost"),_("Planned cost
+        self.assertEqual([[0, 0, 0, 5*self.order_with_work.parts[0].sell_price, 777, 0, 0, 0, 0, 0, 0, 0],
+                          [0, 0, 0, 2975.1, 1455.9, 0, 0, 0, 0, 0, 0, 0],
+                          [0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
                          chart.chart.data)
 
 
@@ -453,6 +470,66 @@ class TestFinancial(TestBase):
         v = dao.order_part_dao.value_work_on_order_part_up_to_date(self.order_with_work.parts[0].order_part_id, d)
         self.assertEqual( 11 * 63.3 + 13 * 10, v)
 
+
+    def test_encours_coherence(self):
+
+        self.show_order( self.order_with_work)
+        self.show_order( self.order_without_work)
+        self.show_order( self.order_with_hours)
+
+        # Right before the first work was done
+        n = date(2012,2,28)
+        encours = dao.order_dao.compute_encours_for_month(n)
+        assert 0 == encours
+        r = self.remote_indicators_service.valution_production_chart(None, n)
+        mainlog.debug(r.data)
+        assert encours == r.data[0][-1]
+
+        n = date(2012, 3, 31)
+        encours = dao.order_dao.compute_encours_for_month(n)
+        mainlog.debug(encours)
+        assert 120 == encours
+        r = self.remote_indicators_service.valution_production_chart(None, n)
+        mainlog.debug(r.data)
+        assert encours == r.data[0][-1]
+
+        n = date(2012,4,30)
+        encours = dao.order_dao.compute_encours_for_month(n)
+        assert 362.65 == encours
+        r = self.remote_indicators_service.valution_production_chart(None, n)
+        mainlog.debug(r.data)
+        assert encours == r.data[0][-1]
+
+
+        n = date(2012, 5, 31)
+        encours = dao.order_dao.compute_encours_for_month(n)
+        r = self.remote_indicators_service.valution_production_chart(None, n)
+        mainlog.debug(encours)
+        mainlog.debug(r.data)
+        assert math.fabs(423.11 -encours) < 0.01
+        assert encours == r.data[0][-1]
+
+        # Make sure the valuation computation is stable when date changes
+        old_valuation = None
+        for i in range(30*12):
+            n = date(2012, 1, 1) + timedelta(days=i)
+            r = self.remote_indicators_service.valution_production_chart(
+                    date(2012, 1, 1),
+                    n)
+            if old_valuation is not None:
+                # mainlog.debug(r.data[0])
+                # mainlog.debug("{} =? {}".format(old_valuation, r.data[0][-2]))
+                assert r.data[0][-2] == old_valuation
+            old_valuation = r.data[0][-1]
+
+            # Last day of month ?
+            if (n + timedelta(days=1)).day == 1:
+                # Yep, so check other valuation functions
+                valuation = dao.order_dao.compute_encours_for_month(n)
+                assert valuation == r.data[0][-1]
+
+                to_bill, encours_this_month, encours_previous_month, turnover = dao.order_dao.compute_turnover_on( n)
+                assert encours_this_month == r.data[0][-1]
 
 if __name__ == '__main__':
     unittest.main()

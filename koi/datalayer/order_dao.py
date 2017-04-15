@@ -1,3 +1,4 @@
+import logging
 from datetime import date,timedelta
 
 from sqlalchemy import String
@@ -664,7 +665,7 @@ class OrderDAO(object):
         date_begin = _first_moment_of_month(month_date)
         date_end = _last_moment_of_month(month_date)
 
-        # mainlog.debug("_active_orders_in_month_subquery from {} to {}".format(date_begin, date_end))
+        mainlog.debug("_active_orders_in_month_subquery from {} to {}".format(date_begin, date_end))
 
         # Work done on each part up to date_end
         hsubq = self._order_parts_worked_hours(date_end)
@@ -690,13 +691,21 @@ class OrderDAO(object):
         aggsubq = session().query(OrderPart.order_id.label("active_order_id")).\
                             outerjoin(hsubq, hsubq.c.order_part_id == OrderPart.order_part_id).\
                             outerjoin(qsubq, qsubq.c.order_part_id == OrderPart.order_part_id).\
+                            join(Order).\
                         filter( \
             and_(
+                # Avoid orders which are in the future
+                Order.creation_date <= date_end,
                 # An order is removed from the valuation if it was completed.
                 # It is removed *as soon as* the user has completed it.
                 # But only before the begin of the month. This is
                 # to account for delivery slips (thus amounts to bill)
-                # issued during the month
+                # issued during the month (IIRC if an orer is completed
+                # during the month, then it may still not be billed to the
+                # customer, therefore it stays in the WIP valuation; it will
+                # disappear from the valuation the next month. So this
+                # is a rather coarse approximation : we should have
+                # a 'order part delivered' state)
                 # Also, this serves has an optimisation since we can
                 # remove a great number of parts by just looking
                 # at their state and completed_date without going
@@ -726,11 +735,10 @@ class OrderDAO(object):
                     # Some quantities were delivered this month. Therefore
                         # there will be amount to bill. This is also part
                     # of the valuation (because we count what's left to produce)
+                    # FIXME Is this correct ? Shouldn't we take all the delivery slips
+                    # FIXME before date_end (and not restrict to "after date_begin")
                     qsubq.c.last_delivery_before_date.between(date_begin,date_end)))).\
             distinct().subquery()
-
-        # list_active_orders = session().query(aggsubq).all()
-        # print(list_active_orders)
 
         return aggsubq
 
@@ -823,6 +831,10 @@ class OrderDAO(object):
 
         active_orders = self._active_orders_in_month_subquery(month_date)
 
+        list_active_orders = session().query(active_orders).all()
+        # print( sorted([o.active_order_id for o in list_active_orders]))
+
+
         # # The price of the quantities delivered on an order part *this* month
         # ds_subq = session().query(DeliverySlipPart.order_part_id,
         #                           func.coalesce(func.sum(func.coalesce(DeliverySlipPart.sell_price,0))).label("total_sell_price")).\
@@ -874,17 +886,34 @@ class OrderDAO(object):
             from collections import namedtuple
             nt = namedtuple('MonthlyReportTuple', res[0]._fields + ('encours',))
 
-            mainlog.debug("encours computation")
+            wip_valuation = []
             for r in res:
-                mainlog.debug( (r.part_qty_out, r.qty, r.part_worked_hours,
-                              r.total_estimated_time,
-                              r.unit_sell_price,r.material_value, r.order_part_id, date_end))
+                # if r.order_part_id == 25268:
+                #     mainlog.debug( "old {}".format( ( r.part_qty_out, r.qty, r.part_worked_hours,
+                #                      r.total_estimated_time,
+                #                      r.unit_sell_price, r.material_value,
+                #                      r.order_part_id, date_end)))
 
-            return [nt._make(tuple(r) + \
-                             (business_computations_service.encours_on_params(r.part_qty_out, r.qty, r.part_worked_hours,
-                                                                              r.total_estimated_time,
-                                                                              r.unit_sell_price,r.material_value, r.order_part_id, date_end),))\
-                    for r in res]
+                v = business_computations_service.encours_on_params(r.part_qty_out, r.qty, r.part_worked_hours,
+                                                                             r.total_estimated_time,
+                                                                             r.unit_sell_price, r.material_value,
+                                                                             r.order_part_id, date_end)
+                # if r.order_part_id == 25268:
+                #     mainlog.debug( "   --> {}".format( v))
+
+                wip_valuation.append(
+                    nt._make( tuple(r) + \
+                             ( v,)))
+
+            # mainlog.debug("encours computation")
+            # for r in wip_valuation:
+            #     mainlog.debug( "{}, {}".format(r.order_part_id, r.encours))
+            #     if r.order_part_id == 25268:
+            #         mainlog.debug( ( r.order_part_id, r.part_qty_out, r.qty, r.part_worked_hours,
+            #                       r.total_estimated_time,
+            #                       r.unit_sell_price,r.material_value, r.encours))
+
+            return wip_valuation
         else:
             return []
 
@@ -909,13 +938,10 @@ class OrderDAO(object):
         * started (some work done or some quantities out)
         """
 
-        mainlog.debug("compute_encours_for_month month_date {}".format(month_date))
         parts = self.order_parts_for_monthly_report(month_date)
 
-        mainlog.debug( [ (p.order_part_id, p.encours) for p in parts])
-
-        # for p in parts:
-        #     mainlog.debug(p)
+        # mainlog.debug( [ (p.order_part_id, p.encours) for p in parts])
+        mainlog.debug("compute_encours_for_month month_date {}".format(month_date))
 
         if parts:
             return sum( [p.encours for p in parts or []] )

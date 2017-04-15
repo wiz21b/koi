@@ -114,6 +114,8 @@ class CacheResult(SourceFunctionDecorator):
     '''Decorator. Caches a function's return value each time it is called.
     If called later with the same arguments, the cached value is returned
     (not reevaluated).
+
+    One can clear the cache by calling clear_cache.
     '''
 
     def __init__(self, func):
@@ -141,10 +143,10 @@ class CacheResult(SourceFunctionDecorator):
             return value
 
 
-def make_temp_file(prefix = None, extension = None):
+def make_temp_file(prefix = None, extension : str = None):
     """ The temporary  file won't be deleted """
 
-    if extension:
+    if extension and not extension.startswith('.'):
         extension = "." + extension
 
     if not prefix:

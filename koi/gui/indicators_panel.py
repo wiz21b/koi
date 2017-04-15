@@ -12,7 +12,7 @@ from openpyxl.styles import Font
 from koi.base_logging import mainlog
 from koi.charts.chart_widget import ChartWidget
 from koi.dao import dao
-from koi.date_utils import month_before, month_after
+from koi.date_utils import month_before, month_after, month_period_as_date
 from koi.gui.dialog_utils import KPIView, SubFrame, make_progress, NavBar, TitleWidget
 from koi.gui.horse_panel import HorsePanel
 from koi.reporting.utils import open_xlsx
@@ -77,6 +77,8 @@ class IndicatorsPanel(HorsePanel):
     def refresh_action(self): # Reimplements parent method !
         self.remote_indicators_service.clear_caches()
         mainlog.debug("Refreshing {}".format(self.month_chooser.base_date))
+
+        # begin, end = month_period_as_date(self.month_chooser.base_date)
         begin, end = month_before(self.month_chooser.base_date, self.MONTHS_PERIOD-1), self.month_chooser.base_date
 
         progress = make_progress(_("Collecting data..."), sum([len(x) - 1 for x in self.indicators]))

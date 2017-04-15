@@ -159,7 +159,7 @@ def upgrade_process( args):
     if next_version and (not current_version or next_version > current_version):
 
         try:
-            tmpfile = make_temp_file(prefix='NewVersion_'+version_to_str(next_version), suffix='.zip')
+            tmpfile = make_temp_file(prefix='NewVersion_'+version_to_str(next_version), extension='.zip')
             download_file( configuration.update_url_file, tmpfile)
 
             newdir = os.path.join(get_data_dir(), "{}-{}".format(codename, version_to_str(next_version)))

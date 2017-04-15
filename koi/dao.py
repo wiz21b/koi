@@ -4056,6 +4056,17 @@ class DeliverySlipDAO(object):
         chrono_click("load_slip_parts_on_filter : query done")
         return res
 
+    @RollbackDecorator
+    def compute_billable_amount(self, ts_begin : datetime, ts_end : datetime):
+        # Coalesce works because slip_part.sell_price is never null
+        v = session().query(func.coalesce(func.sum(DeliverySlipPart.quantity_out * OrderPart.sell_price))).\
+            select_from(DeliverySlipPart).\
+            join(DeliverySlip,DeliverySlip.delivery_slip_id == DeliverySlipPart.delivery_slip_id).\
+            join(OrderPart,OrderPart.order_part_id == DeliverySlipPart.order_part_id).\
+            filter(and_(DeliverySlip.active,
+                        DeliverySlip.creation.between(ts_begin, ts_end))).scalar()
+
+        return float(v or 0)
 
     # @RollbackDecorator
     # def parts_for_activity_report(self, delivery_slip_id):
@@ -4222,8 +4233,13 @@ class DAO(object):
         self.employee_dao = EmployeeDAO(scoped_session)
         # self.user_dao = UserDAO(session)
 
+
         self._order_part_dao = OrderPartDAO(scoped_session)
         self.order_dao = OrderDAO(scoped_session,self._order_part_dao)
+        self.delivery_slip_part_dao = DeliverySlipDAO(scoped_session, self.order_dao) # FIXME rename to delivery_slip_dao
+
+        self._order_part_dao.set_delivery_slip_dao(self.delivery_slip_part_dao)
+
         self.production_file_dao = ProductionFileDAO(scoped_session,self._order_part_dao)
 
         self.day_time_synthesis_dao = DayTimeSynthesisDAO(scoped_session)
@@ -4237,7 +4253,6 @@ class DAO(object):
         self.operation_dao = OperationDAO(scoped_session)
         self.operation_definition_dao = OperationDefinitionDAO(self.operation_dao)
 
-        self.delivery_slip_part_dao = DeliverySlipDAO(scoped_session, self.order_dao) # FIXME rename to delivery_slip_dao
 
         self.special_activity_dao = SpecialActivityDAO()
         self.filters_dao = FilterQueryDAO()

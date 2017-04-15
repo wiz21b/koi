@@ -35,6 +35,7 @@ class StackedBarsChart(LinesChart):
         summed_series = []
         summed = [0] * len( data[0] )
 
+        # Run through the series in the "integrals" order
         sorted_data = []
         sorted_legends = []
         for ndx,dummy in sorted( zip( range(len(integrals)), integrals), key=lambda a: - a[1]):
@@ -62,6 +63,8 @@ class StackedBarsChart(LinesChart):
 
 
         if summed_series[0]:
+            mainlog.debug("stacked bar charts : summed series[0] = ...")
+            mainlog.debug(summed_series[0])
             self.mini, self.maxi = self.clip_mini_maxi(0, max(summed_series[0]))
         else:
             self.mini, self.maxi = self.clip_mini_maxi(0, 0)

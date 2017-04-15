@@ -32,7 +32,7 @@ class ISOIndicatorsWidget(IndicatorsPanel):
                   NumberOfCustomerWhoOrdered(None, remote_indicators_service),
                   # SoldeCarnetCommande(None,remote_indicators_service), # very slow !
                   # EvolutionEncours(None,remote_indicators_service), # very slow !
-                  IndirectWorkEvolutionChart(None, remote_indicators_service, mini=0, maxi=100000)
+                  IndirectWorkEvolutionChart(None, remote_indicators_service)
                   # useless, just for testing
                   ]
              ] )
@@ -61,8 +61,8 @@ class FinancialIndicatorsWidget(IndicatorsPanel):
                  [
                     _("Trends"),
                     ToFacturePerMonthChart(None, remote_indicators_service),
-                    DirectWorkCostEvolutionChart(None, remote_indicators_service, mini=0, maxi=100000),
-                    IndirectWorkEvolutionChart(None, remote_indicators_service, mini=0, maxi=100000),
+                    DirectWorkCostEvolutionChart(None, remote_indicators_service),
+                    IndirectWorkEvolutionChart(None, remote_indicators_service),
                  ],
              ] )
 

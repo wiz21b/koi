@@ -1,7 +1,7 @@
 # from PySide.QtOpenGL import QGLWidget
 
 import math
-from datetime import date
+from datetime import date, datetime
 
 from koi.base_logging import mainlog
 from koi.dao import dao
@@ -210,7 +210,7 @@ class DirectIndirectEvolutionChart(ChartWidget):
         #s = StackedLinesChart(None)
         s = StackedBarsChart(None)
         s.x_axis_as_months = True
-        s.set_mini_maxi(0,10000)
+        s.set_mini_maxi(0,5000)
         super(DirectIndirectEvolutionChart,self).__init__(parent, s, _("Proportion of direct and indirect hours, monthly"))
 
 
@@ -508,7 +508,7 @@ class SoldeCarnetCommande(ChartWidget):
 
 class ToBillThisMonth(KPIView):
     def _gather_data(self, begin=None, end=None):
-        self.set_amount( self._remote_indicators_service.to_bill_this_month_indicator(begin))
+        self.set_amount( self._remote_indicators_service.to_bill_this_month_indicator(begin, end))
 
     def __init__(self, parent, remote_indicators_service):
         self._remote_indicators_service = remote_indicators_service
@@ -522,7 +522,7 @@ the month, regardless of the status of the order)"""))
 
 class ValuationThisMonth(KPIView):
     def _gather_data(self, begin=None, end=None):
-        self.set_amount( self._remote_indicators_service.valuation_this_month_indicator(begin))
+        self.set_amount( self._remote_indicators_service.valuation_this_month_indicator(begin, end))
 
     def __init__(self, parent, remote_indicators_service):
         self._remote_indicators_service = remote_indicators_service
@@ -534,7 +534,7 @@ for them) and not finished."""))
 
 class ValuationLastMonth(KPIView):
     def _gather_data(self, begin=None, end=None):
-        self.set_data( self._remote_indicators_service.valuation_last_month_indicator(begin))
+        self.set_data( self._remote_indicators_service.valuation_last_month_indicator(begin, end))
 
     def __init__(self, parent, remote_indicators_service):
         self._remote_indicators_service = remote_indicators_service
@@ -546,7 +546,7 @@ month."""))
 
 class TurnOverThisMonth(KPIView):
     def _gather_data(self, begin=None, end=None):
-        self.set_amount( self._remote_indicators_service.turn_over_indicator( begin))
+        self.set_amount( self._remote_indicators_service.turn_over_indicator( begin, end))
 
     def __init__(self, parent, remote_indicators_service):
         self._remote_indicators_service = remote_indicators_service
@@ -557,7 +557,12 @@ class TurnOverThisMonth(KPIView):
 
 
 class RunningValuationChart(ChartWidget):
+
+    #RUNNING_MONTHS = 3
     def _gather_data(self, begin = None, end = None):
+
+        # begin, end =  month_before( begin, self.RUNNING_MONTHS), end
+
         graph_data = self._remote_indicators_service.valution_production_chart(begin, end)
 
         # mainlog.debug( "Data")

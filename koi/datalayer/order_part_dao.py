@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+import logging
 import re
 from collections import OrderedDict
 from functools import cmp_to_key
@@ -20,6 +22,8 @@ from koi.db_mapping import TaskOnOperation, Operation, OperationDefinition, Oper
 from koi.db_mapping import defrost_into
 from koi.doc_manager.documents_mapping import Document
 from koi.translators import text_search_normalize
+from koi.date_utils import day_period_to_ts, timestamp_to_pg, _last_moment_of_month,_first_moment_of_month, compute_overlap
+
 
 def _freeze_order_part( sqla_part):
     p = generic_access.freeze(sqla_part,commit=False,additional_fields=['documents','quality_events','customer'])
@@ -43,6 +47,10 @@ class OrderPartDAO(object):
 
     def __init__(self,session):
         pass
+
+    def set_delivery_slip_dao(self, ds_dao):
+        assert ds_dao
+        self._delivery_slip_part_dao = ds_dao
 
     def make(self,order):
         part = OrderPart()
@@ -897,18 +905,22 @@ class OrderPartDAO(object):
 
 
     def value_work_on_order_part_up_to_date(self,order_part_id,d):
-        # mainlog.debug("value_work_on_order_part_up_to_date: {}".format(d))
-        # for tt in session().query(TimeTrack.start_time,TimeTrack.duration,OperationDefinition.description,OperationDefinitionPeriod.start_date,OperationDefinitionPeriod.end_date,OperationDefinitionPeriod.cost).join(TaskOnOperation).\
-        #     join(Operation).\
-        #     join(OperationDefinition).\
-        #     join(OperationDefinitionPeriod, OperationDefinitionPeriod.operation_definition_id == OperationDefinition.operation_definition_id).\
-        #     join(ProductionFile).\
-        #     join(OrderPart).filter(and_(OrderPart.order_part_id == order_part_id,
-        #                                 TimeTrack.start_time <= d,
-        #                                 TimeTrack.start_time >= OperationDefinitionPeriod.start_date,
-        #                                 or_(OperationDefinitionPeriod.end_date == None,
-        #                                     TimeTrack.start_time <= OperationDefinitionPeriod.end_date))).all():
-        #     mainlog.debug(tt)
+
+        if order_part_id == 25268:
+            mainlog.debug("value_work_on_order_part_up_to_date: {}".format(d))
+            for tt in session().query(TimeTrack.start_time,TimeTrack.duration,OperationDefinition.description,OperationDefinitionPeriod.start_date,OperationDefinitionPeriod.end_date,OperationDefinitionPeriod.cost).\
+                join(TaskOnOperation).\
+                join(Operation).\
+                join(ProductionFile).\
+                join(OperationDefinition).\
+                join(OperationDefinitionPeriod, OperationDefinitionPeriod.operation_definition_id == OperationDefinition.operation_definition_id).\
+                join(OrderPart).\
+                filter(and_(OrderPart.order_part_id == order_part_id,
+                            TimeTrack.start_time <= d,
+                            TimeTrack.start_time >= OperationDefinitionPeriod.start_date,
+                            or_(OperationDefinitionPeriod.end_date == None,
+                                TimeTrack.start_time <= OperationDefinitionPeriod.end_date))).all():
+                mainlog.debug(tt)
 
 
         r = session().query(func.sum(TimeTrack.duration * OperationDefinitionPeriod.cost)).\
@@ -949,3 +961,468 @@ class OrderPartDAO(object):
 
         session().commit()
         return res
+
+
+    @RollbackDecorator
+    def wip_valuation_over_time(self, begin, end) -> OrderedDict:
+        """
+        Compute WIP valuation over time for a given (begin, end) period.
+
+        The computation is made day by day.
+        The whole database history is taken into account because the computation
+        is cumulative. SO, for example, to have the value on the first day,
+        we must have all the data preceding that day.
+
+        The computation is based on the states of the order part only. The
+        fact that the parts are grouped in orders is not taken into account.
+
+        Order parts which are aborted or completed are removed from the valuation
+        as soon as they are aborted/completed. Parts which are in another state
+        (notably 'paused') remain in the WIP valuation as long as their state
+        allows it (<> completed/aborted). Therefore, if the user "forgets" an
+        order part in state production pausd, this is valued indefintely
+        (this can produce surprising result if the part stay for years
+        in the valuation).
+
+        Note that the valuation on a given day is completely independant of the
+        computation period.
+
+        :return: An OrderedDict mapping days to valuation. If no valuations, then an
+        empty dict is returned.
+        """
+
+        debugged_part = 208184
+        debugged_date = date(2017,2,28)
+        self.debug_part_dates = []
+
+        valuations = OrderedDict()
+        begin,end = day_period_to_ts( begin, end)
+        mainlog.debug("wip_valuation_over_time: From {} to {}".format(begin, end))
+
+
+        # The goal of the following query is
+        # 1. Gather all data about order part necessary for the computation
+        #    formula (quantities, time spent, etc)
+        # 2. Sum these quantities over time
+        # 3. Select only order parts which participate in the valuation
+
+        # The query is optimized with speed in mind. So it tries to
+        # minimize th quantity of information returned by :
+        # 1. Only retaining days where the *total* valuation of the parts
+        #    will change (so if that valuation doessn't change on a given
+        #    day, then this day is not returned.
+        # 2. Remove data which are after the period of interest.
+        # 3. Compress (by accumulation) the data before the period of interest.
+
+
+        sql = """
+        with
+        events_q_out as (
+        	select
+        	   cast( date_trunc('day',s.creation) as date) as day,
+        	   sp.order_part_id,
+        	   sp.quantity_out
+        	from delivery_slip_parts sp
+        	join delivery_slip as s on s.delivery_slip_id = sp.delivery_slip_id
+        	where s.active = true
+        ),
+        events_work as (
+        	select
+        	    cast( date_trunc('day', timetracks.start_time ) as date) as day,
+        	    pf.order_part_id,
+        	    timetracks.duration,
+        	    timetracks.duration * coalesce(op_def_per.hourly_cost,0) as cost
+        	from production_files pf
+        	join operations op on op.production_file_id = pf.production_file_id
+        	join tasks_operations on tasks_operations.operation_id = op.operation_id
+        	join timetracks on timetracks.task_id = tasks_operations.task_id and timetracks.duration > 0
+        	join operation_definitions opdef on opdef.operation_definition_id = op.operation_definition_id
+        	left outer join operation_definition_periods op_def_per on
+        	      op_def_per.operation_definition_id = opdef.operation_definition_id
+        	      and timetracks.start_time >= op_def_per.start_date
+        		  and (op_def_per.end_date is null or timetracks.start_time <= op_def_per.end_date)
+        ),
+        exceptional_quantities as (
+            select orders.creation_date as day, order_parts.order_part_id, order_parts.tex as quantity_out
+            from order_parts
+            join orders on orders.order_id = order_parts.order_id
+            where order_parts.tex > 0
+        ),
+        all_events_untranslated as (
+             -- we're interested in what happens for a given part on a given day.
+             -- for that, we collapse all data on each days (so if we have 1 qty out
+             -- and one done hour on the same day, then they both must appear on the
+             -- same row). That's why we sum over grouped dates.
+        	select day, order_part_id, sum(quantity_out) as quantity_out, sum(duration) as done_hours, sum(cost) as done_hours_cost
+        	from (
+        		select day, order_part_id, quantity_out, 0 as duration, 0 as cost
+        		from events_q_out
+        		union all
+        		select day, order_part_id, 0, duration, cost
+        		from events_work
+        		union all
+        		select day, order_part_id, quantity_out, 0 as duration, 0 as cost
+        		from exceptional_quantities
+        	) merged_data
+        	-- filter out useless events. Do that early to remove as much computations
+        	-- as possible. Attention, this optimisation works *only* if the
+        	-- completed part is greater than the max(timetracks/slip dates).
+        	-- see note below
+        	-- where day <= date '{}'
+        	group by order_part_id, day
+        ),
+        all_events as (
+            -- select greatest( day, date '{}') as day, order_part_id, quantity_out, done_hours, done_hours_cost
+            select day, order_part_id, quantity_out, done_hours, done_hours_cost
+            from all_events_untranslated
+        ),
+        active_parts as (
+            -- determine which parts must participate in the computation of the valuation
+            -- this is based on events as well as statuses of the parts.
+            -- here we only take into account the parts which have either
+            -- delivered quantities or time spent on them.
+            select order_parts.order_part_id, periods.finish, periods.start
+            from (
+                -- We figure out the moment on which an order part is out of the valuation
+                -- This is what we call the finish date
+                -- there are problems here
+                -- imagine this : completed_date = 10 january, and with have 2 events 5 january and 15 january
+                -- if we look for WIP on period 1 -> 15 january, then the last day is max(completed, 15/1) => 15 january
+                -- if we look for WIP on period 1 -> 14 january, then the last day is max(completed, 5/1) => 10 january
+                --    which is wrong because we forget 5 days (from 11 to 15 january)...
+                -- but the problem is that the completed date doesn't correspond to the timetracks.
+                -- completed date should be greater than the latest timetrack/slip and it seems
+                -- it's not alwyas the case (data quality issue :-( )...
+                -- so filtering out events that are beyond the end of the computed WIP period
+                -- is quite difficult because we have the risk of forgetting a period betwwen the last
+                -- event in the wip period and the first event after the wip period.
+                select all_events.order_part_id,
+                       least( orders.creation_date, min(day)) as start, -- !!! the first day *should* be after the creation_date but somestimes data quality says the opposite
+                       case order_parts.state
+                          when 'aborted' then order_parts.completed_date
+                          when 'completed' then greatest( order_parts.completed_date, max(day))
+                          else date '{}'
+                          end as finish
+                from all_events
+                join order_parts on order_parts.order_part_id =  all_events.order_part_id
+                join orders on orders.order_id = order_parts.order_id
+                group by all_events.order_part_id, orders.creation_date, order_parts.completed_date, order_parts.state
+                order by all_events.order_part_id) periods
+            join order_parts on order_parts.order_part_id = periods.order_part_id
+            where      periods.start <= date '{}' -- doesn't start after the end of the period
+                  and (periods.finish is null or periods.finish  >= date '{}') -- doesn't end before the end of the period
+        ),
+        extended_events as (
+        	  select day, order_part_id, sum(quantity_out) as quantity_out, sum(done_hours) as done_hours, sum(done_hours_cost) as done_hours_cost
+        	  from (
+	            -- Keep in mind that it must *not* be necessary to have work/delivery slips
+	            -- to take the part into account in the valuation. That's because at this
+	            -- point it's better not to make any assumptions on how the absence of
+	            -- work/delivery is taken into account in the valuation formula (the formula
+	            -- might count something for those parts, even if they have no work/slips).
+	            select          day,  order_part_id, quantity_out, done_hours, done_hours_cost
+	            from all_events
+	            union
+	            select start as day,  order_part_id, 0 as quantity_out, 0 as done_hours, 0 as done_hours_cost
+	            from active_parts
+	            union
+	            select finish as day, order_part_id, 0 as quantity_out, 0 as done_hours, 0 as done_hours_cost
+	            from active_parts) data
+    	      group by day, order_part_id
+        )
+        select
+            extended_events.order_part_id,
+            day,
+            -- We use the fact that this specific partition will accumulate values in its series.
+            -- See postgresql doc about those partitions.
+            sum( extended_events.quantity_out)    over (partition by extended_events.order_part_id  order by extended_events.day) quantity_out,
+            sum( extended_events.done_hours)      over (partition by extended_events.order_part_id  order by extended_events.day) done_hours,
+            sum( extended_events.done_hours_cost) over (partition by extended_events.order_part_id  order by extended_events.day) done_hours_cost
+        from extended_events
+        join active_parts on active_parts.order_part_id = extended_events.order_part_id
+        order by order_part_id, day asc -- This ordering is crucial for the python part.
+                """.format(timestamp_to_pg(end),
+                           timestamp_to_pg(begin - timedelta(days=1)),
+                           timestamp_to_pg(end),
+                           timestamp_to_pg(end), timestamp_to_pg(begin),
+                           timestamp_to_pg(end))
+
+        mainlog.debug(sql)
+
+        r = session().connection().execute(sql).fetchall()
+
+
+        if len(r) == 0:
+            i = date(begin.year, begin.month, begin.day)
+            end = date(end.year, end.month, end.day)
+            while i <= end:
+                valuations[i] = 0
+                i = i + timedelta(days=1)
+
+        elif len(r) > 0:
+
+            # We build a vlauation smap. It maps a day to
+            # the sum of valuations for that day
+
+            first_date = date(begin.year, begin.month, begin.day)
+            # Preinitialise the mapping so that we don't have to check
+            # for the existence of a given date before adding items.
+            # first_date = min([row.day for row in r])
+            i = first_date
+            end = date(end.year, end.month, end.day)
+            while i <= end:
+                valuations[i] = 0
+                i = i + timedelta(days=1)
+
+            # i = date(end.year, end.month, end.day)
+            # while i >= first_date:
+            #     valuations[i] = 0
+            #     i = i + timedelta(days=-1)
+
+            # We'll need quick access to parts
+            parts = dict()
+
+            all_ids = list(set([row.order_part_id for row in r]))  # list/set to compress the array
+
+            # We preload all the parts that participate in the valuation of WIP
+
+            # We use a step because the IN clause doesn't accept as many integer as we want.
+            step = 100
+            ndx = 0
+            while ndx < len(all_ids):
+                parts_ids = set(all_ids[ndx:ndx + step])
+                for part in session().query(OrderPart).filter(OrderPart.order_part_id.in_(parts_ids)).all():
+                    parts[part.order_part_id] = part
+                    # mainlog.debug("Part {} completed_date = {}".format(part.order_part_id, part.completed_date))
+                ndx += step
+
+            # Now we compute the sum of valuations on each day
+
+            last_date = None
+            last_valuation = 0
+            last_order_part_id = None
+
+            if mainlog.level == logging.DEBUG:
+                mainlog.debug("valution_production_chart: query complete {} rows must be computed".format(len(r)))
+                # mainlog.debug( sorted(list(set([row.order_part_id for row in r]))))
+                self._debug_active_orders = sorted(set([part.order_id for part in parts.values()]))
+                self._debug_active_order_parts = sorted(set([part.order_part_id for part in parts.values()]))
+
+            stats = 0
+
+            global_row_ndx = 0
+
+            while global_row_ndx < len( r):
+
+                # We consume all the rows belonging to the same order part
+                # We make the assumption that there are always at least
+                # 2 rows per order part.
+
+                part_rows = [ r[ global_row_ndx] ]
+                global_row_ndx += 1
+
+                # assert part_rows
+                # if global_row_ndx > len(r) - 1 or global_row_ndx not in r:
+                #     mainlog.debug("{}/{}".format(global_row_ndx, len(r)))
+
+                while global_row_ndx < len(r) and part_rows[0].order_part_id == r[global_row_ndx].order_part_id:
+                    part_rows.append( r[global_row_ndx])
+                    global_row_ndx += 1
+
+                # we have now consumed all the rows for the order_part_id
+
+                part = parts[ part_rows[ 0].order_part_id]
+
+                if part.order_part_id == debugged_part:
+                    for x in part_rows:
+                        mainlog.debug("in stock : {}".format(x))
+
+                for row_ndx in range( len( part_rows) - 1): # Thus will stop at len(r) - 2
+
+                    row = part_rows[row_ndx]
+                    row_next = part_rows[row_ndx + 1]
+
+                    if part.sell_price > 0:
+                        valuation = business_computations_service.encours_on_params(
+                            int(row.quantity_out), part.qty, row.done_hours, part.total_estimated_time,
+                            float(part.sell_price), part.material_value, row.order_part_id, row.day
+                        )
+                    else:
+                        valuation = row.done_hours_cost
+
+                    p_end = row_next.day - timedelta(days=1)
+
+                    # if not compute_overlap( row.day, p_end, first_date, end):
+                    #     mainlog.debug("{} {} / {} {}".format(row.day, p_end, first_date, end))
+                    #     for r in part_rows:
+                    #         mainlog.debug(str(r))
+
+                    o = compute_overlap( row.day, p_end, first_date, end)
+                    if o:
+                        i, end_o = o
+
+                        if part.order_part_id == debugged_part:
+                            # for x in part_rows:
+                            mainlog.debug("deb part {} : {} {} --> {} {} --> {} {}, valuation {}".format(
+                                part.order_part_id, row.day, row_next.day, row.day, p_end, i, end_o, valuation))
+
+                        if row.day == date(2017,2,28):
+                           self.debug_part_dates.append(row.order_part_id)
+
+                        while i <= end_o:
+                            valuations[i] += valuation
+                            i += timedelta(days=1)
+
+                # The last row is a special case.
+                # Indeed, the last row is the last day on which there's an
+                # event for the order part id in the period. We're sure of that
+                # because when we construt events, we introduce an event for
+                # the end of the period. In other word, there will alwyas
+                # be an event on the last day of the period over which we
+                # compute the WIP valuation.
+                #
+                # Since it's the last event, the valuation
+                # must be computed at its point too. That's what we do here.
+
+                row = part_rows[-1]
+                if first_date <= row.day <= end:
+                    if part.sell_price > 0:
+                        valuation = business_computations_service.encours_on_params(
+                            int(row.quantity_out), part.qty, row.done_hours, part.total_estimated_time,
+                            float(part.sell_price), part.material_value, row.order_part_id, row.day
+                        )
+                    else:
+                        valuation = row.done_hours_cost
+
+                    valuations[row.day] += valuation
+                    if row.day == date(2017, 2, 28) and row.order_part_id == debugged_part:
+                        self.debug_part_dates.append( row.order_part_id )
+
+                #
+                # if row.day == debugged_date:
+                #     mainlog.debug("Special date {}, {}".format(debugged_date, row.order_part_id))
+                #
+                # # if stats % 1000 == 0:
+                # #     mainlog.debug("{} rows computed".format(stats))
+                # # stats += 1
+                #
+                # # mainlog.debug("Row {}".format(row))
+                #
+                # # We go one order part at a time
+                # if last_order_part_id != row.order_part_id:
+                #     last_order_part_id = row.order_part_id
+                #     last_date = None
+                #     last_valuation = 0
+                #
+                # part = parts[row.order_part_id]
+                #
+                # if last_date:
+                #
+                #     # Copy the last valuation over several days because it's constant
+                #     # on that period.
+                #
+                #     # We determine the range of dates given by the valuation points
+                #     # and then we constrain it to the period we compute the valuation for
+                #     i = max( first_date, last_date + timedelta(days=1))  # skip last date, it's already accounted for.
+                #     i_end = min( end, row.day - timedelta(days=1))
+                #
+                #     if row.order_part_id == 113659:
+                #         mainlog.debug("valuation on for {} from  {} to {}".format(
+                #             last_order_part_id, i, i_end))
+                #
+                #     while i <= i_end:  # Don't go till new date, it will be accounted for afterwards.
+                #         # if i == date(2018, 3, 31):
+                #         # mainlog.debug("valuation on  {} for order part {} is {}".format(i, last_order_part_id, last_valuation))
+                #         # mainlog.debug("{},{}".format(row.order_part_id, last_valuation))
+                #         valuations[i] += last_valuation
+                #
+                #         if part.order_part_id == debugged_part:
+                #             mainlog.debug("{} : + {} - {}".format(part.order_part_id, i, last_valuation))
+                #
+                #         i = i + timedelta(days=1)
+                #
+                # # mainlog.debug("Valuation step 1 unit price {}".format(part.sell_price))
+                #
+                #
+                # if part.sell_price > 0:
+                #     # if True or part.order_part_id == 115984:
+                #     #     mainlog.debug( "new [{}] {}".format( row.day,
+                #     #         (int(row.quantity_out), part.qty, row.done_hours, part.total_estimated_time, float(part.sell_price), part.material_value, row.order_part_id, row.day)))
+                #
+                #     last_valuation = business_computations_service.encours_on_params(
+                #         int(row.quantity_out), part.qty, row.done_hours, part.total_estimated_time,
+                #         float(part.sell_price), part.material_value, row.order_part_id, row.day
+                #     )
+                #
+                #     # if True or part.order_part_id == 115984:
+                #     #     mainlog.debug("new is --> {}".format(last_valuation))
+                #
+                # else:
+                #     last_valuation = row.done_hours_cost
+                #
+                # # mainlog.debug("{}, {}".format(row.order_part_id,last_valuation))
+                # # mainlog.debug("Valuation {}".format(last_valuation))
+                #
+                # if first_date <= row.day <= end: # This is not an optimisation, it's needed for the calculation
+                #     if part.order_part_id == debugged_part:
+                #         mainlog.debug("{} : {} - {}".format(part.order_part_id, row.day, last_valuation))
+                #
+                #     # if row.day == date(2018,3,31):
+                #     #     # mainlog.debug("On basis of {}".format( (row.quantity_out, part.qty, row.done_hours, part.total_estimated_time, part.sell_price, part.material_value, row.order_part_id, row.day) ))
+                #     #     # mainlog.debug("the valuation on {} for {} is {}".format(row.day, row.order_part_id, last_valuation))
+                #     #     mainlog.debug("{},{}".format(row.order_part_id, last_valuation))
+                #     valuations[row.day] += last_valuation
+                #
+                # last_date = row.day
+                #
+                # # for k in sorted(valuations.keys()):
+                # #     mainlog.debug("{} {}".format(k,valuations[k]))
+                #
+                # # mainlog.debug("valution_production_chart - 2")
+
+            return valuations
+
+
+    @RollbackDecorator
+    def compute_turnover_on( self, month_date : date):
+        """ Turnover for a given month. The turnover is made
+        of three parts : turnover = realised value + current encours - past month's encours.
+
+        * realised value = value of quantities delivered (i.e. for which there
+          are delivery slips) this month
+        * current encours = encours of this month
+        * past month's encours = encours at the very end of the previous month
+
+        So the first part depends exclusively on the deliver slips
+        written during the month, and nothing else.
+        """
+
+        month_before = month_date - timedelta(month_date.day)
+
+        ts_begin = _first_moment_of_month(month_date)
+        ts_end = _last_moment_of_month(month_date)
+
+        billable_amount_on_slips = self._delivery_slip_part_dao.compute_billable_amount(ts_begin, ts_end)
+
+        mainlog.debug("Turnover from {} to {} ----------------------------------------- ".format(ts_begin, ts_end))
+
+        # for order_part,q_out, sell_price  in session().query(OrderPart, DeliverySlipPart.quantity_out, OrderPart.sell_price).\
+        #     select_from(DeliverySlipPart).\
+        #     join(DeliverySlip,DeliverySlip.delivery_slip_id == DeliverySlipPart.delivery_slip_id).\
+        #     join(OrderPart,OrderPart.order_part_id == DeliverySlipPart.order_part_id).\
+        #     join(Order,Order.order_id==OrderPart.order_id).\
+        #     filter(and_(DeliverySlip.active,
+        #                 DeliverySlip.creation.between(ts_begin, ts_end))).order_by(Order.accounting_label,OrderPart.label):
+        #
+        #     mainlog.debug(u"{} {} {}".format(order_part.human_identifier, q_out, sell_price))
+
+        # mainlog.debug("//Turnover from {} to {} ----------------------------------------- ".format(ts_begin, ts_end))
+
+        # we're interested in the previous month so we extend the period by one day
+        valuations = self.wip_valuation_over_time( ts_begin - timedelta(days=1), ts_end)
+
+        encours_this_month = valuations[ts_end.date()]
+        encours_previous_month = valuations[ month_before]
+        turnover = billable_amount_on_slips + encours_this_month - encours_previous_month
+
+        return billable_amount_on_slips, encours_this_month, encours_previous_month, turnover

@@ -61,6 +61,7 @@ class LinesChart(QFrame):
         """
 
         mainlog.debug("({}) line_chart : set_data".format(self.title))
+        mainlog.debug(data)
         if len(legends) != len(data):
             raise Exception("The number of legends for data series ({}) is different than the number of series ({})".format(len(legends),len(data)))
 
@@ -235,25 +236,67 @@ class LinesChart(QFrame):
         # value (so, no 12.3462, 24.68... but 10, 20, 30...)
         # And we start with an arbitrary number of steps
 
-        if self.mini == self.maxi:
-            steps = 6
-            self.rounded_step_size = int(10 ** round(math.log10(self.maxi / steps))) or 1
+        # if self.mini == self.maxi:
+        #     steps = 6
+        #     self.rounded_step_size = int(10 ** round(math.log10(self.maxi / steps))) or 1
+        # else:
+        #     steps = min(6, self.maxi - self.mini) or 1
+        #     self.rounded_step_size = int(10 ** round(math.log10( (self.maxi - self.mini) / steps))) or 1
+        #
+        #
+        # if self.rounded_step_size > 1:
+        #
+        #     # MAke sure the step size is small enough to have "steps" steps.
+        #
+        #     while int(self.maxi / self.rounded_step_size) < steps:
+        #         self.rounded_step_size = int(self.rounded_step_size / 2)
+        #
+        #     # Second, make sure the step is tall enough to let the text in
+        #
+        #     while h > self.rounded_step_size * self.y_factor:
+        #         # mainlog.debug("{} > {} * {}".format(h, self.rounded_step_size, self.y_factor))
+        #         self.rounded_step_size = self.rounded_step_size * 2
+        #
+        # if self.maxi > 0:
+        #     step_size = (10 ** int(math.log10(self.maxi - 0.00001))) or 1
+        #     mainlog.debug("Maxi={} Actual {}, new {}".format(self.maxi,self.rounded_step_size,step_size))
+        #     self.rounded_step_size = step_size
+        # else:
+        #     mainlog.debug("zero")
+
+        log10 = math.log10( self.maxi)
+
+        # This fix to make sure there is more than one step
+        # in case the maxi is aligned on a power of 10.
+        # In this case there will be 10 steps.
+
+        if log10 - int(log10) == 0:
+            fix = -1
         else:
-            steps = min(6, self.maxi - self.mini) or 1
-            self.rounded_step_size = int(10 ** round(math.log10( (self.maxi - self.mini) / steps))) or 1
+            fix = 0
 
-        if self.rounded_step_size > 1:
+        step_size = 10 ** int(math.floor(log10) + fix)
 
-            # MAke sure the step size is small enough to have "steps" steps.
+        # If we rely only on power of 10, we might end up
+        # with a small number of steps (e.g. 2). That is
+        # correct but unpleasant to look at. To avoid
+        # this, I increase the size of steps to reach
+        # a minimum number of steps.
+        # Dividing by two a power of 10 make sure we'll keep
+        # "human readable" steps (1/2, 1/4, 1/8,...)
 
-            while int(self.maxi / self.rounded_step_size) < steps:
-                self.rounded_step_size = int(self.rounded_step_size / 2)
+        MINIMUM_NUMBER_OF_STEPS = 4
 
-            # Second, make sure the step is tall enough to let the text in
+        while self.maxi / step_size < MINIMUM_NUMBER_OF_STEPS:  # number of steps < MINIMUM_NUMBER_OF_STEPS
+            step_size = step_size / 2
 
-            while h > self.rounded_step_size * self.y_factor:
-                # mainlog.debug("{} > {} * {}".format(h, self.rounded_step_size, self.y_factor))
-                self.rounded_step_size = self.rounded_step_size * 2
+        # Second, make sure the step is tall enough to let the text in
+
+        while h > step_size * self.y_factor:
+            # mainlog.debug("{} > {} * {}".format(h, self.rounded_step_size, self.y_factor))
+            step_size = step_size * 2
+
+        self.rounded_step_size = step_size
 
         self.x_centers = self._compute_x_centers(len(self.data[0]), self.total_width)
 
@@ -732,6 +775,9 @@ class LinesChart(QFrame):
 
         if isinstance(labels[0],date):
 
+            # In this case we expect to have, for example, a label per day
+            # Of course that's too many to draw, hence this "dithering"
+
             dithered_labels = []
 
             # 12 expresses a "density" which allows us to switch between days and month
@@ -769,7 +815,7 @@ class LinesChart(QFrame):
                         nl.append(str(d.month))
                     old_d = d
                 else:
-                    nl.append("")
+                    nl.append("") # Dithering == cleraing unwanted values
 
             labels = nl
 
@@ -943,11 +989,17 @@ class LinesChart(QFrame):
         text_pen.setWidth(1)
         painter.setPen(text_pen)
 
+
+        if self.rounded_step_size < 1:
+            fmt = "{:.1f}"
+        else:
+            fmt = "{:.0f}"
+
         if self.rounded_step_size > 0:
             for i in range(int(self.maxi / self.rounded_step_size) + 1):
 
                 y = y_base - self.rounded_step_size * i * self.y_factor
-                painter.drawText(self.margin,y, str(int(self.rounded_step_size * i)))
+                painter.drawText(self.margin,y, fmt.format(self.rounded_step_size * i))
 
 
     def draw_title(self, painter):
