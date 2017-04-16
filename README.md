@@ -1,7 +1,6 @@
 li[]( -*-mode: org; coding: utf-8;-*- )
 
-This is Koï
-===========
+# This is Koï
 
 Koï is a production management system. It is aimed at mid-size manufacturing workshops.
 It tracks production, quality issues, work done, orders, preorders and a few other things.
@@ -10,8 +9,7 @@ It is therefore aimed at "agile" companies. If you want strict workflows, choose
 
 It is in production use since a few years (so, yes, it is battle tested).
 
-Future
-======
+# Future
 
 Well, it depends highly on our customers. As you know, many programs like us are
 tuned to a specific business. We'll do our best to maintain a common base
@@ -23,8 +21,7 @@ Our immediate targets are :
 * finding partnerships all over the world
 * improve project's documentation and ease of use
 
-Business
-========
+# Business
 
 This version is the community version. For professional services, licensing issues
 or other business matters, feel free to contact us at <koimes@proximus.be> or simply
