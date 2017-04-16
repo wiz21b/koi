@@ -10,7 +10,7 @@ It is in production use since a few years (so, yes, it is battle tested).
 # Business
 
 This version is the community version. For professional services, licensing issues
-or other business matters, feel free to contact us at [koimes@proximus.be](koimes@proximus.be) or simply
+or other business matters, feel free to contact us at [koimes@proximus.be](mailto:koimes@proximus.be) or simply
 post a message here.
 
 # Future
