@@ -7,11 +7,12 @@ It is therefore aimed at "agile" companies. If you want strict workflows, choose
 
 It is in production use since a few years (so, yes, it is battle tested).
 
+Our home page is [there](https://koi-mes.net/).
+
 # Business
 
 This version is the community version. For professional services, licensing issues
-or other business matters, feel free to contact us at [koimes@proximus.be](mailto:koimes@proximus.be) or simply
-post a message here.
+or other business matters, feel free to contact us at [koimes@proximus.be](mailto:koimes@proximus.be).
 
 # Future
 
