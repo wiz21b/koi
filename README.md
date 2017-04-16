@@ -7,6 +7,12 @@ It is therefore aimed at "agile" companies. If you want strict workflows, choose
 
 It is in production use since a few years (so, yes, it is battle tested).
 
+# Business
+
+This version is the community version. For professional services, licensing issues
+or other business matters, feel free to contact us at [koimes@proximus.be](koimes@proximus.be) or simply
+post a message here.
+
 # Future
 
 Well, it depends highly on our customers. As you know, many programs like us are
@@ -19,8 +25,3 @@ Our immediate targets are :
 * finding partnerships all over the world
 * improve project's documentation and ease of use
 
-# Business
-
-This version is the community version. For professional services, licensing issues
-or other business matters, feel free to contact us at <koimes@proximus.be> or simply
-post a message here.
