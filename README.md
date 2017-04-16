@@ -1,5 +1,3 @@
-li[]( -*-mode: org; coding: utf-8;-*- )
-
 # This is Koï
 
 Koï is a production management system. It is aimed at mid-size manufacturing workshops.
