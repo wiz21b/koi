@@ -5,10 +5,10 @@ def copyright_years():
     return ",".join(map(str,sorted(range(2012,date.today().year+1))))
 
 def copyright():
-    return "Copyright (c) {} Stefan Champailler".format(copyright_years())
+    return "Copyright \u00A9 {} St\u00E9phane Champailler".format(copyright_years())
 
 def license_short():
-    return "This software is covered by the GNU General Public License v3. See help and documentation for information about that license."
+    return "This software is covered by the GNU Affero General Public License v3. See help and documentation for information about that license."
 
 def license():
     return """                    GNU AFFERO GENERAL PUBLIC LICENSE
