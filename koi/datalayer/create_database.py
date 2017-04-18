@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
 from koi.Configurator import mainlog,configuration
 from koi.db_mapping import *
-from koi.datalayer.database_session import init_db_session,session,db_engine, reopen_session, disconnect_db
+from koi.datalayer.database_session import init_db_session,session,db_engine, disconnect_db, parse_db_url, template1_connection_parameters, extract_db_params_from_url
 from koi.datalayer.audit_trail_mapping import AuditTrail
 from koi.datalayer.employee_mapping import RoleType
 from koi.doc_manager.documents_mapping import *
@@ -525,22 +525,32 @@ def drop_all_tables(current_session):
     current_session.commit()
 
 
-def set_up_database(url_admin, login, password):
+def set_up_database(url_admin, url_client):
+    """ Create the very basic Koi database. That is :
+    the client user, the admin user, the schema, grant privileges.
+
+    :param url_admin:
+    :param url_client:
+    :return:
+    """
+
     # The administrative user must be "horse_adm"
     # He must have the right to create databases and roles
 
-    login_adm, password_adm, dbname, host, port = _extract_db_params_from_url(url_admin)
-
-    mainlog.info("Admin is {}, regular user is {}".format(login_adm, login))
     # Just to be sure we're outside any connection
     disconnect_db()
 
-    parsed_url = urlparse(url_admin)
-    t1_url = parsed_url.scheme + "://" + parsed_url.netloc + "/template1"
-    mainlog.info("Connecting to template1")
-    init_db_session(t1_url)
+    db_url, params = parse_db_url( url_client)
+    login, password, dbname, host, port = extract_db_params_from_url( db_url)
 
-    horsedb_url = parsed_url.scheme + "://" + login + ":" + password + "@" + host + ":" + port + "/" + dbname
+    db_url, params = parse_db_url( url_admin)
+    login_adm, password_adm, dbname, host, port = extract_db_params_from_url( db_url)
+    mainlog.info("Admin user is {}, regular user is {}".format(login_adm, login))
+
+    db_url, params = template1_connection_parameters(url_admin)
+    init_db_session(db_url, params=params)
+
+
 
     mainlog.info("creating database")
 
@@ -690,14 +700,6 @@ def add_user(employee_id,login,password,fullname,roles):
     h.update(password)
     session().connection().execute("INSERT INTO employees (employee_id,login,fullname,roles,password) VALUES ('{}','{}','{}','{}','{}')".format(employee_id,login,fullname,roles,h.hexdigest()))
 
-from urllib.parse import urlparse
-def _extract_db_params_from_url(url):
-    mainlog.debug("Analysing URL {}".format(url))
-    parsed_url = urlparse(url)
-    dbname = parsed_url.path[1:]
-    login_pw_re = re.compile("^([^:]+):([^@]+)@([^:]+):?([0-9]+)?")
-    login, password,host,port = login_pw_re.match(parsed_url.netloc).groups()
-    return login, password, dbname, host, port
 
 
 def create_root_account(login="admin", password="admin"):
@@ -717,13 +719,12 @@ def create_root_account(login="admin", password="admin"):
     employee.is_active = True
     session().commit()
 
-def create_blank_database(admin_url, client_url):
+def create_blank_database( admin_url, client_url):
 
     # Do administrative level stuff
 
-    login, password, dbname, host, port = _extract_db_params_from_url(client_url)
-    set_up_database( admin_url, login, password)
-    init_db_session(admin_url)
+    set_up_database( admin_url, client_url)
+    init_db_session( admin_url)
     create_all_tables()
     disconnect_db()
 

@@ -1386,15 +1386,21 @@ class OrderPartDAO(object):
     @RollbackDecorator
     def compute_turnover_on( self, month_date : date):
         """ Turnover for a given month. The turnover is made
-        of three parts : turnover = realised value + current encours - past month's encours.
+        of three parts :
 
+            turnover = realised value + current WIP value - past month's WIP value
+
+        with :
         * realised value = value of quantities delivered (i.e. for which there
           are delivery slips) this month
-        * current encours = encours of this month
-        * past month's encours = encours at the very end of the previous month
+        * current WIP valuation = WIP value of this month
+        * past month's WIP valuation = WIP value at the very end of the previous month
 
-        So the first part depends exclusively on the deliver slips
-        written during the month, and nothing else.
+        Note that if no realised value was made, then the turnover depends
+        on the WIP valuations delta. And that may be negative if the current
+        WIP if smaller than the past one. That can happen if orders are cancelled
+        in this month (so the WIP decreases, but to delivery slips are written).
+        In that case, we bound the turnover to 0.
         """
 
         month_before = month_date - timedelta(month_date.day)
@@ -1424,5 +1430,8 @@ class OrderPartDAO(object):
         encours_this_month = valuations[ts_end.date()]
         encours_previous_month = valuations[ month_before]
         turnover = billable_amount_on_slips + encours_this_month - encours_previous_month
+
+        if turnover < 0:
+            turnover = 0
 
         return billable_amount_on_slips, encours_this_month, encours_previous_month, turnover

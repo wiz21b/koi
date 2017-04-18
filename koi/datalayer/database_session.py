@@ -3,6 +3,7 @@ try:
 except ImportError:
     from urllib.parse import urlparse
 
+import re
 from sqlalchemy import create_engine
 from sqlalchemy import exc
 from sqlalchemy.orm import sessionmaker,scoped_session
@@ -34,18 +35,37 @@ def disconnect_db():
         mainlog.debug("Dropping engine")
         _config.pop('engine')
 
-def init_db_session(db_url,metadata=None,echo_query=False,autocommit=False):
-    global _config
 
+def extract_db_params_from_url(url):
+    assert type(url) == str
+
+    mainlog.debug("Analysing URL {}".format(url))
+    parsed_url = urlparse(url)
+    dbname = parsed_url.path[1:]
+    login_pw_re = re.compile("^([^:]+):([^@]+)@([^:]+):?([0-9]+)?")
+    login, password,host,port = login_pw_re.match(parsed_url.netloc).groups()
+    return login, password, dbname, host, port
+
+
+def template1_connection_parameters( db_url):
+    db_url, params = parse_db_url(db_url)
+    parsed_url = urlparse(db_url)
+    t1_url = parsed_url.scheme + "://" + parsed_url.netloc + "/template1"
+
+    return t1_url, params
+
+
+def parse_db_url( db_url):
     mainlog.debug("Init DB session " + str(db_url))
-
-    if 'session' in _config:
-        raise Exception("Sorry, but you're trying ot double initialize the db session")
 
     if not db_url:
         raise Exception("Sorry, but the URL you provided is empty")
 
+    if ',' in db_url:
+        db_url = ','.split(db_url)
+
     mainlog.debug("{} ({})".format(db_url, type(db_url)))
+
     params = dict()
     if type(db_url) == list:
         mainlog.debug("DB connection URL has parts : {}".format(db_url))
@@ -54,6 +74,19 @@ def init_db_session(db_url,metadata=None,echo_query=False,autocommit=False):
         db_url = db_url[0]
     else:
         mainlog.debug("Regular DB URL")
+
+    return db_url, params
+
+def init_db_session(db_url,metadata=None,echo_query=False,autocommit=False, params=dict()):
+    global _config
+
+    mainlog.debug("Init DB session " + str(db_url))
+
+    if 'session' in _config:
+        raise Exception("Sorry, but you're trying ot double initialize the db session")
+
+    db_url, params_from_url = parse_db_url( db_url)
+    params =  dict(list(params_from_url.items()) + list(params.items()))
 
     mainlog.debug("Creating engine to {} with params {}".format(db_url, params))
     engine = create_engine(db_url,
@@ -121,6 +154,7 @@ def check_postgres_connection(db_url):
     # I need DB url because I didn't find a way to get that information
     # from the session(), connection()...
 
+    db_url, params_from_url = parse_db_url( db_url)
     parsed_url = urlparse(db_url)
     t1_url = parsed_url.scheme + "://" + parsed_url.netloc + "/template1"
 
