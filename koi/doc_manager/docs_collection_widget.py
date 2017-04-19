@@ -834,6 +834,9 @@ class DocumentCollectionWidget(QWidget):
 
             try:
                 doc_id = upload_document(full_path_client, progress_tracker)
+
+                if not doc_id:
+                    raise Exception("Server didn't store the document")
             except Exception as exc:
                 progress_bar.close()
                 showErrorBox(_("There was a problem while uploading the file to the server"), ex=exc, object_name="file_upload_error")

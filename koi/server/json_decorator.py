@@ -1207,7 +1207,7 @@ class JsonCallWrapper(object):
             headers = {"Content-type": "application/json"}
 
             server_address = urlparse( configuration.get("DownloadSite","base_url"))
-            mainlog.debug("http_call to : {}".format(server_address))
+            mainlog.debug("http_call to : {}://{}:{}".format(server_address.scheme, server_address.hostname, server_address.port))
 
             if server_address.scheme == 'https':
                 c = HTTPSConnection(server_address.hostname,server_address.port)
