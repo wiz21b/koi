@@ -1,6 +1,6 @@
 import sys
 from urllib.parse import urlencode
-from http.client import HTTPConnection
+from http.client import HTTPConnection, HTTPSConnection
 
 
 import socket
@@ -1207,8 +1207,12 @@ class JsonCallWrapper(object):
             headers = {"Content-type": "application/json"}
 
             server_address = urlparse( configuration.get("DownloadSite","base_url"))
-            # mainlog.debug("http_call to : {}".format(server_address))
-            c = HTTPConnection(server_address.hostname,server_address.port)
+            mainlog.debug("http_call to : {}".format(server_address))
+
+            if server_address.scheme == 'https':
+                c = HTTPSConnection(server_address.hostname,server_address.port)
+            else:
+                c = HTTPConnection(server_address.hostname,server_address.port)
 
             try:
                 params = horse_json_encoder.encode(rpc_data).encode('utf-8')

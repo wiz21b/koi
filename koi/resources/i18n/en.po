@@ -8,12 +8,12 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-17 15:41+0200\n"
+"POT-Creation-Date: 2017-04-19 07:54+0200\n"
 "PO-Revision-Date: 2015-04-10 17:18+0200\n"
 "Last-Translator: stc <EMAIL@ADDRESS>\n"
 "Language-Team: English\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CP1252\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
@@ -529,7 +529,7 @@ msgstr "Unemployment start"
 msgid "Editor can't be empty"
 msgstr "Editor can't be empty"
 
-#: tools\..\koi\EditConfigurationDialog.py:16 tools\..\koi\python.py:536
+#: tools\..\koi\EditConfigurationDialog.py:16 tools\..\koi\python.py:538
 msgid "Preferences"
 msgstr "Preferences"
 
@@ -599,7 +599,7 @@ msgstr "ID"
 msgid "Edit customer"
 msgstr "Edit customers"
 
-#: tools\..\koi\EditCustomerDialog.py:60 tools\..\koi\python.py:444
+#: tools\..\koi\EditCustomerDialog.py:60 tools\..\koi\python.py:446
 msgid "Customers"
 msgstr "Customers"
 
@@ -639,7 +639,7 @@ msgstr "Roles"
 msgid "Employee edit"
 msgstr "Employee"
 
-#: tools\..\koi\EditCustomerDialog.py:95 tools\..\koi\python.py:524
+#: tools\..\koi\EditCustomerDialog.py:95 tools\..\koi\python.py:526
 msgid "Employees"
 msgstr "Employees"
 
@@ -724,7 +724,7 @@ msgstr "On operations"
 msgid "Periods"
 msgstr "Periods"
 
-#: tools\..\koi\EditOperationDefinition.py:281 tools\..\koi\python.py:533
+#: tools\..\koi\EditOperationDefinition.py:281 tools\..\koi\python.py:535
 msgid "Edit operations"
 msgstr "Edit operations"
 
@@ -1285,7 +1285,7 @@ msgstr "Sum of durations"
 msgid "Timesheet for <b>{}</b> on <b>{}</b>"
 msgstr "Timesheet for <b>{}</b> on <b>{}</b>"
 
-#: tools\..\koi\FindOrder.py:16 tools\..\koi\python.py:435
+#: tools\..\koi\FindOrder.py:16 tools\..\koi\python.py:437
 msgid "Find order"
 msgstr "Find order"
 
@@ -1572,19 +1572,19 @@ msgstr ""
 "\n"
 "the company team."
 
-#: tools\..\koi\python.py:163
+#: tools\..\koi\python.py:164
 msgid "Contacting updates server"
 msgstr "Contacting updates server"
 
-#: tools\..\koi\python.py:165
+#: tools\..\koi\python.py:166
 msgid "Loading database URL"
 msgstr "Loading database URL"
 
-#: tools\..\koi\python.py:172
+#: tools\..\koi\python.py:173
 msgid "Can't connect to the main server"
 msgstr "Can't connect to the main server"
 
-#: tools\..\koi\python.py:173
+#: tools\..\koi\python.py:174
 msgid ""
 "I was unable to contact the main server (located here : {}). It is not 100% "
 "necessary to do so but that's not normal either. You should tell your "
@@ -1596,24 +1596,24 @@ msgstr ""
 "administrator about that. I will now allow you to change the network address "
 "of the server I know in the preferences panel."
 
-#: tools\..\koi\python.py:195
+#: tools\..\koi\python.py:196
 #, fuzzy
 msgid "Can't initialize the database connection"
 msgstr "Can't connect to the database"
 
-#: tools\..\koi\python.py:196
+#: tools\..\koi\python.py:197
 msgid "I have tried this url : {}. And got this problem : {}"
 msgstr ""
 
-#: tools\..\koi\python.py:205
+#: tools\..\koi\python.py:207
 msgid "Checking DB connection"
 msgstr "Checking DB connection"
 
-#: tools\..\koi\python.py:209
+#: tools\..\koi\python.py:211
 msgid "Can't connect to the database"
 msgstr "Can't connect to the database"
 
-#: tools\..\koi\python.py:210
+#: tools\..\koi\python.py:212
 #, fuzzy
 msgid ""
 "<b>This program is not usable without a database and will therefore shut "
@@ -1628,178 +1628,178 @@ msgstr ""
 "<b>call the system administrator now </b> because this error should not "
 "happen.</b><br/><br/>Error was : {}"
 
-#: tools\..\koi\python.py:217
+#: tools\..\koi\python.py:219
 msgid "Loading additional data"
 msgstr "Loading additional data"
 
-#: tools\..\koi\python.py:421
+#: tools\..\koi\python.py:423
 msgid "Create supply order"
 msgstr "Create supply order"
 
-#: tools\..\koi\python.py:425
+#: tools\..\koi\python.py:427
 msgid "Supply order overview"
 msgstr "Supply order overview"
 
-#: tools\..\koi\python.py:429
+#: tools\..\koi\python.py:431
 msgid "Edit suppliers"
 msgstr "Edit suppliers"
 
-#: tools\..\koi\python.py:433
+#: tools\..\koi\python.py:435
 msgid "Supply"
 msgstr "Supply"
 
-#: tools\..\koi\python.py:439 tools\..\koi\python.py:500
+#: tools\..\koi\python.py:441 tools\..\koi\python.py:502
 msgid "Show order overview"
 msgstr "Show order overview"
 
-#: tools\..\koi\python.py:443
+#: tools\..\koi\python.py:445
 msgid "Edit customers"
 msgstr "Edit customers"
 
-#: tools\..\koi\python.py:447
+#: tools\..\koi\python.py:449
 msgid "Create order"
 msgstr "Create order"
 
-#: tools\..\koi\python.py:452 tools\..\koi\ReprintDeliverySlip.py:49
+#: tools\..\koi\python.py:454 tools\..\koi\ReprintDeliverySlip.py:49
 #: tools\..\koi\delivery_slips\DeliverySlipPanel.py:174
 msgid "Order"
 msgstr "Order"
 
-#: tools\..\koi\python.py:454
+#: tools\..\koi\python.py:456
 msgid "Show presence overview"
 msgstr "Show presence overview"
 
-#: tools\..\koi\python.py:455
+#: tools\..\koi\python.py:457
 msgid "Print badges"
 msgstr "Print badges"
 
-#: tools\..\koi\python.py:456
+#: tools\..\koi\python.py:458
 msgid "Print non billable barcodes"
 msgstr "Print non billable barcodes"
 
-#: tools\..\koi\python.py:457
+#: tools\..\koi\python.py:459
 msgid "Print machines barcodes"
 msgstr "Print machines barcodes"
 
-#: tools\..\koi\python.py:458
+#: tools\..\koi\python.py:460
 msgid "Print presence barcodes"
 msgstr "Print presence barcodes"
 
-#: tools\..\koi\python.py:460 tools\..\koi\TimeReportingScanner.py:52
+#: tools\..\koi\python.py:462 tools\..\koi\TimeReportingScanner.py:52
 msgid "Time tracking"
 msgstr "Time tracking"
 
-#: tools\..\koi\python.py:471
+#: tools\..\koi\python.py:473
 msgid "Create new delivery slip"
 msgstr "Create new delivery slip"
 
-#: tools\..\koi\python.py:475
+#: tools\..\koi\python.py:477
 msgid "Show delivery slips"
 msgstr "Show delivery slips"
 
-#: tools\..\koi\python.py:490
+#: tools\..\koi\python.py:492
 #: tools\..\koi\delivery_slips\DeliverySlipPanel.py:109
 #: tools\..\koi\reporting\order_activity_report.py:131
 msgid "Delivery slips"
 msgstr "Delivery slips"
 
-#: tools\..\koi\python.py:501
+#: tools\..\koi\python.py:503
 msgid "Show posts view"
 msgstr "Show posts view"
 
-#: tools\..\koi\python.py:502
+#: tools\..\koi\python.py:504
 msgid "Print plant status"
 msgstr "Print plant status"
 
-#: tools\..\koi\python.py:506 tools\..\koi\configuration\charts_config.py:19
+#: tools\..\koi\python.py:508 tools\..\koi\configuration\charts_config.py:19
 msgid "Production"
 msgstr "Production"
 
-#: tools\..\koi\python.py:523
+#: tools\..\koi\python.py:525
 msgid "Edit employees"
 msgstr "Edit employees"
 
-#: tools\..\koi\python.py:534
+#: tools\..\koi\python.py:536
 msgid "Edit machines"
 msgstr "Edit machines"
 
-#: tools\..\koi\python.py:535
+#: tools\..\koi\python.py:537
 msgid "Document templates"
 msgstr "Document templates"
 
-#: tools\..\koi\python.py:537
+#: tools\..\koi\python.py:539
 msgid "Parameters"
 msgstr "Parameters"
 
-#: tools\..\koi\python.py:543
+#: tools\..\koi\python.py:545
 msgid "Detach tab"
 msgstr "Detach tab"
 
-#: tools\..\koi\python.py:547
+#: tools\..\koi\python.py:549
 msgid "Remove tab"
 msgstr "Remove tab"
 
-#: tools\..\koi\python.py:554
+#: tools\..\koi\python.py:556
 msgid "Windows"
 msgstr "Windows"
 
-#: tools\..\koi\python.py:556
+#: tools\..\koi\python.py:558
 msgid "Help page"
 msgstr "Help page"
 
-#: tools\..\koi\python.py:557
+#: tools\..\koi\python.py:559
 msgid "About {}"
 msgstr ""
 
-#: tools\..\koi\python.py:558
+#: tools\..\koi\python.py:560
 msgid "Help"
 msgstr "Help"
 
-#: tools\..\koi\python.py:568
+#: tools\..\koi\python.py:570
 #, fuzzy
 msgid "Quit"
 msgstr "Quantity"
 
-#: tools\..\koi\python.py:670
+#: tools\..\koi\python.py:672
 #, fuzzy
 msgid "Unable to show the order"
 msgstr "Close the order"
 
-#: tools\..\koi\python.py:720
+#: tools\..\koi\python.py:722
 msgid "No supplier defined"
 msgstr "No supplier defined"
 
-#: tools\..\koi\python.py:720
+#: tools\..\koi\python.py:722
 msgid "Before creating an order, you must first create a supplier"
 msgstr "Before creating an order, you must first create a supplier"
 
-#: tools\..\koi\python.py:747
+#: tools\..\koi\python.py:749
 msgid "No customer defined"
 msgstr "No customer defined"
 
-#: tools\..\koi\python.py:747
+#: tools\..\koi\python.py:749
 msgid "Before creating an order, you must first create a customer"
 msgstr "Before creating an order, you must first create a customer"
 
-#: tools\..\koi\python.py:959
+#: tools\..\koi\python.py:961
 msgid ""
 "There's no selected order. We can't create a delivery slip without that."
 msgstr ""
 "There's no selected order. We can't create a delivery slip without that."
 
-#: tools\..\koi\python.py:1036
+#: tools\..\koi\python.py:1038
 msgid "There was a serious problem while accessing the database"
 msgstr "There was a serious problem while accessing the database"
 
-#: tools\..\koi\python.py:1037
+#: tools\..\koi\python.py:1039
 msgid "This problem might require you to contact your local administrator"
 msgstr "This problem might require you to contact your local administrator"
 
-#: tools\..\koi\python.py:1098
+#: tools\..\koi\python.py:1112
 msgid "Not authorized"
 msgstr "Not authorized"
 
-#: tools\..\koi\python.py:1098
+#: tools\..\koi\python.py:1112
 msgid ""
 "You are not authorized to use this program. Please check with your system "
 "administrator."
@@ -2263,17 +2263,17 @@ msgid "Global production overview"
 msgstr "Global production overview"
 
 #: tools\..\koi\datalayer\connection.py:47
-#: tools\..\koi\datalayer\database_session.py:207
+#: tools\..\koi\datalayer\database_session.py:241
 msgid " A ping was successful (so host is up, database is down)"
 msgstr " A ping was successful (so host is up, database is down)"
 
 #: tools\..\koi\datalayer\connection.py:49
-#: tools\..\koi\datalayer\database_session.py:209
+#: tools\..\koi\datalayer\database_session.py:243
 msgid " A ping was not successful (so host is down)"
 msgstr " A ping was not successful (so host is down)"
 
 #: tools\..\koi\datalayer\connection.py:54
-#: tools\..\koi\datalayer\database_session.py:214
+#: tools\..\koi\datalayer\database_session.py:248
 msgid "Ping failed, the host is down."
 msgstr "Ping failed, the host is down."
 
@@ -2745,6 +2745,27 @@ msgid ""
 "</ul>\n"
 "as long as you give those freedoms and duties to anybody you give this "
 "program to.\n"
+msgstr ""
+
+#: tools\..\koi\gui\AboutDemoBox.py:11
+msgid "Welcome to {}..."
+msgstr ""
+
+#: tools\..\koi\gui\AboutDemoBox.py:18
+msgid ""
+"\n"
+"  <p>Welcome to the demo of {0}. This demo is fully functional and it\n"
+"    comes with an example database. That should be enough to have a full\n"
+"    tour of {0}.</p>\n"
+"  <p>The first screen you'll see is a list of orders that were done\n"
+"    in our imaginary company. If you double click on one of them,\n"
+"    you'll see its details. From there on, you can browse around\n"
+"    and test everything.</p>\n"
+"  <p>As it is the demo version, all the data you'll change will be visible\n"
+"    on internet. The demonstration database will be reased from time to time."
+"</p>\n"
+"  <p>Enjoy and feel free to contact us in case of problems :\n"
+"    <a href=\"mailto:koimes@proximus.be\">koimes@proximus.be</a></p>\n"
 msgstr ""
 
 #: tools\..\koi\gui\ask_date.py:32

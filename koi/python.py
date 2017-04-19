@@ -36,6 +36,7 @@ parser.add_argument('--finish-update', default=False, help='Continue the update 
 parser.add_argument('--console', action='store_true', default=False, help='Activate console output')
 parser.add_argument('--debug', action='store_true', default=False, help='Verbose debug output output')
 parser.add_argument('--dev', action='store_true', default=False, help='Equals --console --debug --no-update')
+parser.add_argument('--demo', action='store_true', default=False, help='Run as the demo')
 parser.add_argument('--echo-sql', action='store_true', default=False, help='Show SQL statements')
 parser.add_argument('--no-update', action='store_true', default=False, help='Run without trying to update')
 # parser.add_argument('--watchdog-file', action='store_true', default="watchdog", help='Watch dog file')
@@ -200,6 +201,7 @@ except Exception as e:
 from koi.db_mapping import Order,OrderPart
 from koi.datalayer.employee_mapping import RoleType
 from koi.gui.AboutBox import AboutDialog
+from koi.gui.AboutDemoBox import AboutDemoDialog
 from koi.EditConfigurationDialog import EditConfigurationDialog
 
 splash_msg(_("Checking DB connection"))
@@ -1061,8 +1063,20 @@ def all_systems_go():
 
     mainlog.debug("all_systems_go() : login dialog")
     if not user_session.is_active(): # the configuration may have forced a user
-        d = LoginDialog(window, user_session)
-        d.exec_()
+
+        # Special case for demo
+
+        from koi.datalayer.employee_mapping import Employee
+        if 'koi-mes.net' in configuration.get("DownloadSite", "base_url") or args.demo:
+            user_session.open(
+                dao.employee_dao.authenticate(
+                    "roba", Employee.hash_password("roba")))
+            d = AboutDemoDialog(None)
+            d.exec_()
+        else:
+            d = LoginDialog(window, user_session)
+            d.exec_()
+
         # splash.repaint()
 
     # zzz = QWidget()

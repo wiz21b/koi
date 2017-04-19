@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
@@ -9,12 +9,12 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-17 15:41+0200\n"
+"POT-Creation-Date: 2017-04-19 07:54+0200\n"
 "PO-Revision-Date: 2015-04-08 07:05+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: tools\..\koi\business_charts.py:153 tools\..\koi\business_charts.py:214
@@ -23,15 +23,15 @@ msgstr "Heures directes et indirectes, mensuel."
 
 #: tools\..\koi\business_charts.py:166
 msgid "Hours spent on operations per month"
-msgstr "Heures sur opérations directes"
+msgstr "Heures sur opÃ©rations directes"
 
 #: tools\..\koi\business_charts.py:179
 msgid "Hours on indirect operations"
-msgstr "Heures sur opérations indirectes"
+msgstr "Heures sur opÃ©rations indirectes"
 
 #: tools\..\koi\business_charts.py:192
 msgid "Cost of operations"
-msgstr "Coût sur opérations"
+msgstr "CoÃ»t sur opÃ©rations"
 
 #: tools\..\koi\business_charts.py:222 tools\..\koi\business_charts.py:239
 #: tools\..\koi\business_charts.py:329 tools\..\koi\business_charts.py:363
@@ -40,11 +40,11 @@ msgstr "Cible {}"
 
 #: tools\..\koi\business_charts.py:232
 msgid "Number of customers who ordered"
-msgstr "Nombre de clients qui ont commandé"
+msgstr "Nombre de clients qui ont commandÃ©"
 
 #: tools\..\koi\business_charts.py:249
 msgid "Number of created order parts"
-msgstr "Nombre de postes créés"
+msgstr "Nombre de postes crÃ©Ã©s"
 
 #: tools\..\koi\business_charts.py:267
 msgid "Order parts value"
@@ -60,7 +60,7 @@ msgstr "Valorisation au cours du temps"
 
 #: tools\..\koi\business_charts.py:335
 msgid "Custsomer non-conformities"
-msgstr "Non conformités client"
+msgstr "Non conformitÃ©s client"
 
 #: tools\..\koi\business_charts.py:346 tools\..\koi\business_charts.py:379
 #: tools\..\koi\business_charts.py:404
@@ -69,16 +69,16 @@ msgstr "Cible {}%"
 
 #: tools\..\koi\business_charts.py:352
 msgid "Internal non conformities"
-msgstr "Non conformités internes"
+msgstr "Non conformitÃ©s internes"
 
 #: tools\..\koi\business_charts.py:369
 msgid "Done / Planned Hours On Completed Parts"
-msgstr "H. réalisées/planifiées pour postes terminés"
+msgstr "H. rÃ©alisÃ©es/planifiÃ©es pour postes terminÃ©s"
 
 #: tools\..\koi\business_charts.py:385
 #, python-format
 msgid "% completed parts on time (OTD)"
-msgstr "% postes terminés à temps (OTD)"
+msgstr "% postes terminÃ©s Ã  temps (OTD)"
 
 #: tools\..\koi\business_charts.py:410
 msgid "OQD"
@@ -90,15 +90,15 @@ msgstr "Delta (jours)"
 
 #: tools\..\koi\business_charts.py:462
 msgid "Number of order parts with a given delivery delay (negative = late)"
-msgstr "# parties de cdes avec un retard donné (j) (< 0 = en retard)"
+msgstr "# parties de cdes avec un retard donnÃ© (j) (< 0 = en retard)"
 
 #: tools\..\koi\business_charts.py:475
 msgid "Sell price vs cost for delivered units"
-msgstr "Prix vente vs coût pour les unités produites"
+msgstr "Prix vente vs coÃ»t pour les unitÃ©s produites"
 
 #: tools\..\koi\business_charts.py:490
 msgid "Time spent on completed order parts"
-msgstr "Temps passé sur les parties de commandes terminées"
+msgstr "Temps passÃ© sur les parties de commandes terminÃ©es"
 
 #: tools\..\koi\business_charts.py:502
 msgid "Order backlog valuation"
@@ -106,7 +106,7 @@ msgstr "Solde carnet de commandes"
 
 #: tools\..\koi\business_charts.py:515
 msgid "To facture"
-msgstr "À facturer"
+msgstr "Ã€ facturer"
 
 #: tools\..\koi\business_charts.py:516
 msgid ""
@@ -117,8 +117,8 @@ msgid ""
 "the month, regardless of the status of the order)"
 msgstr ""
 "Montant facturable pour les parties de commande pour lesquelles un bon de "
-"livraison a été produit ce mois. La valeur est le produit du nombre de "
-"pièces produites par le prix unitaire de celles-ci."
+"livraison a Ã©tÃ© produit ce mois. La valeur est le produit du nombre de "
+"piÃ¨ces produites par le prix unitaire de celles-ci."
 
 #: tools\..\koi\business_charts.py:529
 #, fuzzy
@@ -132,13 +132,13 @@ msgid ""
 "been reported\n"
 "for them) and not finished."
 msgstr ""
-"L'encours mensuel est calculé pour les parties de commandes sur lesquelles "
-"une production a déjà été enregistrée (heures ou pièces) et qui ne sont pas "
-"encore terminées."
+"L'encours mensuel est calculÃ© pour les parties de commandes sur lesquelles "
+"une production a dÃ©jÃ  Ã©tÃ© enregistrÃ©e (heures ou piÃ¨ces) et qui ne sont pas "
+"encore terminÃ©es."
 
 #: tools\..\koi\business_charts.py:541
 msgid "Valuation last month"
-msgstr "Encours mois précédent"
+msgstr "Encours mois prÃ©cÃ©dent"
 
 #: tools\..\koi\business_charts.py:542
 msgid ""
@@ -147,8 +147,8 @@ msgid ""
 "previous\n"
 "month."
 msgstr ""
-"L'encours mensuel passé est calculé pour les parties de commandes qui "
-"étaient commencées mais non terminées au dernier jour du mois d'intérêt"
+"L'encours mensuel passÃ© est calculÃ© pour les parties de commandes qui "
+"Ã©taient commencÃ©es mais non terminÃ©es au dernier jour du mois d'intÃ©rÃªt"
 
 #: tools\..\koi\business_charts.py:553
 msgid "Turnover"
@@ -157,7 +157,7 @@ msgstr "Chiffre d'affaire"
 #: tools\..\koi\business_charts.py:554
 msgid "Is to facture - valuation last month + valuation this month"
 msgstr ""
-"Soit montant à facturer - encours mois précédent + encours mois courant"
+"Soit montant Ã  facturer - encours mois prÃ©cÃ©dent + encours mois courant"
 
 #: tools\..\koi\business_charts.py:578
 msgid "Work-in-progress valuation"
@@ -188,7 +188,7 @@ msgstr "Veuillez choisir un client pour la nouvelle commande"
 
 #: tools\..\koi\CreateNewOrderDialog.py:31
 msgid "Create new order"
-msgstr "Créer une nouvelle commande"
+msgstr "CrÃ©er une nouvelle commande"
 
 #: tools\..\koi\CreateNewOrderDialog.py:60
 #: tools\..\koi\CurrentOrdersOverview.py:120
@@ -203,7 +203,7 @@ msgstr "Client"
 #: tools\..\koi\CurrentOrdersOverview.py:401
 #: tools\..\koi\PastOrdersOverview.py:59
 msgid "# Order"
-msgstr "N° cde"
+msgstr "NÂ° cde"
 
 #: tools\..\koi\CurrentOrdersOverview.py:120
 #: tools\..\koi\CurrentOrdersOverview.py:401
@@ -234,7 +234,7 @@ msgstr "Description"
 #: tools\..\koi\reporting\preorder_report.py:94
 #: tools\..\koi\supply\SupplyOrderOverview.py:267
 msgid "Deadline"
-msgstr "Échéance"
+msgstr "Ã‰chÃ©ance"
 
 #: tools\..\koi\CurrentOrdersOverview.py:120
 #: tools\..\koi\CurrentOrdersOverview.py:401
@@ -246,7 +246,7 @@ msgstr "H. Mach."
 #: tools\..\koi\EditOrderParts.py:1410 tools\..\koi\PastOrdersOverview.py:59
 #: tools\..\koi\TModel.py:222
 msgid "Qty"
-msgstr "Qté"
+msgstr "QtÃ©"
 
 #: tools\..\koi\CurrentOrdersOverview.py:120
 #: tools\..\koi\CurrentOrdersOverview.py:401
@@ -259,19 +259,19 @@ msgstr "Prix de vente"
 #: tools\..\koi\CurrentOrdersOverview.py:401
 #: tools\..\koi\CurrentOrdersOverview.py:1283
 msgid "Priority"
-msgstr "Priorité"
+msgstr "PrioritÃ©"
 
 #: tools\..\koi\CurrentOrdersOverview.py:566
 #: tools\..\koi\CurrentOrdersOverview.py:1208
 #: tools\..\koi\PastOrdersOverview.py:394
 msgid "Operations"
-msgstr "Opérations"
+msgstr "OpÃ©rations"
 
 #: tools\..\koi\CurrentOrdersOverview.py:629
 #: tools\..\koi\EditOrderParts.py:1821 tools\..\koi\gui\MetaFormDialog.py:406
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:129
 msgid "Data were changed"
-msgstr "Données changées"
+msgstr "DonnÃ©es changÃ©es"
 
 #: tools\..\koi\CurrentOrdersOverview.py:630
 #: tools\..\koi\EditOrderParts.py:1822 tools\..\koi\gui\MetaFormDialog.py:407
@@ -280,7 +280,7 @@ msgid ""
 "You have changed some of the data in this. Do you want to save before "
 "proceeding ?"
 msgstr ""
-"Vous avez changé des informations. Voulez-vous les enregistrer avant de "
+"Vous avez changÃ© des informations. Voulez-vous les enregistrer avant de "
 "continuer ?"
 
 #: tools\..\koi\CurrentOrdersOverview.py:674
@@ -297,7 +297,7 @@ msgstr "Erreur dans le filtre !"
 #: tools\..\koi\CurrentOrdersOverview.py:692 tools\..\koi\FindOrder.py:73
 #: tools\..\koi\supply\SupplyOrderOverview.py:177
 msgid "Too many results"
-msgstr "Trop de résultats"
+msgstr "Trop de rÃ©sultats"
 
 #: tools\..\koi\CurrentOrdersOverview.py:692 tools\..\koi\FindOrder.py:73
 #: tools\..\koi\supply\SupplyOrderOverview.py:177
@@ -305,13 +305,13 @@ msgid ""
 "The query you've given brought back too many results. Only a part of them is "
 "displayed. Consider refining your query"
 msgstr ""
-"La requête que vous avez données a ramené trop de résultats. Seule une "
-"partie est affichée. Pensez à raffiner votre requête."
+"La requÃªte que vous avez donnÃ©es a ramenÃ© trop de rÃ©sultats. Seule une "
+"partie est affichÃ©e. Pensez Ã  raffiner votre requÃªte."
 
 #: tools\..\koi\CurrentOrdersOverview.py:697 tools\..\koi\FindOrder.py:81
 #: tools\..\koi\delivery_slips\DeliverySlipPanel.py:235
 msgid "The filter can't be empty"
-msgstr "Le filtre ne peut être vide."
+msgstr "Le filtre ne peut Ãªtre vide."
 
 #: tools\..\koi\CurrentOrdersOverview.py:699 tools\..\koi\FindOrder.py:84
 #: tools\..\koi\delivery_slips\DeliverySlipPanel.py:237
@@ -326,7 +326,7 @@ msgstr "Copier"
 #: tools\..\koi\CurrentOrdersOverview.py:910
 #: tools\..\koi\PresenceOverview.py:788
 msgid "Select all"
-msgstr "Tout sélectionner"
+msgstr "Tout sÃ©lectionner"
 
 #: tools\..\koi\CurrentOrdersOverview.py:1125
 msgid "Valorisation"
@@ -360,22 +360,22 @@ msgstr "Poste vers {}"
 #: tools\..\koi\EditTimeTracksDialog.py:275 tools\..\koi\TimeReportView.py:190
 #: tools\..\koi\TimeTracksOverview.py:330
 msgid "Duration"
-msgstr "Durée"
+msgstr "DurÃ©e"
 
 #: tools\..\koi\CurrentOrdersOverview.py:1410
 #: tools\..\koi\clocks\clock_client.py:823
 msgid "Start"
-msgstr "Début"
+msgstr "DÃ©but"
 
 #: tools\..\koi\CurrentOrdersOverview.py:1411
 #: tools\..\koi\EditOperationDefinition.py:283
 #: tools\..\koi\machine\EditMachinesDialog.py:16
 msgid "Operation"
-msgstr "Opération"
+msgstr "OpÃ©ration"
 
 #: tools\..\koi\CurrentOrdersOverview.py:1517
 msgid "Delivery slip {}, <b>{}</b> units"
-msgstr "Bon de livraison n° {}, <b>{}</b> unités"
+msgstr "Bon de livraison nÂ° {}, <b>{}</b> unitÃ©s"
 
 #: tools\..\koi\CustomerPlateWidget.py:112
 #: tools\..\koi\CustomerPlateWidget.py:117
@@ -391,20 +391,20 @@ msgstr "Fax: {}"
 #: tools\..\koi\db_mapping.py:1095 tools\..\koi\TimeReportingScanner.py:59
 #: tools\..\koi\TimeReportView.py:405
 msgid "Presence"
-msgstr "Présence"
+msgstr "PrÃ©sence"
 
 #: tools\..\koi\dao.py:3187 tools\..\koi\server\json_decorator.py:87
 msgid ""
 "Cannot delete this employee because there are orders for him. Remove the "
 "orders first."
 msgstr ""
-"Vous ne pouvez pas supprimer ce client car il est lié à des commandes. "
+"Vous ne pouvez pas supprimer ce client car il est liÃ© Ã  des commandes. "
 "Enlevez ces commandes d'abord."
 
 #: tools\..\koi\dao.py:3828
 msgid "I can't delete the delivery slip {} because it is not the last one."
 msgstr ""
-"Vous ne pouvez supprimer un bon de livraison que si c'est le dernier créé"
+"Vous ne pouvez supprimer un bon de livraison que si c'est le dernier crÃ©Ã©"
 
 #: tools\..\koi\db_mapping.py:47
 msgid "Preorder"
@@ -424,27 +424,27 @@ msgstr "Non conforme"
 
 #: tools\..\koi\db_mapping.py:65
 msgid "Completed"
-msgstr "Terminée"
+msgstr "TerminÃ©e"
 
 #: tools\..\koi\db_mapping.py:66
 msgid "Aborted"
-msgstr "Annulé"
+msgstr "AnnulÃ©"
 
 #: tools\..\koi\db_mapping.py:71
 msgid "Preorder definition"
-msgstr "Définition devis"
+msgstr "DÃ©finition devis"
 
 #: tools\..\koi\db_mapping.py:76
 msgid "Preorder sent"
-msgstr "Devis envoyé"
+msgstr "Devis envoyÃ©"
 
 #: tools\..\koi\db_mapping.py:84
 msgid "Order definition"
-msgstr "Définition commande"
+msgstr "DÃ©finition commande"
 
 #: tools\..\koi\db_mapping.py:90
 msgid "Order in production"
-msgstr "Commande à la production"
+msgstr "Commande Ã  la production"
 
 #: tools\..\koi\db_mapping.py:95
 msgid "Order production on hold"
@@ -452,11 +452,11 @@ msgstr "Commande en attente"
 
 #: tools\..\koi\db_mapping.py:97
 msgid "Order completed"
-msgstr "Commande terminée"
+msgstr "Commande terminÃ©e"
 
 #: tools\..\koi\db_mapping.py:105
 msgid "Order aborted"
-msgstr "Commande annulée"
+msgstr "Commande annulÃ©e"
 
 #: tools\..\koi\db_mapping.py:113
 #: tools\..\koi\people_admin\people_admin_mapping.py:13
@@ -483,7 +483,7 @@ msgstr "Autre"
 
 #: tools\..\koi\db_mapping.py:937
 msgid "Regular time"
-msgstr "Présence"
+msgstr "PrÃ©sence"
 
 #: tools\..\koi\db_mapping.py:938
 msgid "Unemployment time"
@@ -491,11 +491,11 @@ msgstr "Sous-emploi"
 
 #: tools\..\koi\db_mapping.py:1093
 msgid "Task start "
-msgstr "Début tâche"
+msgstr "DÃ©but tÃ¢che"
 
 #: tools\..\koi\db_mapping.py:1094
 msgid "Task stop"
-msgstr "Fin tâche"
+msgstr "Fin tÃ¢che"
 
 #: tools\..\koi\db_mapping.py:1096
 msgid "Day in"
@@ -507,19 +507,19 @@ msgstr "Pointage out"
 
 #: tools\..\koi\db_mapping.py:1098
 msgid "Pause start"
-msgstr "Début de pause"
+msgstr "DÃ©but de pause"
 
 #: tools\..\koi\db_mapping.py:1099
 msgid "Unemployment start"
-msgstr "Début sous-emploi"
+msgstr "DÃ©but sous-emploi"
 
 #: tools\..\koi\db_mapping.py:1261
 msgid "Editor can't be empty"
-msgstr "L'auteur ne peut être vide"
+msgstr "L'auteur ne peut Ãªtre vide"
 
-#: tools\..\koi\EditConfigurationDialog.py:16 tools\..\koi\python.py:536
+#: tools\..\koi\EditConfigurationDialog.py:16 tools\..\koi\python.py:538
 msgid "Preferences"
-msgstr "Préférences"
+msgstr "PrÃ©fÃ©rences"
 
 #: tools\..\koi\EditConfigurationDialog.py:28
 msgid "Fonts"
@@ -531,26 +531,26 @@ msgstr "Addresse IP du serveur"
 
 #: tools\..\koi\EditConfigurationDialog.py:71
 msgid "Restart needed"
-msgstr "Redémarrage nécessaire"
+msgstr "RedÃ©marrage nÃ©cessaire"
 
 #: tools\..\koi\EditConfigurationDialog.py:72
 msgid ""
 "The modifications you have requested needs a restart of the application to "
 "be applied. They will take effect when you restart the application."
 msgstr ""
-"Les modifications que vous avez demandées requièrent un redémarrage de "
-"l'application pour être prises en compte. Elles n'auront d'effet qu'une fois "
-"l'application redémarrée."
+"Les modifications que vous avez demandÃ©es requiÃ¨rent un redÃ©marrage de "
+"l'application pour Ãªtre prises en compte. Elles n'auront d'effet qu'une fois "
+"l'application redÃ©marrÃ©e."
 
 #: tools\..\koi\EditCustomerDialog.py:48
 #: tools\..\koi\supply\EditSupplierDialog.py:21
 msgid "Phone"
-msgstr "Téléphone"
+msgstr "TÃ©lÃ©phone"
 
 #: tools\..\koi\EditCustomerDialog.py:49
 #: tools\..\koi\supply\EditSupplierDialog.py:22
 msgid "Phone 2"
-msgstr "Téléphone 2"
+msgstr "TÃ©lÃ©phone 2"
 
 #: tools\..\koi\EditCustomerDialog.py:50
 #: tools\..\koi\supply\EditSupplierDialog.py:23
@@ -586,7 +586,7 @@ msgstr "ID"
 msgid "Edit customer"
 msgstr "Modifier les clients"
 
-#: tools\..\koi\EditCustomerDialog.py:60 tools\..\koi\python.py:444
+#: tools\..\koi\EditCustomerDialog.py:60 tools\..\koi\python.py:446
 msgid "Customers"
 msgstr "Clients"
 
@@ -596,7 +596,7 @@ msgstr "Clients"
 #: tools\..\koi\supply\EditSupplierDialog.py:30
 #: tools\..\koi\user_mgmt\edit_user.py:45
 msgid "Detail"
-msgstr "Détail"
+msgstr "DÃ©tail"
 
 #: tools\..\koi\EditCustomerDialog.py:82
 msgid "Picture"
@@ -619,19 +619,19 @@ msgstr "Mot de passe"
 #: tools\..\koi\EditCustomerDialog.py:86
 #: tools\..\koi\user_mgmt\edit_user.py:43
 msgid "Roles"
-msgstr "Rôles"
+msgstr "RÃ´les"
 
 #: tools\..\koi\EditCustomerDialog.py:95
 msgid "Employee edit"
-msgstr "Modifier les employés"
+msgstr "Modifier les employÃ©s"
 
-#: tools\..\koi\EditCustomerDialog.py:95 tools\..\koi\python.py:524
+#: tools\..\koi\EditCustomerDialog.py:95 tools\..\koi\python.py:526
 msgid "Employees"
-msgstr "Employés"
+msgstr "EmployÃ©s"
 
 #: tools\..\koi\EditOperationDefinition.py:58
 msgid "Start date"
-msgstr "Date début"
+msgstr "Date dÃ©but"
 
 #: tools\..\koi\EditOperationDefinition.py:59
 msgid "End date"
@@ -639,25 +639,25 @@ msgstr "Date fin"
 
 #: tools\..\koi\EditOperationDefinition.py:60
 msgid "Cost"
-msgstr "Coût"
+msgstr "CoÃ»t"
 
 #: tools\..\koi\EditOperationDefinition.py:75
 msgid "New period"
-msgstr "Nouvelle période"
+msgstr "Nouvelle pÃ©riode"
 
 #: tools\..\koi\EditOperationDefinition.py:79
 msgid "Delete last period"
-msgstr "Effacer dernière période"
+msgstr "Effacer derniÃ¨re pÃ©riode"
 
 #: tools\..\koi\EditOperationDefinition.py:158
 #: tools\..\koi\gui\ProxyModel.py:131 tools\..\koi\gui\ProxyModel.py:913
 #: tools\..\koi\gui\ProxyModel.py:955
 msgid "{} can't be empty"
-msgstr "{} ne peut être vide"
+msgstr "{} ne peut Ãªtre vide"
 
 #: tools\..\koi\EditOperationDefinition.py:202
 msgid "Add a period for an operation definition"
-msgstr "Ajouter une période à une définition d'opération"
+msgstr "Ajouter une pÃ©riode Ã  une dÃ©finition d'opÃ©ration"
 
 #: tools\..\koi\EditOperationDefinition.py:210
 #: tools\..\koi\SpecialActivityDialog.py:29
@@ -668,27 +668,27 @@ msgstr "Ajouter une période à une définition d'opération"
 #: tools\..\koi\TimeReportingScanner.py:874
 #: tools\..\koi\TimeTracksOverview.py:331
 msgid "Start time"
-msgstr "Début"
+msgstr "DÃ©but"
 
 #: tools\..\koi\EditOperationDefinition.py:216
 msgid "Hourly cost"
-msgstr "Coût horaire"
+msgstr "CoÃ»t horaire"
 
 #: tools\..\koi\EditOperationDefinition.py:243
 msgid "The given cost is not valid"
-msgstr "Le coût donné est invalide"
+msgstr "Le coÃ»t donnÃ© est invalide"
 
 #: tools\..\koi\EditOperationDefinition.py:244
 msgid "The given cost doesn't look like a cost"
-msgstr "Le coût donné est incorrect"
+msgstr "Le coÃ»t donnÃ© est incorrect"
 
 #: tools\..\koi\EditOperationDefinition.py:250
 msgid "The given date is not valid"
-msgstr "la date donnée est invalide"
+msgstr "la date donnÃ©e est invalide"
 
 #: tools\..\koi\EditOperationDefinition.py:251
 msgid "Please check the syntax and that the date exists"
-msgstr "Veuillez vérifier que la date est correcte"
+msgstr "Veuillez vÃ©rifier que la date est correcte"
 
 #: tools\..\koi\EditOperationDefinition.py:273
 msgid "Short ID"
@@ -704,24 +704,24 @@ msgstr "Sur commandes"
 
 #: tools\..\koi\EditOperationDefinition.py:277
 msgid "On operations"
-msgstr "Sur opérations"
+msgstr "Sur opÃ©rations"
 
 #: tools\..\koi\EditOperationDefinition.py:278
 msgid "Periods"
-msgstr "Périodes"
+msgstr "PÃ©riodes"
 
-#: tools\..\koi\EditOperationDefinition.py:281 tools\..\koi\python.py:533
+#: tools\..\koi\EditOperationDefinition.py:281 tools\..\koi\python.py:535
 msgid "Edit operations"
-msgstr "Modifier les opérations"
+msgstr "Modifier les opÃ©rations"
 
 #: tools\..\koi\EditOperationDefinition.py:282
 msgid "All operations"
-msgstr "Toutes les opérations"
+msgstr "Toutes les opÃ©rations"
 
 #: tools\..\koi\EditOperationDefinition.py:328
 #, fuzzy
 msgid "Operation definition already in use !"
-msgstr "La définition d'opération {} n'est pas imputable"
+msgstr "La dÃ©finition d'opÃ©ration {} n'est pas imputable"
 
 #: tools\..\koi\EditOrderParts.py:113 tools\..\koi\EditOrderParts.py:885
 #: tools\..\koi\translators.py:307
@@ -735,33 +735,33 @@ msgstr "Dev. {}"
 
 #: tools\..\koi\EditOrderParts.py:865 tools\..\koi\EditOrderParts.py:1346
 msgid "Last edit by : {}"
-msgstr "Dernière modif. : {}"
+msgstr "DerniÃ¨re modif. : {}"
 
 #: tools\..\koi\EditOrderParts.py:1014
 msgid "Hours reported on operation"
-msgstr "Heures sur opérations"
+msgstr "Heures sur opÃ©rations"
 
 #: tools\..\koi\EditOrderParts.py:1015
 msgid "You cannot delete this operation because there is work reported on it."
 msgstr ""
-"Vous ne pouvez pas supprimer cette opération car il y a du travail imputé "
+"Vous ne pouvez pas supprimer cette opÃ©ration car il y a du travail imputÃ© "
 "dessus."
 
 #: tools\..\koi\EditOrderParts.py:1188
 msgid "The documents are associated to an empty order part."
-msgstr "Les documents sont associés à des parties de commandes vides."
+msgstr "Les documents sont associÃ©s Ã  des parties de commandes vides."
 
 #: tools\..\koi\EditOrderParts.py:1189
 msgid "If you leave the part empty, they won't be saved"
-msgstr "Si vous laissez la partie de commande vide, ils ne seront pas sauvés."
+msgstr "Si vous laissez la partie de commande vide, ils ne seront pas sauvÃ©s."
 
 #: tools\..\koi\EditOrderParts.py:1297
 msgid "< cust"
-msgstr "Préc. client"
+msgstr "PrÃ©c. client"
 
 #: tools\..\koi\EditOrderParts.py:1298
 msgid "< active"
-msgstr "Préc. active"
+msgstr "PrÃ©c. active"
 
 #: tools\..\koi\EditOrderParts.py:1299
 msgid "<"
@@ -804,27 +804,27 @@ msgstr "Satut commande"
 
 #: tools\..\koi\EditOrderParts.py:1318
 msgid "State"
-msgstr "État"
+msgstr "Ã‰tat"
 
 #: tools\..\koi\EditOrderParts.py:1326
 msgid "Customer order ID :"
-msgstr "N° commande client"
+msgstr "NÂ° commande client"
 
 #: tools\..\koi\EditOrderParts.py:1339
 msgid "State "
-msgstr "État"
+msgstr "Ã‰tat"
 
 #: tools\..\koi\EditOrderParts.py:1342
 msgid "Estimate sent on {}"
-msgstr "Devis envoyé le {}"
+msgstr "Devis envoyÃ© le {}"
 
 #: tools\..\koi\EditOrderParts.py:1342
 msgid "Estimate not sent."
-msgstr "Devis pas envoyé."
+msgstr "Devis pas envoyÃ©."
 
 #: tools\..\koi\EditOrderParts.py:1399 tools\..\koi\ReprintDeliverySlip.py:42
 msgid "Slip number"
-msgstr "N° de bon de livraison"
+msgstr "NÂ° de bon de livraison"
 
 #: tools\..\koi\EditOrderParts.py:1400
 msgid "Order part"
@@ -838,7 +838,7 @@ msgstr "Partie de commande"
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:345
 #: tools\..\koi\supply\SupplyOrderOverview.py:269
 msgid "Quantity"
-msgstr "Qtité"
+msgstr "QtitÃ©"
 
 #: tools\..\koi\EditOrderParts.py:1412 tools\..\koi\TModel.py:223
 msgid "Q.Ex"
@@ -846,7 +846,7 @@ msgstr "Q.Ex"
 
 #: tools\..\koi\EditOrderParts.py:1413 tools\..\koi\TModel.py:224
 msgid "D/line"
-msgstr "Éché."
+msgstr "Ã‰chÃ©."
 
 #: tools\..\koi\EditOrderParts.py:1416 tools\..\koi\TModel.py:225
 msgid ""
@@ -876,7 +876,7 @@ msgstr ""
 #: tools\..\koi\EditOrderParts.py:1433 tools\..\koi\OperationsView.py:28
 #: tools\..\koi\TModel.py:229
 msgid "Op."
-msgstr "Opér."
+msgstr "OpÃ©r."
 
 #: tools\..\koi\EditOrderParts.py:1436 tools\..\koi\OperationsView.py:30
 #: tools\..\koi\TModel.py:231
@@ -901,11 +901,11 @@ msgstr "Valeurs"
 
 #: tools\..\koi\EditOrderParts.py:1485
 msgid "Unit cost"
-msgstr "Prix calculé"
+msgstr "Prix calculÃ©"
 
 #: tools\..\koi\EditOrderParts.py:1489
 msgid "Order part state"
-msgstr "État du poste"
+msgstr "Ã‰tat du poste"
 
 #: tools\..\koi\EditOrderParts.py:1503
 msgid "Total selling price"
@@ -935,7 +935,7 @@ msgstr "Commentaires"
 #: tools\..\koi\EditOrderParts.py:1685 tools\..\koi\EditOrderParts.py:1698
 #: tools\..\koi\EditOrderParts.py:1710
 msgid "Previous order"
-msgstr "Commande précédente"
+msgstr "Commande prÃ©cÃ©dente"
 
 #: tools\..\koi\EditOrderParts.py:1691 tools\..\koi\EditOrderParts.py:1704
 #: tools\..\koi\EditOrderParts.py:1716
@@ -948,11 +948,11 @@ msgstr "Coller parties cde"
 
 #: tools\..\koi\EditOrderParts.py:1736 tools\..\koi\OperationsView.py:64
 msgid "Copy operations"
-msgstr "Copier opérations"
+msgstr "Copier opÃ©rations"
 
 #: tools\..\koi\EditOrderParts.py:1742
 msgid "Paste operations"
-msgstr "Coller opérations"
+msgstr "Coller opÃ©rations"
 
 #: tools\..\koi\EditOrderParts.py:1755
 msgid "Save order"
@@ -960,7 +960,7 @@ msgstr "Sauver la commande"
 
 #: tools\..\koi\EditOrderParts.py:1756
 msgid "Print operations"
-msgstr "Imprimer le mode opératoire"
+msgstr "Imprimer le mode opÃ©ratoire"
 
 #: tools\..\koi\EditOrderParts.py:1757
 msgid "Print as preorder"
@@ -972,7 +972,7 @@ msgstr "Imprimer le devis DOC"
 
 #: tools\..\koi\EditOrderParts.py:1759
 msgid "Activity report"
-msgstr "Rapport d'activités"
+msgstr "Rapport d'activitÃ©s"
 
 #: tools\..\koi\EditOrderParts.py:1760
 msgid "Order confirmation report"
@@ -997,27 +997,27 @@ msgstr "Rapport d'audit"
 #: tools\..\koi\EditOrderParts.py:1837
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:302
 msgid "No order or non-saved order selected"
-msgstr "Aucune commande sélectionnée ou commande non sauvée sélectionnée"
+msgstr "Aucune commande sÃ©lectionnÃ©e ou commande non sauvÃ©e sÃ©lectionnÃ©e"
 
 #: tools\..\koi\EditOrderParts.py:1838
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:303
 msgid "You can only delete an order that has already been saved"
 msgstr ""
-"Vous ne pouvez supprimer une commande que si elle a au moins été sauvée"
+"Vous ne pouvez supprimer une commande que si elle a au moins Ã©tÃ© sauvÃ©e"
 
 #: tools\..\koi\EditOrderParts.py:1854
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:286
 msgid "About to delete order {}"
-msgstr "Prêt pour effacer la commande n° {}"
+msgstr "PrÃªt pour effacer la commande nÂ° {}"
 
 #: tools\..\koi\EditOrderParts.py:1856
 msgid "About to delete preorder {}"
-msgstr "Prêt pour effacer le devis n° {}"
+msgstr "PrÃªt pour effacer le devis nÂ° {}"
 
 #: tools\..\koi\EditOrderParts.py:1858
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:288
 msgid "Are you sure ?"
-msgstr "Êtes-vous sûr ?"
+msgstr "ÃŠtes-vous sÃ»r ?"
 
 #: tools\..\koi\EditOrderParts.py:1862
 msgid "There was an error while deleting the order"
@@ -1025,25 +1025,25 @@ msgstr "Il y a eu une erreur pendant l'effacement de la commande"
 
 #: tools\..\koi\EditOrderParts.py:1869
 msgid "A part of the order already have time reported on it"
-msgstr "Une partie de la commande a déjà des imputations"
+msgstr "Une partie de la commande a dÃ©jÃ  des imputations"
 
 #: tools\..\koi\EditOrderParts.py:1870
 msgid ""
 "You can only delete an order if none of its parts has time reported on it"
 msgstr ""
-"Vous ne pouvez effacer une commande que si aucune de ses parties n'a reçu de "
+"Vous ne pouvez effacer une commande que si aucune de ses parties n'a reÃ§u de "
 "prestation"
 
 #: tools\..\koi\EditOrderParts.py:1872
 msgid "You can only delete an order if it is the last one."
-msgstr "Vous ne pouvez supprimer une commande que si c'est la dernière sauvée"
+msgstr "Vous ne pouvez supprimer une commande que si c'est la derniÃ¨re sauvÃ©e"
 
 #: tools\..\koi\EditOrderParts.py:1873
 msgid ""
 "Orders have an order number which cannot be remove because of accounting "
 "rules"
 msgstr ""
-"Les commandes sont numérotées et la numérotation doit suivre une séquence "
+"Les commandes sont numÃ©rotÃ©es et la numÃ©rotation doit suivre une sÃ©quence "
 "ininterrompue"
 
 #: tools\..\koi\EditOrderParts.py:1940
@@ -1058,29 +1058,29 @@ msgstr ""
 #: tools\..\koi\EditOrderParts.py:1989
 msgid "Can't set material price or planned hours when no operation is chosen"
 msgstr ""
-"On ne peut indiquer un coût ou des heures si aucune opération n'a été "
-"sélectionnée"
+"On ne peut indiquer un coÃ»t ou des heures si aucune opÃ©ration n'a Ã©tÃ© "
+"sÃ©lectionnÃ©e"
 
 #: tools\..\koi\EditOrderParts.py:1993
 msgid "Planned hours can only be set for imputable operations"
-msgstr "On ne peut planifier des heures sur des coûts fixes"
+msgstr "On ne peut planifier des heures sur des coÃ»ts fixes"
 
 #: tools\..\koi\EditOrderParts.py:1995
 msgid "Material price can only be set for material operations"
-msgstr "On ne peut donner un prix que sur les opérations à coût fixe"
+msgstr "On ne peut donner un prix que sur les opÃ©rations Ã  coÃ»t fixe"
 
 #: tools\..\koi\EditOrderParts.py:2011
 msgid "In order part operational <b>{}</b>"
-msgstr "Dans le mode opératoire de la partie de commande <b>{}</b>:"
+msgstr "Dans le mode opÃ©ratoire de la partie de commande <b>{}</b>:"
 
 #: tools\..\koi\EditOrderParts.py:2018
 msgid "On line <b>{}</b> : {}"
-msgstr "À la ligne <b>{}</b>: {}"
+msgstr "Ã€ la ligne <b>{}</b>: {}"
 
 #: tools\..\koi\EditOrderParts.py:2029 tools\..\koi\gui\dialog_utils.py:485
 #: tools\..\koi\gui\dialog_utils.py:501
 msgid "Some of the data you entered are not valid"
-msgstr "Une partie des données introduites n'est pas correcte"
+msgstr "Une partie des donnÃ©es introduites n'est pas correcte"
 
 #: tools\..\koi\EditOrderParts.py:2079
 msgid "Quantity to do increased for a completed part ({})"
@@ -1096,7 +1096,7 @@ msgstr ""
 #: tools\..\koi\EditOrderParts.py:2212
 #: tools\..\koi\EditTaskActionReportsDialog.py:137
 msgid "There was an error while saving your data"
-msgstr "Il y a eu une erreur pendant la sauvegare de vos données"
+msgstr "Il y a eu une erreur pendant la sauvegare de vos donnÃ©es"
 
 #: tools\..\koi\EditOrderParts.py:2558 tools\..\koi\EditOrderParts.py:2562
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:37
@@ -1105,18 +1105,18 @@ msgstr "Commande vide"
 
 #: tools\..\koi\EditOrderParts.py:2558
 msgid "You can't print the bill of operations if the order is empty"
-msgstr "Vous ne pouvez imprimer le mode opératoire si la commande est vide."
+msgstr "Vous ne pouvez imprimer le mode opÃ©ratoire si la commande est vide."
 
 #: tools\..\koi\EditOrderParts.py:2562
 msgid "You can't print the bill of operations if the order has no operations"
 msgstr ""
-"Vous ne pouvez imprimer le mode opératoire si la commande n'a pas "
-"d'opération."
+"Vous ne pouvez imprimer le mode opÃ©ratoire si la commande n'a pas "
+"d'opÃ©ration."
 
 #: tools\..\koi\EditOrderParts.py:2566
 msgid "Printing a bill of operations for a part in non appropriate state"
 msgstr ""
-"Impression du mode opératoire pour un poste qui n'est pas près pour la "
+"Impression du mode opÃ©ratoire pour un poste qui n'est pas prÃ¨s pour la "
 "production"
 
 #: tools\..\koi\EditOrderParts.py:2567
@@ -1124,12 +1124,12 @@ msgid ""
 "The order seems to not be ready for production, are your sure you want to "
 "print its bill of operations ?"
 msgstr ""
-"Vous demandez d'imprimer le mode opératoire d'un poste de commande qui ne "
-"semble pas prêt pour la production. Êtes-vous sûr ?"
+"Vous demandez d'imprimer le mode opÃ©ratoire d'un poste de commande qui ne "
+"semble pas prÃªt pour la production. ÃŠtes-vous sÃ»r ?"
 
 #: tools\..\koi\EditOrderParts.py:2637
 msgid "State change on printing"
-msgstr "Changer l'état de la commande suite à l'impression"
+msgstr "Changer l'Ã©tat de la commande suite Ã  l'impression"
 
 #: tools\..\koi\EditOrderParts.py:2638
 msgid ""
@@ -1137,12 +1137,12 @@ msgid ""
 "to \"{}\". If you disagree, we'll leave the state as it is."
 msgstr ""
 "Si vous avez l'intention d'envoyer ce devis au client comme tel, je peux "
-"changer son état vers « {} ». Si vous n'êtes pas d'accord, je laisse l'état "
+"changer son Ã©tat vers Â« {} Â». Si vous n'Ãªtes pas d'accord, je laisse l'Ã©tat "
 "tel qu'il est."
 
 #: tools\..\koi\EditOrderParts.py:2645
 msgid "Set estimate sent date on printing"
-msgstr "Définir la date d'envoi du devis"
+msgstr "DÃ©finir la date d'envoi du devis"
 
 #: tools\..\koi\EditOrderParts.py:2646
 msgid ""
@@ -1150,7 +1150,7 @@ msgid ""
 "the send date"
 msgstr ""
 "Si vous avez l'intention d'envoyer ce devis au client comme tel, je peux "
-"mettre la date d'envoi à aujourd'hui."
+"mettre la date d'envoi Ã  aujourd'hui."
 
 #: tools\..\koi\EditOrderParts.py:2731
 msgid ""
@@ -1185,7 +1185,7 @@ msgstr ""
 #: tools\..\koi\TimeTracksOverview.py:329
 #: tools\..\koi\TimeTracksOverview.py:348
 msgid "Task"
-msgstr "Tâche"
+msgstr "TÃ¢che"
 
 #: tools\..\koi\EditTaskActionReportsDialog.py:51
 #: tools\..\koi\TimeTracksOverview.py:349
@@ -1195,7 +1195,7 @@ msgstr "Heure"
 #: tools\..\koi\EditTaskActionReportsDialog.py:52
 #: tools\..\koi\TimeTracksOverview.py:332
 msgid "Recorded at"
-msgstr "Enregistrée le"
+msgstr "EnregistrÃ©e le"
 
 #: tools\..\koi\EditTaskActionReportsDialog.py:53
 #: tools\..\koi\TimeTracksOverview.py:352
@@ -1222,10 +1222,10 @@ msgid ""
 "recordings. After doing so, the program will automatically conclude that the "
 "time record is not necessary anymore"
 msgstr ""
-"Vous ne pouvez modifier cette ligne car elle a été automatiquement créée "
-"d'après les pointages. Si vous voulez la modifier, il faut éliminer les "
-"pointages correspondant. Après cela, le programme concluerau automatiquement "
-"que la ligne n'est plus nécessaire et il l'enlèvera pour vous."
+"Vous ne pouvez modifier cette ligne car elle a Ã©tÃ© automatiquement crÃ©Ã©e "
+"d'aprÃ¨s les pointages. Si vous voulez la modifier, il faut Ã©liminer les "
+"pointages correspondant. AprÃ¨s cela, le programme concluerau automatiquement "
+"que la ligne n'est plus nÃ©cessaire et il l'enlÃ¨vera pour vous."
 
 #: tools\..\koi\EditTimeTracksDialog.py:216
 msgid "You can't modify this row"
@@ -1238,15 +1238,15 @@ msgid ""
 "need to create another row with the same task and a positive or negative "
 "amount of hours if you want to add or remove hours"
 msgstr ""
-"Vous ne pouvez modifier cette ligne car elle a été automatiquement créée "
-"d'après les pointages. Si vous désirez changer le temps passé sur une tâche, "
-"vous devez créer une autre ligne dans la table et y mettre le nombre "
-"d'heures souhaité. Si vous voulez retirer des heures, vous devez introduire "
-"un nombre d'heures négatif."
+"Vous ne pouvez modifier cette ligne car elle a Ã©tÃ© automatiquement crÃ©Ã©e "
+"d'aprÃ¨s les pointages. Si vous dÃ©sirez changer le temps passÃ© sur une tÃ¢che, "
+"vous devez crÃ©er une autre ligne dans la table et y mettre le nombre "
+"d'heures souhaitÃ©. Si vous voulez retirer des heures, vous devez introduire "
+"un nombre d'heures nÃ©gatif."
 
 #: tools\..\koi\EditTimeTracksDialog.py:246
 msgid "Time spent on tasks"
-msgstr "Temps passé sur les tâches"
+msgstr "Temps passÃ© sur les tÃ¢ches"
 
 #: tools\..\koi\EditTimeTracksDialog.py:258
 msgid ""
@@ -1259,11 +1259,11 @@ msgid ""
 "task with a duration of three hours."
 msgstr ""
 "Dans la table ci-dessous avez deux types de lignes. Les grises qui montrent "
-"le temps passé sur des tâches calculé d'après les pointages. Comme ces temps "
-"sont calculés automatiquement, vous ne pouvez les changer. Les lignes noires "
-"ont été encodées manuellement. Elles représentent des corrections à ajouter "
-"aux heures calculées. Les corrections peuvent être positives ou négatives "
-"(vous pouvez indiquer des heures négatives pour retirer des heures)"
+"le temps passÃ© sur des tÃ¢ches calculÃ© d'aprÃ¨s les pointages. Comme ces temps "
+"sont calculÃ©s automatiquement, vous ne pouvez les changer. Les lignes noires "
+"ont Ã©tÃ© encodÃ©es manuellement. Elles reprÃ©sentent des corrections Ã  ajouter "
+"aux heures calculÃ©es. Les corrections peuvent Ãªtre positives ou nÃ©gatives "
+"(vous pouvez indiquer des heures nÃ©gatives pour retirer des heures)"
 
 #: tools\..\koi\EditTimeTracksDialog.py:276
 #: tools\..\koi\TimeReportingScanner.py:862
@@ -1279,7 +1279,7 @@ msgstr "Total heures :"
 msgid "Timesheet for <b>{}</b> on <b>{}</b>"
 msgstr "Feuille de pointage de {}, le {}"
 
-#: tools\..\koi\FindOrder.py:16 tools\..\koi\python.py:435
+#: tools\..\koi\FindOrder.py:16 tools\..\koi\python.py:437
 msgid "Find order"
 msgstr "Recherche devis/commandes"
 
@@ -1289,15 +1289,15 @@ msgstr "Recherche"
 
 #: tools\..\koi\FindOrder.py:34
 msgid "Preorder Nr"
-msgstr "N° devis"
+msgstr "NÂ° devis"
 
 #: tools\..\koi\FindOrder.py:34
 msgid "Order Nr"
-msgstr "N° commande"
+msgstr "NÂ° commande"
 
 #: tools\..\koi\FindOrder.py:34
 msgid "Customer Nr"
-msgstr "N° cde client"
+msgstr "NÂ° cde client"
 
 #: tools\..\koi\FindOrder.py:87
 #: tools\..\koi\delivery_slips\DeliverySlipPanel.py:239
@@ -1323,11 +1323,11 @@ msgstr "Veuillez donner un nouveau nom pour le filtre"
 
 #: tools\..\koi\OrderOverview.py:285 tools\..\koi\OrderOverview.py:576
 msgid "Orders overview"
-msgstr "Aperçu des commandes"
+msgstr "AperÃ§u des commandes"
 
 #: tools\..\koi\OrderOverview.py:472
 msgid "Order Overview"
-msgstr "Aperçu commandes"
+msgstr "AperÃ§u commandes"
 
 #: tools\..\koi\OrderOverview.py:539
 #: tools\..\koi\delivery_slips\DeliverySlipPanel.py:141
@@ -1355,15 +1355,15 @@ msgstr "{}x{}={}h, reste:{}h"
 #: tools\..\koi\PostView.py:275 tools\..\koi\gui\indicators_panel.py:84
 #: tools\..\koi\gui\indicators_panel.py:105
 msgid "Collecting data..."
-msgstr "Calcul des données"
+msgstr "Calcul des donnÃ©es"
 
 #: tools\..\koi\PostView.py:387
 msgid "{} - Estimated to do : {}h; done : {}h"
-msgstr "{} - estimé à faire : {}h; fait : {}h"
+msgstr "{} - estimÃ© Ã  faire : {}h; fait : {}h"
 
 #: tools\..\koi\PostView.py:411
 msgid "Started"
-msgstr "Démarré"
+msgstr "DÃ©marrÃ©"
 
 #: tools\..\koi\PostView.py:421 tools\..\koi\PostView.py:454
 #: tools\..\koi\translators.py:136 tools\..\koi\translators.py:204
@@ -1372,27 +1372,27 @@ msgstr "{}h"
 
 #: tools\..\koi\PostView.py:444
 msgid "Not started yet"
-msgstr "Pas démarré"
+msgstr "Pas dÃ©marrÃ©"
 
 #: tools\..\koi\PostView.py:502
 msgid "Post overview"
-msgstr "Aperçu des postes"
+msgstr "AperÃ§u des postes"
 
 #: tools\..\koi\PostView.py:510
 msgid "Refresh"
-msgstr "Rafraîchir"
+msgstr "RafraÃ®chir"
 
 #: tools\..\koi\PostView.py:512
 msgid "By deadline"
-msgstr "Tri par échéance"
+msgstr "Tri par Ã©chÃ©ance"
 
 #: tools\..\koi\PostView.py:514
 msgid "By hours left to do"
-msgstr "Tri heures restant à faire"
+msgstr "Tri heures restant Ã  faire"
 
 #: tools\..\koi\PostView.py:534
 msgid "Posts Overview"
-msgstr "Aperçu des postes"
+msgstr "AperÃ§u des postes"
 
 #: tools\..\koi\PostView.py:560
 msgid "Posts"
@@ -1420,7 +1420,7 @@ msgstr "Avant"
 
 #: tools\..\koi\PresenceOverview.py:201
 msgid "Year"
-msgstr "Année"
+msgstr "AnnÃ©e"
 
 #: tools\..\koi\PresenceOverview.py:202
 msgid "Month"
@@ -1429,7 +1429,7 @@ msgstr "Mois"
 #: tools\..\koi\PresenceOverview.py:334 tools\..\koi\TimeTracksOverview.py:106
 #: tools\..\koi\TimeTracksOverview.py:286
 msgid "Employee"
-msgstr "Employé"
+msgstr "EmployÃ©"
 
 #: tools\..\koi\PresenceOverview.py:337
 msgid "Correction"
@@ -1448,21 +1448,21 @@ msgstr "Absences"
 #: tools\..\koi\TimeTracksOverview.py:213
 #: tools\..\koi\TimeTracksOverview.py:254
 msgid "Can't edit"
-msgstr "Édition impossible"
+msgstr "Ã‰dition impossible"
 
 #: tools\..\koi\PresenceOverview.py:668 tools\..\koi\PresenceOverview.py:726
 #: tools\..\koi\TimeTracksOverview.py:213
 #: tools\..\koi\TimeTracksOverview.py:254
 msgid "You must first select a day/person."
-msgstr "Il faut d'abord sélectionner une personne/jour"
+msgstr "Il faut d'abord sÃ©lectionner une personne/jour"
 
 #: tools\..\koi\PresenceOverview.py:759
 msgid "Presence overview"
-msgstr "Aperçu des activités"
+msgstr "AperÃ§u des activitÃ©s"
 
 #: tools\..\koi\PresenceOverview.py:797 tools\..\koi\TimeTracksOverview.py:307
 msgid "Month before"
-msgstr "Mois précédent"
+msgstr "Mois prÃ©cÃ©dent"
 
 #: tools\..\koi\PresenceOverview.py:798 tools\..\koi\TimeTracksOverview.py:308
 #: tools\..\koi\gui\indicators_panel.py:196
@@ -1484,11 +1484,11 @@ msgstr "Correction mensuelle"
 
 #: tools\..\koi\PresenceOverview.py:823
 msgid "Presence Overview"
-msgstr "Aperçu des activités"
+msgstr "AperÃ§u des activitÃ©s"
 
 #: tools\..\koi\PresenceOverview.py:828
 msgid "Overview"
-msgstr "Aperçu des activités"
+msgstr "AperÃ§u des activitÃ©s"
 
 #: tools\..\koi\PresenceOverview.py:845
 msgid "Day"
@@ -1513,7 +1513,7 @@ msgstr "Un demi-jour"
 
 #: tools\..\koi\PresenceOverview.py:1019
 msgid "Set period"
-msgstr "Période"
+msgstr "PÃ©riode"
 
 #: tools\..\koi\PresenceOverview.py:1026
 msgid "Set time off for {}"
@@ -1532,11 +1532,11 @@ msgid ""
 "Here you can give a small message that will be printed togetehr with the "
 "preorder."
 msgstr ""
-"Vous pouvez donner ici quelques lignes qui seront placées en début du devis"
+"Vous pouvez donner ici quelques lignes qui seront placÃ©es en dÃ©but du devis"
 
 #: tools\..\koi\PrintPreorderDialog.py:37
 msgid "Header text"
-msgstr "En-tête"
+msgstr "En-tÃªte"
 
 #: tools\..\koi\PrintPreorderDialog.py:42
 msgid "Footer text"
@@ -1551,11 +1551,11 @@ msgid ""
 msgstr ""
 "Madame, Monsieur,\n"
 "\n"
-"Veuillez trouver ci dessous le devis discuté avec vous. Veuillez nous le "
-"renvoyer signé pour que nous puissions poursuivre la réalisation de cette "
+"Veuillez trouver ci dessous le devis discutÃ© avec vous. Veuillez nous le "
+"renvoyer signÃ© pour que nous puissions poursuivre la rÃ©alisation de cette "
 "commande.\n"
 "\n"
-"Sincères salutations."
+"SincÃ¨res salutations."
 
 #: tools\..\koi\PrintPreorderDialog.py:69
 msgid ""
@@ -1563,51 +1563,51 @@ msgid ""
 "\n"
 "the company team."
 msgstr ""
-"Sincères salutations,\n"
+"SincÃ¨res salutations,\n"
 "\n"
-"l'équipe."
+"l'Ã©quipe."
 
-#: tools\..\koi\python.py:163
+#: tools\..\koi\python.py:164
 msgid "Contacting updates server"
-msgstr "Connection au serveur de mise à jour"
+msgstr "Connection au serveur de mise Ã  jour"
 
-#: tools\..\koi\python.py:165
+#: tools\..\koi\python.py:166
 msgid "Loading database URL"
-msgstr "Chargement de l'URL de la base de données"
+msgstr "Chargement de l'URL de la base de donnÃ©es"
 
-#: tools\..\koi\python.py:172
+#: tools\..\koi\python.py:173
 msgid "Can't connect to the main server"
 msgstr "Impossible de se connecter au serveur"
 
-#: tools\..\koi\python.py:173
+#: tools\..\koi\python.py:174
 msgid ""
 "I was unable to contact the main server (located here : {}). It is not 100% "
 "necessary to do so but that's not normal either. You should tell your "
 "administrator about that. I will now allow you to change the network address "
 "of the server I know in the preferences panel."
 msgstr ""
-"Impossible de contacter le serveur principal (situé ici : {}). Je peux "
+"Impossible de contacter le serveur principal (situÃ© ici : {}). Je peux "
 "continuer sans cela mais cette situation n'est pas normale. Vous devriez "
-"avertir votre administrateur système. Vous allez à présent avoir "
-"l'opportunité de changer l'adresse du serveur."
-
-#: tools\..\koi\python.py:195
-msgid "Can't initialize the database connection"
-msgstr "Impossible de se connecter à la base de données"
+"avertir votre administrateur systÃ¨me. Vous allez Ã  prÃ©sent avoir "
+"l'opportunitÃ© de changer l'adresse du serveur."
 
 #: tools\..\koi\python.py:196
+msgid "Can't initialize the database connection"
+msgstr "Impossible de se connecter Ã  la base de donnÃ©es"
+
+#: tools\..\koi\python.py:197
 msgid "I have tried this url : {}. And got this problem : {}"
 msgstr ""
 
-#: tools\..\koi\python.py:205
+#: tools\..\koi\python.py:207
 msgid "Checking DB connection"
-msgstr "Vérification connection base de données"
+msgstr "VÃ©rification connection base de donnÃ©es"
 
-#: tools\..\koi\python.py:209
+#: tools\..\koi\python.py:211
 msgid "Can't connect to the database"
-msgstr "Impossible de se connecter à la base de données"
+msgstr "Impossible de se connecter Ã  la base de donnÃ©es"
 
-#: tools\..\koi\python.py:210
+#: tools\..\koi\python.py:212
 msgid ""
 "<b>This program is not usable without a database and will therefore shut "
 "down now.</b> You should verify if the server is running because this "
@@ -1615,190 +1615,190 @@ msgid ""
 "<b>call the system administrator now </b> because this error should not "
 "happen."
 msgstr ""
-"<b>Ce programme n'est pas utilisable sans base de données et va donc\n"
-"être arrêté.</b> Vous devez vérifier que le serveur (l'ordinateur) "
+"<b>Ce programme n'est pas utilisable sans base de donnÃ©es et va donc\n"
+"Ãªtre arrÃªtÃ©.</b> Vous devez vÃ©rifier que le serveur (l'ordinateur) "
 "fonctionne\n"
 "car cette situation peut affecter les autres utilisateurs. <b>Nous vous\n"
-"conseillons d'appeler l'administrateur du système car ce problème ne\n"
+"conseillons d'appeler l'administrateur du systÃ¨me car ce problÃ¨me ne\n"
 "devrait pas arriver en pratique.</b><br/><br/>"
 
-#: tools\..\koi\python.py:217
+#: tools\..\koi\python.py:219
 msgid "Loading additional data"
-msgstr "Chargement de données additionnelles"
+msgstr "Chargement de donnÃ©es additionnelles"
 
-#: tools\..\koi\python.py:421
+#: tools\..\koi\python.py:423
 msgid "Create supply order"
-msgstr "Créer une commande fournisseur"
+msgstr "CrÃ©er une commande fournisseur"
 
-#: tools\..\koi\python.py:425
+#: tools\..\koi\python.py:427
 msgid "Supply order overview"
-msgstr "Aperçu commandes fournisseurs"
+msgstr "AperÃ§u commandes fournisseurs"
 
-#: tools\..\koi\python.py:429
+#: tools\..\koi\python.py:431
 msgid "Edit suppliers"
 msgstr "Modifier les fournisseurs"
 
-#: tools\..\koi\python.py:433
+#: tools\..\koi\python.py:435
 msgid "Supply"
 msgstr "Fourniture"
 
-#: tools\..\koi\python.py:439 tools\..\koi\python.py:500
+#: tools\..\koi\python.py:441 tools\..\koi\python.py:502
 msgid "Show order overview"
-msgstr "Aperçu commandes"
+msgstr "AperÃ§u commandes"
 
-#: tools\..\koi\python.py:443
+#: tools\..\koi\python.py:445
 msgid "Edit customers"
 msgstr "Modifier les clients"
 
-#: tools\..\koi\python.py:447
+#: tools\..\koi\python.py:449
 msgid "Create order"
-msgstr "Créer une commande"
+msgstr "CrÃ©er une commande"
 
-#: tools\..\koi\python.py:452 tools\..\koi\ReprintDeliverySlip.py:49
+#: tools\..\koi\python.py:454 tools\..\koi\ReprintDeliverySlip.py:49
 #: tools\..\koi\delivery_slips\DeliverySlipPanel.py:174
 msgid "Order"
 msgstr "Commande"
 
-#: tools\..\koi\python.py:454
+#: tools\..\koi\python.py:456
 msgid "Show presence overview"
-msgstr "Montrer les activités"
+msgstr "Montrer les activitÃ©s"
 
-#: tools\..\koi\python.py:455
+#: tools\..\koi\python.py:457
 msgid "Print badges"
 msgstr "Imprimer les badges"
 
-#: tools\..\koi\python.py:456
+#: tools\..\koi\python.py:458
 msgid "Print non billable barcodes"
-msgstr "Imprimer les codes barres pour les tâches non facturables"
+msgstr "Imprimer les codes barres pour les tÃ¢ches non facturables"
 
-#: tools\..\koi\python.py:457
+#: tools\..\koi\python.py:459
 msgid "Print machines barcodes"
 msgstr "Imprimer les codes barres machines"
 
-#: tools\..\koi\python.py:458
+#: tools\..\koi\python.py:460
 msgid "Print presence barcodes"
-msgstr "Imprimer les codes barres pour les tâches de présence"
+msgstr "Imprimer les codes barres pour les tÃ¢ches de prÃ©sence"
 
-#: tools\..\koi\python.py:460 tools\..\koi\TimeReportingScanner.py:52
+#: tools\..\koi\python.py:462 tools\..\koi\TimeReportingScanner.py:52
 msgid "Time tracking"
-msgstr "Activités"
+msgstr "ActivitÃ©s"
 
-#: tools\..\koi\python.py:471
+#: tools\..\koi\python.py:473
 msgid "Create new delivery slip"
-msgstr "Créer un nouveau bordereau de livraison"
+msgstr "CrÃ©er un nouveau bordereau de livraison"
 
-#: tools\..\koi\python.py:475
+#: tools\..\koi\python.py:477
 msgid "Show delivery slips"
 msgstr "Bordereaux de livraison"
 
-#: tools\..\koi\python.py:490
+#: tools\..\koi\python.py:492
 #: tools\..\koi\delivery_slips\DeliverySlipPanel.py:109
 #: tools\..\koi\reporting\order_activity_report.py:131
 msgid "Delivery slips"
 msgstr "Bordereaux de livraison"
 
-#: tools\..\koi\python.py:501
+#: tools\..\koi\python.py:503
 msgid "Show posts view"
-msgstr "Apperçu des postes"
+msgstr "ApperÃ§u des postes"
 
-#: tools\..\koi\python.py:502
+#: tools\..\koi\python.py:504
 msgid "Print plant status"
 msgstr "Imprimer rapport de charge"
 
-#: tools\..\koi\python.py:506 tools\..\koi\configuration\charts_config.py:19
+#: tools\..\koi\python.py:508 tools\..\koi\configuration\charts_config.py:19
 msgid "Production"
 msgstr "Production"
 
-#: tools\..\koi\python.py:523
+#: tools\..\koi\python.py:525
 msgid "Edit employees"
-msgstr "Modifier les employés"
+msgstr "Modifier les employÃ©s"
 
-#: tools\..\koi\python.py:534
+#: tools\..\koi\python.py:536
 msgid "Edit machines"
 msgstr "Modifier les machines"
 
-#: tools\..\koi\python.py:535
+#: tools\..\koi\python.py:537
 msgid "Document templates"
 msgstr "Documents types"
 
-#: tools\..\koi\python.py:537
+#: tools\..\koi\python.py:539
 msgid "Parameters"
-msgstr "Paramètres"
+msgstr "ParamÃ¨tres"
 
-#: tools\..\koi\python.py:543
+#: tools\..\koi\python.py:545
 msgid "Detach tab"
-msgstr "Détacher onglet"
+msgstr "DÃ©tacher onglet"
 
-#: tools\..\koi\python.py:547
+#: tools\..\koi\python.py:549
 msgid "Remove tab"
 msgstr "Fermer onglet"
 
-#: tools\..\koi\python.py:554
-msgid "Windows"
-msgstr "Fenêtres"
-
 #: tools\..\koi\python.py:556
+msgid "Windows"
+msgstr "FenÃªtres"
+
+#: tools\..\koi\python.py:558
 msgid "Help page"
 msgstr "Aide"
 
-#: tools\..\koi\python.py:557
+#: tools\..\koi\python.py:559
 msgid "About {}"
-msgstr "À propos de {}"
+msgstr "Ã€ propos de {}"
 
-#: tools\..\koi\python.py:558
+#: tools\..\koi\python.py:560
 msgid "Help"
 msgstr "Aide"
 
-#: tools\..\koi\python.py:568
+#: tools\..\koi\python.py:570
 msgid "Quit"
 msgstr "Quitter"
 
-#: tools\..\koi\python.py:670
+#: tools\..\koi\python.py:672
 msgid "Unable to show the order"
 msgstr "Impossible de montrer la commande"
 
-#: tools\..\koi\python.py:720
+#: tools\..\koi\python.py:722
 msgid "No supplier defined"
-msgstr "Pas de fournisseur défini"
+msgstr "Pas de fournisseur dÃ©fini"
 
-#: tools\..\koi\python.py:720
+#: tools\..\koi\python.py:722
 msgid "Before creating an order, you must first create a supplier"
-msgstr "Avant de créer une commande il faut d'abord créer des fournisseurs !"
+msgstr "Avant de crÃ©er une commande il faut d'abord crÃ©er des fournisseurs !"
 
-#: tools\..\koi\python.py:747
+#: tools\..\koi\python.py:749
 msgid "No customer defined"
-msgstr "Pas de client défini"
+msgstr "Pas de client dÃ©fini"
 
-#: tools\..\koi\python.py:747
+#: tools\..\koi\python.py:749
 msgid "Before creating an order, you must first create a customer"
-msgstr "Avant de créer une commande il faut d'abord créer des clients !"
+msgstr "Avant de crÃ©er une commande il faut d'abord crÃ©er des clients !"
 
-#: tools\..\koi\python.py:959
+#: tools\..\koi\python.py:961
 msgid ""
 "There's no selected order. We can't create a delivery slip without that."
 msgstr ""
-"Il n'y a pas de commande sélectionnée. On ne peut pas créer de bon de "
+"Il n'y a pas de commande sÃ©lectionnÃ©e. On ne peut pas crÃ©er de bon de "
 "livraison sans commande."
 
-#: tools\..\koi\python.py:1036
+#: tools\..\koi\python.py:1038
 msgid "There was a serious problem while accessing the database"
-msgstr "Il y a eu une erreur pendant l'accès à la base de donnée"
+msgstr "Il y a eu une erreur pendant l'accÃ¨s Ã  la base de donnÃ©e"
 
-#: tools\..\koi\python.py:1037
+#: tools\..\koi\python.py:1039
 msgid "This problem might require you to contact your local administrator"
 msgstr "Vous devriez contacter votre administrateur local"
 
-#: tools\..\koi\python.py:1098
+#: tools\..\koi\python.py:1112
 msgid "Not authorized"
-msgstr "Pas autorisé"
+msgstr "Pas autorisÃ©"
 
-#: tools\..\koi\python.py:1098
+#: tools\..\koi\python.py:1112
 msgid ""
 "You are not authorized to use this program. Please check with your system "
 "administrator."
 msgstr ""
-"Vous n'êtes pas autorisé à utiliser ce programme. Demandez à votre "
-"administrateur système pour obtenir des accès."
+"Vous n'Ãªtes pas autorisÃ© Ã  utiliser ce programme. Demandez Ã  votre "
+"administrateur systÃ¨me pour obtenir des accÃ¨s."
 
 #: tools\..\koi\ReprintDeliverySlip.py:32
 msgid "Print a delivery slip"
@@ -1807,7 +1807,7 @@ msgstr "Imprimer un bordereau de livraison"
 #: tools\..\koi\ReprintDeliverySlip.py:49
 #: tools\..\koi\delivery_slips\DeliverySlipPanel.py:171
 msgid "Slip Nr"
-msgstr "N° de bon"
+msgstr "NÂ° de bon"
 
 #: tools\..\koi\ReprintDeliverySlip.py:49
 #: tools\..\koi\delivery_slips\DeliverySlipPanel.py:172
@@ -1816,26 +1816,26 @@ msgstr "Date"
 
 #: tools\..\koi\ReprintDeliverySlip.py:107
 msgid "The delivery slip number {} is not valid"
-msgstr "Le n° de bordereau de livraison {} n'est pas valide"
+msgstr "Le nÂ° de bordereau de livraison {} n'est pas valide"
 
 #: tools\..\koi\ReprintDeliverySlip.py:113
 #: tools\..\koi\delivery_slips\DeliverySlipPanel.py:75
 msgid "The delivery slip {} doesn't exist"
-msgstr "Le bordereau de livraison n° {} n'existe pas"
+msgstr "Le bordereau de livraison nÂ° {} n'existe pas"
 
 #: tools\..\koi\ReprintDeliverySlip.py:117
 msgid "Something wrong happened while printing"
-msgstr "Il y a eu un problème lors de l'impression"
+msgstr "Il y a eu un problÃ¨me lors de l'impression"
 
 #: tools\..\koi\SpecialActivityDialog.py:30
 #: tools\..\koi\SpecialActivityDialog.py:88
 msgid "End time"
-msgstr "Fin de période"
+msgstr "Fin de pÃ©riode"
 
 #: tools\..\koi\SpecialActivityDialog.py:66
 #: tools\..\koi\gui\MetaFormDialog.py:374
 msgid "Some of the data you encoded is not right"
-msgstr "Une partie des données n'est pas correcte"
+msgstr "Une partie des donnÃ©es n'est pas correcte"
 
 #: tools\..\koi\SpecialActivityDialog.py:80
 msgid "Edit holidays"
@@ -1851,26 +1851,26 @@ msgstr "Modification des vacances pour {}"
 
 #: tools\..\koi\SpecialActivityDialog.py:133
 msgid "The start time must be before than the end time"
-msgstr "La date de début doit être avant la date de fin"
+msgstr "La date de dÃ©but doit Ãªtre avant la date de fin"
 
 #: tools\..\koi\SpecialActivityDialog.py:144
 msgid "Validation failed"
-msgstr "Échec de validation"
+msgstr "Ã‰chec de validation"
 
 #: tools\..\koi\SpecialActivityDialog.py:151
 #: tools\..\koi\gui\MetaFormDialog.py:386
 #: tools\..\koi\gui\MetaFormDialog.py:389
 msgid "There was an error while saving"
-msgstr "Il y a eu une erreur pendant la sauvegarde de vos données"
+msgstr "Il y a eu une erreur pendant la sauvegarde de vos donnÃ©es"
 
 #: tools\..\koi\TaskService.py:206
 msgid "The order part {} does not exist !"
 msgstr ""
-"La partie de commande n° {} n'existe pas ou n'est pas encore en production"
+"La partie de commande nÂ° {} n'existe pas ou n'est pas encore en production"
 
 #: tools\..\koi\TaskService.py:218
 msgid "The order {} does not exist !"
-msgstr "La commande n° {} n'existe pas ou n'est pas encore en production"
+msgstr "La commande nÂ° {} n'existe pas ou n'est pas encore en production"
 
 #: tools\..\koi\TimeReportingScanner.py:54
 msgid "Delete report"
@@ -1882,7 +1882,7 @@ msgstr "Ajouter pointage"
 
 #: tools\..\koi\TimeReportingScanner.py:60
 msgid "Add presence report"
-msgstr "Ajouter un pointage de présence"
+msgstr "Ajouter un pointage de prÃ©sence"
 
 #: tools\..\koi\TimeReportingScanner.py:62
 msgid "All"
@@ -1890,7 +1890,7 @@ msgstr "Tout"
 
 #: tools\..\koi\TimeReportingScanner.py:313
 msgid "Time reporting scanner"
-msgstr "Détail des pointages"
+msgstr "DÃ©tail des pointages"
 
 #: tools\..\koi\TimeReportingScanner.py:317
 msgid ""
@@ -1901,13 +1901,13 @@ msgid ""
 "green bar shows the presence of the employee during the day; it doesn't show "
 "actual work. The actual work is shown on the blue bars."
 msgstr ""
-"L'image ci-dessous montre les différénts pointage réalisé par une personne "
-"(lignes verticales). On y voit également les périodes d'activité, de "
-"présence (barres colorées). La barre verte indique le temps de présence. Les "
+"L'image ci-dessous montre les diffÃ©rÃ©nts pointage rÃ©alisÃ© par une personne "
+"(lignes verticales). On y voit Ã©galement les pÃ©riodes d'activitÃ©, de "
+"prÃ©sence (barres colorÃ©es). La barre verte indique le temps de prÃ©sence. Les "
 "bleues indiquent le travail. Vous ne pouvez changer que les pointages, les "
-"périodes (les barres) sont déduites par le programme. Faites un click droit "
+"pÃ©riodes (les barres) sont dÃ©duites par le programme. Faites un click droit "
 "sur une ligne du temps pour y ajouter un pointage. Clickez dans le vide pour "
-"créer des pointages sur des tâches non représentées."
+"crÃ©er des pointages sur des tÃ¢ches non reprÃ©sentÃ©es."
 
 #: tools\..\koi\TimeReportingScanner.py:520
 msgid "Time records for {} on {}"
@@ -1924,7 +1924,7 @@ msgstr "Suivi des temps seulement pour les commandes en production"
 
 #: tools\..\koi\TimeReportingScanner.py:748 tools\..\koi\gui\ProxyModel.py:712
 msgid "The order or order part with number {} doesn't exist."
-msgstr "La commande ou la partie de commande n° {} n'existe pas"
+msgstr "La commande ou la partie de commande nÂ° {} n'existe pas"
 
 #: tools\..\koi\TimeReportingScanner.py:845
 msgid "identifier"
@@ -1936,23 +1936,23 @@ msgstr "Identifiant"
 
 #: tools\..\koi\TimeReportingScanner.py:908
 msgid "Start time is not valid"
-msgstr "La date de début est invalide"
+msgstr "La date de dÃ©but est invalide"
 
 #: tools\..\koi\TimeReportingScanner.py:912
 msgid "Type of task is not valid"
-msgstr "Type de tâche invalide invalide"
+msgstr "Type de tÃ¢che invalide invalide"
 
 #: tools\..\koi\TimeReportingScanner.py:916
 msgid "No task selected"
-msgstr "Pas de tâche sélectionnée"
+msgstr "Pas de tÃ¢che sÃ©lectionnÃ©e"
 
 #: tools\..\koi\TimeReportView.py:276
 msgid "On {}"
-msgstr "À {}"
+msgstr "Ã€ {}"
 
 #: tools\..\koi\TimeReportView.py:278
 msgid "Edited by {}"
-msgstr "Modifié par {}"
+msgstr "ModifiÃ© par {}"
 
 #: tools\..\koi\TimeReportView.py:289
 msgid ", on {}"
@@ -1968,11 +1968,11 @@ msgstr "Heures du {}"
 
 #: tools\..\koi\TimeTracksOverview.py:93
 msgid "Time Records Overview - {}"
-msgstr "Aperçu activités - {}"
+msgstr "AperÃ§u activitÃ©s - {}"
 
 #: tools\..\koi\TimeTracksOverview.py:311
 msgid "Time Records Overview"
-msgstr "Aperçu activités"
+msgstr "AperÃ§u activitÃ©s"
 
 #: tools\..\koi\TimeTracksOverview.py:320
 msgid "Hours worked per person"
@@ -2020,7 +2020,7 @@ msgstr "Janvier"
 
 #: tools\..\koi\translators.py:10 tools\..\koi\translators.py:122
 msgid "February"
-msgstr "Février"
+msgstr "FÃ©vrier"
 
 #: tools\..\koi\translators.py:10 tools\..\koi\translators.py:122
 msgid "March"
@@ -2044,7 +2044,7 @@ msgstr "Juillet"
 
 #: tools\..\koi\translators.py:11 tools\..\koi\translators.py:123
 msgid "August"
-msgstr "Août"
+msgstr "AoÃ»t"
 
 #: tools\..\koi\translators.py:11 tools\..\koi\translators.py:123
 msgid "September"
@@ -2060,7 +2060,7 @@ msgstr "Novembre"
 
 #: tools\..\koi\translators.py:12 tools\..\koi\translators.py:124
 msgid "December"
-msgstr "Décembre"
+msgstr "DÃ©cembre"
 
 #: tools\..\koi\translators.py:139
 msgid "{:0>02}m"
@@ -2088,7 +2088,7 @@ msgstr "Cmde"
 
 #: tools\..\koi\WeekOverview.py:163
 msgid "Week before"
-msgstr "Semaine précédente"
+msgstr "Semaine prÃ©cÃ©dente"
 
 #: tools\..\koi\WeekOverview.py:164
 msgid "Week after"
@@ -2096,7 +2096,7 @@ msgstr "Semaine suivante"
 
 #: tools\..\koi\WeekOverview.py:171
 msgid "Deadlines Overview"
-msgstr "Aperçu des échéances"
+msgstr "AperÃ§u des Ã©chÃ©ances"
 
 #: tools\..\koi\charts\indicators_service.py:334
 msgid "Remaining"
@@ -2104,15 +2104,15 @@ msgstr "Solde"
 
 #: tools\..\koi\charts\indicators_service.py:334
 msgid "Consumed"
-msgstr "Consommé"
+msgstr "ConsommÃ©"
 
 #: tools\..\koi\charts\indicators_service.py:982
 msgid "Planned"
-msgstr "Planifié"
+msgstr "PlanifiÃ©"
 
 #: tools\..\koi\charts\indicators_service.py:982
 msgid "Actual"
-msgstr "Réel"
+msgstr "RÃ©el"
 
 #: tools\..\koi\charts\indicators_service.py:1098
 msgid "To bill"
@@ -2120,15 +2120,15 @@ msgstr "Facturable"
 
 #: tools\..\koi\charts\indicators_service.py:1098
 msgid "Actual cost"
-msgstr "Coût réel"
+msgstr "CoÃ»t rÃ©el"
 
 #: tools\..\koi\charts\indicators_service.py:1098
 msgid "Planned cost"
-msgstr "Coût planifié"
+msgstr "CoÃ»t planifiÃ©"
 
 #: tools\..\koi\clocks\clock_client.py:301
 msgid "Task doesn't exist"
-msgstr "La tâche n'existe pas"
+msgstr "La tÃ¢che n'existe pas"
 
 #: tools\..\koi\clocks\clock_client.py:663
 #: tools\..\koi\server\clock_client.py:1131
@@ -2139,16 +2139,16 @@ msgstr "Scannez encore pour plus !"
 #: tools\..\koi\clocks\clock_client.py:684
 #: tools\..\koi\server\clock_client.py:1229
 msgid "Scan an operation"
-msgstr "Scannez une opération !"
+msgstr "Scannez une opÃ©ration !"
 
 #: tools\..\koi\clocks\clock_client.py:696
 msgid "Ongoing tasks :"
-msgstr "Tâches en cours :"
+msgstr "TÃ¢ches en cours :"
 
 #: tools\..\koi\clocks\clock_client.py:728
 #: tools\..\koi\server\clock_client.py:1213
 msgid "Warning ! Task without customer !"
-msgstr "Attention ! Tâche sans client !"
+msgstr "Attention ! TÃ¢che sans client !"
 
 #: tools\..\koi\clocks\clock_client.py:751
 #: tools\..\koi\server\clock_client.py:1243
@@ -2162,15 +2162,15 @@ msgstr "Bonsoir !"
 
 #: tools\..\koi\clocks\clock_client.py:782
 msgid "Check with management"
-msgstr "Vérifiez auprès de la direction"
+msgstr "VÃ©rifiez auprÃ¨s de la direction"
 
 #: tools\..\koi\clocks\clock_client.py:802
 msgid "Your status"
-msgstr "À propos de vous"
+msgstr "Ã€ propos de vous"
 
 #: tools\..\koi\clocks\clock_client.py:808
 msgid "Day started on {}"
-msgstr "Démarré à {}"
+msgstr "DÃ©marrÃ© Ã  {}"
 
 #: tools\..\koi\clocks\clock_client.py:813
 msgid "Hours : {}"
@@ -2181,14 +2181,14 @@ msgstr "Heures : {}"
 #: tools\..\koi\server\clock_client.py:1556
 #: tools\..\koi\server\clock_client.py:1581
 msgid "You're beginning the task"
-msgstr "Tâche commencée"
+msgstr "TÃ¢che commencÃ©e"
 
 #: tools\..\koi\clocks\clock_client.py:868
 #: tools\..\koi\server\clock_client.py:1521
 #: tools\..\koi\server\clock_client.py:1566
 #: tools\..\koi\server\clock_client.py:1586
 msgid "You've finished the task"
-msgstr "Tâche terminée"
+msgstr "TÃ¢che terminÃ©e"
 
 #: tools\..\koi\clocks\clock_client.py:873
 #: tools\..\koi\server\clock_client.py:487
@@ -2205,7 +2205,7 @@ msgstr "Pointage OUT !"
 #: tools\..\koi\clocks\clock_client.py:923
 #: tools\..\koi\server\clock_client.py:1647
 msgid "Non billable task !"
-msgstr "Tâches non facturables !"
+msgstr "TÃ¢ches non facturables !"
 
 #: tools\..\koi\configuration\business_functions.py:72
 msgid "No estimate ?"
@@ -2217,24 +2217,24 @@ msgid ""
 "estimate before. This means that this order will be without a estimate. "
 "Continue anyway ?"
 msgstr ""
-"Vous allez mettre la commande à l'état « {} ». Toutefois, il semblerait que "
-"cette commande n'aie jamais fait l'objet d'un devis. Continuer malgré cela ?"
+"Vous allez mettre la commande Ã  l'Ã©tat Â« {} Â». Toutefois, il semblerait que "
+"cette commande n'aie jamais fait l'objet d'un devis. Continuer malgrÃ© cela ?"
 
 #: tools\..\koi\configuration\business_functions.py:81
 msgid "No estimate sent ?"
-msgstr "Devis pas envoyé ?"
+msgstr "Devis pas envoyÃ© ?"
 
 #: tools\..\koi\configuration\business_functions.py:82
 msgid ""
 "You want to put the order in the state {}. However it seems you didn't send "
 "any estimate to the customer. Continue anyway ?"
 msgstr ""
-"Vous allez mettre le devis à l'état « {} ». Toutefois, il semblerait que "
-"vous n'ayez jamais envoyé le devis. Continuer malgré cela ?"
+"Vous allez mettre le devis Ã  l'Ã©tat Â« {} Â». Toutefois, il semblerait que "
+"vous n'ayez jamais envoyÃ© le devis. Continuer malgrÃ© cela ?"
 
 #: tools\..\koi\configuration\charts_config.py:17
 msgid "ISO indicators overview"
-msgstr "Aperçu des indicateurs ISO"
+msgstr "AperÃ§u des indicateurs ISO"
 
 #: tools\..\koi\configuration\charts_config.py:28
 msgid "Commercial"
@@ -2242,12 +2242,12 @@ msgstr "Commercial"
 
 #: tools\..\koi\configuration\charts_config.py:45
 msgid "Global financial overview"
-msgstr "Vue globale financière"
+msgstr "Vue globale financiÃ¨re"
 
 #: tools\..\koi\configuration\charts_config.py:48
 #, fuzzy
 msgid "Financial values for %MONTH%"
-msgstr "Valeurs financières pour le mois"
+msgstr "Valeurs financiÃ¨res pour le mois"
 
 #: tools\..\koi\configuration\charts_config.py:62
 msgid "Trends"
@@ -2258,19 +2258,19 @@ msgid "Global production overview"
 msgstr "Vue globale production"
 
 #: tools\..\koi\datalayer\connection.py:47
-#: tools\..\koi\datalayer\database_session.py:207
+#: tools\..\koi\datalayer\database_session.py:241
 msgid " A ping was successful (so host is up, database is down)"
 msgstr ""
-" Un « ping » a été exécuté avec succès (donc le serveur fonctionne mais la "
-"base de données pas)"
+" Un Â« ping Â» a Ã©tÃ© exÃ©cutÃ© avec succÃ¨s (donc le serveur fonctionne mais la "
+"base de donnÃ©es pas)"
 
 #: tools\..\koi\datalayer\connection.py:49
-#: tools\..\koi\datalayer\database_session.py:209
+#: tools\..\koi\datalayer\database_session.py:243
 msgid " A ping was not successful (so host is down)"
-msgstr " Un ping a été réalisé mais le serveur ne répond pas."
+msgstr " Un ping a Ã©tÃ© rÃ©alisÃ© mais le serveur ne rÃ©pond pas."
 
 #: tools\..\koi\datalayer\connection.py:54
-#: tools\..\koi\datalayer\database_session.py:214
+#: tools\..\koi\datalayer\database_session.py:248
 msgid "Ping failed, the host is down."
 msgstr "Impossible de faire le ping"
 
@@ -2279,7 +2279,7 @@ msgid ""
 "Cannot delete this customer because there are orders for him. Remove the "
 "orders first."
 msgstr ""
-"Vous ne pouvez pas supprimer ce client car il est lié à des commandes. "
+"Vous ne pouvez pas supprimer ce client car il est liÃ© Ã  des commandes. "
 "Enlevez ces commandes d'abord."
 
 #: tools\..\koi\datalayer\employee_mapping.py:25
@@ -2292,7 +2292,7 @@ msgstr "Modifier les pointages"
 
 #: tools\..\koi\datalayer\employee_mapping.py:27
 msgid "Modify parameters"
-msgstr "Modifier les paramètres"
+msgstr "Modifier les paramÃ¨tres"
 
 #: tools\..\koi\datalayer\employee_mapping.py:29
 msgid "Change monthly timetracks correction"
@@ -2300,7 +2300,7 @@ msgstr "Changer la correction mensuelle de pointage"
 
 #: tools\..\koi\datalayer\employee_mapping.py:30
 msgid "View financial information"
-msgstr "Voir les informations financières"
+msgstr "Voir les informations financiÃ¨res"
 
 #: tools\..\koi\datalayer\employee_mapping.py:31
 msgid "View prices"
@@ -2319,14 +2319,14 @@ msgid ""
 "Can't add a new period after an operation definition period that was already "
 "terminated"
 msgstr ""
-"Vous ne pouvez ajouter une période après une période qui est déjà clôturée\n"
-"(il ly a une autre période non clôturée pour cela)"
+"Vous ne pouvez ajouter une pÃ©riode aprÃ¨s une pÃ©riode qui est dÃ©jÃ  clÃ´turÃ©e\n"
+"(il ly a une autre pÃ©riode non clÃ´turÃ©e pour cela)"
 
 #: tools\..\koi\datalayer\parser_utils.py:94
 #: tools\..\koi\datalayer\query_parser.py:174
 #: tools\..\koi\datalayer\supply_order_query_parser.py:188
 msgid "the date you provided ({}) is not valid"
-msgstr "la date donnée ({}) est invalide "
+msgstr "la date donnÃ©e ({}) est invalide "
 
 #: tools\..\koi\datalayer\parser_utils.py:132
 #: tools\..\koi\datalayer\query_parser.py:271
@@ -2348,8 +2348,8 @@ msgstr "erreur de structure"
 #: tools\..\koi\datalayer\supply_order_query_parser.py:51
 msgid "Parsing failed for text : {} {}, possible completions are : {}"
 msgstr ""
-"L'interprétation de votre requête a échoué : {} {}, vous pouvez peut-être "
-"compléter par {}"
+"L'interprÃ©tation de votre requÃªte a Ã©chouÃ© : {} {}, vous pouvez peut-Ãªtre "
+"complÃ©ter par {}"
 
 #: tools\..\koi\datalayer\parser_utils.py:267
 #: tools\..\koi\datalayer\query_parser.py:53
@@ -2362,14 +2362,14 @@ msgstr "Impossible d'analyser le text : {} {}"
 #: tools\..\koi\datalayer\supply_order_query_parser.py:639
 msgid "There was an error ({}) while parsing the request around '{}'"
 msgstr ""
-"Il y a eu une erreur ({}) pendant l'évaluation de la requête aux environs de "
+"Il y a eu une erreur ({}) pendant l'Ã©valuation de la requÃªte aux environs de "
 "'{}'"
 
 #: tools\..\koi\datalayer\parser_utils.py:479
 #: tools\..\koi\datalayer\query_parser.py:767
 #: tools\..\koi\datalayer\supply_order_query_parser.py:641
 msgid "There was an error ({}) while parsing the request."
-msgstr "Il y a eu une erreur ({}) pendant l'évaluation de la requête."
+msgstr "Il y a eu une erreur ({}) pendant l'Ã©valuation de la requÃªte."
 
 #: tools\..\koi\datalayer\quality.py:60
 msgid "Non conform customer"
@@ -2393,7 +2393,7 @@ msgstr "Imprimer un bordereau de livraison"
 
 #: tools\..\koi\delivery_slips\DeliverySlipPanel.py:121
 msgid "Desactivate delivery slip"
-msgstr "Désactiver un bordereau de livraison"
+msgstr "DÃ©sactiver un bordereau de livraison"
 
 #: tools\..\koi\delivery_slips\DeliverySlipPanel.py:125
 msgid "Activate delivery slip"
@@ -2409,12 +2409,12 @@ msgstr "Partie de commande"
 
 #: tools\..\koi\delivery_slips\DeliverySlipView.py:26
 msgid "Q. out"
-msgstr "Qté sortie"
+msgstr "QtÃ© sortie"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:32
 #, fuzzy
 msgid "Order has never been in production"
-msgstr "Commande à la production"
+msgstr "Commande Ã  la production"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:33
 msgid ""
@@ -2424,11 +2424,11 @@ msgstr ""
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:38
 msgid "There's nothing to report on a delivery slip !"
-msgstr "Il n'y a rien à mettre sur le bordereau de livraison."
+msgstr "Il n'y a rien Ã  mettre sur le bordereau de livraison."
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:42
 msgid "All parts completed"
-msgstr "Tous les postes sont terminés"
+msgstr "Tous les postes sont terminÃ©s"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:43
 msgid ""
@@ -2436,9 +2436,9 @@ msgid ""
 "explictely marked them as completed/aborted or because the quantities out "
 "are equal to the planned quantities), making a delivery slip is not needed"
 msgstr ""
-"Tous les postes de la commande sont déjà terminés (soit parce-qu'on les a "
-"explicitement marqués terminés/annulé, soit parce-que toutes les quantités "
-"ont été sorties). Il n'y a pas besoin de faire un bon de livraison."
+"Tous les postes de la commande sont dÃ©jÃ  terminÃ©s (soit parce-qu'on les a "
+"explicitement marquÃ©s terminÃ©s/annulÃ©, soit parce-que toutes les quantitÃ©s "
+"ont Ã©tÃ© sorties). Il n'y a pas besoin de faire un bon de livraison."
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:47
 msgid "No work done"
@@ -2450,9 +2450,9 @@ msgid ""
 "was actually done.\n"
 "I'll let you do it although it doesn't make much sense."
 msgstr ""
-"Vous tentez de créer un bon de livraison pour des parties de commande sur "
-"lesquelles aucun travail n'a été réalisé. Vous pouvez continuer mais cela "
-"est peut-être le signe d'une anomalie."
+"Vous tentez de crÃ©er un bon de livraison pour des parties de commande sur "
+"lesquelles aucun travail n'a Ã©tÃ© rÃ©alisÃ©. Vous pouvez continuer mais cela "
+"est peut-Ãªtre le signe d'une anomalie."
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:74
 msgid "Delete the last delivery slip"
@@ -2460,7 +2460,7 @@ msgstr "Effacer le dernier bordereau de livraison"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:100
 msgid "You're about to delete the delivery slip number {}. Do you confirm ?"
-msgstr "Vous allez supprimer le bordereau de livraison n° {}. Vous confirmez ?"
+msgstr "Vous allez supprimer le bordereau de livraison nÂ° {}. Vous confirmez ?"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:108
 msgid "Unable to delete the last delivery slip"
@@ -2468,15 +2468,15 @@ msgstr "Impossible d'effacer le bordereau de livraison"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:121
 msgid "No delivery slip to delete !"
-msgstr "Pas de bordereau à supprimer !"
+msgstr "Pas de bordereau Ã  supprimer !"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:122
 msgid "There are no delivery slip to delete"
-msgstr "Il n'y a pas de bordereau de livraison à supprimer."
+msgstr "Il n'y a pas de bordereau de livraison Ã  supprimer."
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:141
 msgid "Create delivery slip"
-msgstr "Créer un bordereau de livraison"
+msgstr "CrÃ©er un bordereau de livraison"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:157
 #, fuzzy
@@ -2485,46 +2485,46 @@ msgstr "Partie de commande"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:159
 msgid "Qty plan."
-msgstr "Qté plan."
+msgstr "QtÃ© plan."
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:160
 msgid "Qty so far"
-msgstr "Qté sortie"
+msgstr "QtÃ© sortie"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:161
 msgid "Qty out now"
-msgstr "À sortir"
+msgstr "Ã€ sortir"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:175
 msgid "Close the order"
-msgstr "Clôturer la commande"
+msgstr "ClÃ´turer la commande"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:202
 msgid "(customer number <b>{}</b>)"
-msgstr "(n° client : <b>{}</b>)"
+msgstr "(nÂ° client : <b>{}</b>)"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:204
 msgid ""
 "Creating a new delivery slip for order <b>{}</b>{} of customer <b>{}</b>"
 msgstr ""
-"Création d'un nouveau bordereau de livraison pour la commande <b>{}</b> {} "
+"CrÃ©ation d'un nouveau bordereau de livraison pour la commande <b>{}</b> {} "
 "de <b>{}</b>"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:303
 msgid "For {} {}, quantity {}"
-msgstr "Pour [{}] {}, <b>{}</b> pièce(s)"
+msgstr "Pour [{}] {}, <b>{}</b> piÃ¨ce(s)"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:313
 msgid ""
 "You requested to create a new delivery slip. However, you didn't encode any "
 "quantities"
 msgstr ""
-"Vous avez demandé de créer un nouveau bordereau de livraison mais il n'y a "
-"pas de qantités encodées"
+"Vous avez demandÃ© de crÃ©er un nouveau bordereau de livraison mais il n'y a "
+"pas de qantitÃ©s encodÃ©es"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:318
 msgid "One quantity is too big"
-msgstr "Une des quantités est trop grande"
+msgstr "Une des quantitÃ©s est trop grande"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:318
 msgid ""
@@ -2532,9 +2532,9 @@ msgid ""
 "total quantity out bigger than what was ordered. You must either change the "
 "quantity out or change the planned quantity."
 msgstr ""
-"Attention, vous avez donné des quantités qui vont faire en sorte que la "
-"quantité totale produite sera supérieure à celle commandée. Il vous faut "
-"donc soit changer la quantité produite, soit changer la quantité commandée."
+"Attention, vous avez donnÃ© des quantitÃ©s qui vont faire en sorte que la "
+"quantitÃ© totale produite sera supÃ©rieure Ã  celle commandÃ©e. Il vous faut "
+"donc soit changer la quantitÃ© produite, soit changer la quantitÃ© commandÃ©e."
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:322
 msgid ""
@@ -2550,18 +2550,18 @@ msgid ""
 "confirm.\n"
 " Here are the quantities you're going to record"
 msgstr ""
-"<b>Vous allez rédiger un bon de livraison. Cette opération ne pourra être\n"
-"défaite, veuillez confirmer.<br/>Voici les quantités que vous allez\n"
+"<b>Vous allez rÃ©diger un bon de livraison. Cette opÃ©ration ne pourra Ãªtre\n"
+"dÃ©faite, veuillez confirmer.<br/>Voici les quantitÃ©s que vous allez\n"
 "enregistrer"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:339
 msgid "Error while creating the delivery slip"
-msgstr "Erreur pendant la création du bordereau delivraison"
+msgstr "Erreur pendant la crÃ©ation du bordereau delivraison"
 
 #: tools\..\koi\delivery_slips\EditDeliverySlipDialog.py:340
 msgid "The delivery slip was not created due to an unexpected error."
 msgstr ""
-"Le bordereau de livraison n'a pu être créé suite à une problème technique"
+"Le bordereau de livraison n'a pu Ãªtre crÃ©Ã© suite Ã  une problÃ¨me technique"
 
 #: tools\..\koi\doc_manager\docs_collection_widget.py:440
 #: tools\..\koi\doc_manager\docs_collection_widget.py:611
@@ -2587,11 +2587,11 @@ msgstr "Documents"
 
 #: tools\..\koi\doc_manager\docs_collection_widget.py:812
 msgid "The file is empty"
-msgstr "Le fichier ne peut être vide"
+msgstr "Le fichier ne peut Ãªtre vide"
 
 #: tools\..\koi\doc_manager\docs_collection_widget.py:816
 msgid "Can't open the file located at {}"
-msgstr "Je n'arrive pas à ouvrir le fichier situé ici : {}"
+msgstr "Je n'arrive pas Ã  ouvrir le fichier situÃ© ici : {}"
 
 #: tools\..\koi\doc_manager\docs_collection_widget.py:831
 #: tools\..\koi\doc_manager\templates_collection_widget.py:157
@@ -2605,11 +2605,11 @@ msgstr "Il y a eu une erreur pendant l'envoi du fichier"
 
 #: tools\..\koi\doc_manager\docs_collection_widget.py:890
 msgid "Downloading"
-msgstr "Téléchargement"
+msgstr "TÃ©lÃ©chargement"
 
 #: tools\..\koi\doc_manager\docs_collection_widget.py:899
 msgid "There was a problem while downloading the file from the server"
-msgstr "Il y a eu une erreur pendant la réception du fichier"
+msgstr "Il y a eu une erreur pendant la rÃ©ception du fichier"
 
 #: tools\..\koi\doc_manager\docs_collection_widget.py:937
 msgid "Save a document"
@@ -2638,7 +2638,7 @@ msgstr "Effacement d'un document"
 #: tools\..\koi\doc_manager\docs_collection_widget.py:1014
 #: tools\..\koi\doc_manager\templates_collection_widget.py:139
 msgid "Are you sure you want to remove {}"
-msgstr "Êtes-vous sûr de supprimer {} ?"
+msgstr "ÃŠtes-vous sÃ»r de supprimer {} ?"
 
 #: tools\..\koi\doc_manager\docs_collection_widget.py:1018
 #: tools\..\koi\doc_manager\templates_collection_widget.py:146
@@ -2647,15 +2647,15 @@ msgstr "Il y a eu une erreur pendant l'effacement"
 
 #: tools\..\koi\doc_manager\docs_collection_widget.py:1044
 msgid "Categories"
-msgstr "Catégories"
+msgstr "CatÃ©gories"
 
 #: tools\..\koi\doc_manager\templates_collection_widget.py:68
 msgid "Horse Ref."
-msgstr "Réf. Horse"
+msgstr "RÃ©f. Horse"
 
 #: tools\..\koi\doc_manager\templates_collection_widget.py:134
 msgid "Confirmation for deleting reference template"
-msgstr "Confirmation de l'effacement d'un canvas de référence"
+msgstr "Confirmation de l'effacement d'un canvas de rÃ©fÃ©rence"
 
 #: tools\..\koi\doc_manager\templates_collection_widget.py:135
 msgid ""
@@ -2664,10 +2664,10 @@ msgid ""
 "you should immediately upload another template with the same reference. OK "
 "to proceed ?"
 msgstr ""
-"Vous allez supprimer un document type. Ces documents sont utilisés par des "
+"Vous allez supprimer un document type. Ces documents sont utilisÃ©s par des "
 "parties de Horse. L'effacer perturbera ces parties. Vous devriez donc "
-"enregistrer une nouvelle version de ce document type, avec la <i>même</i> "
-"référence aussi vite que possible. D'accord pour continuer ?"
+"enregistrer une nouvelle version de ce document type, avec la <i>mÃªme</i> "
+"rÃ©fÃ©rence aussi vite que possible. D'accord pour continuer ?"
 
 #: tools\..\koi\doc_manager\templates_collection_widget.py:138
 msgid "Deleting a template"
@@ -2683,7 +2683,7 @@ msgstr "Remplacement"
 
 #: tools\..\koi\doc_manager\templates_collection_widget.py:218
 msgid "Replacing a Horse reference document"
-msgstr "Remplacement d'un canvas Horse de référence"
+msgstr "Remplacement d'un canvas Horse de rÃ©fÃ©rence"
 
 #: tools\..\koi\doc_manager\templates_collection_widget.py:219
 msgid ""
@@ -2698,7 +2698,7 @@ msgstr ""
 #: tools\..\koi\doc_manager\templates_collection_widget.py:545
 #: tools\..\koi\doc_manager\templates_collection_widget.py:547
 msgid "Templates library"
-msgstr "Bibliothèque de documents types"
+msgstr "BibliothÃ¨que de documents types"
 
 #: tools\..\koi\doc_manager\templates_collection_widget.py:549
 msgid ""
@@ -2707,9 +2707,9 @@ msgid ""
 "reference document (one with a special Horse reference, then simply drag and "
 "drop the document on the appropriate row"
 msgstr ""
-"Ici vous pouvez ajouter ou retirer des documents types de la bibliothèque. "
-"Si nécessaire, vous pouvez changer leur nom ou ajouter une description. Si "
-"vous désirez remplacer un document de référence (avec une référence horse) "
+"Ici vous pouvez ajouter ou retirer des documents types de la bibliothÃ¨que. "
+"Si nÃ©cessaire, vous pouvez changer leur nom ou ajouter une description. Si "
+"vous dÃ©sirez remplacer un document de rÃ©fÃ©rence (avec une rÃ©fÃ©rence horse) "
 "alors faites simplement un drag/drop desssus."
 
 #: tools\..\koi\doc_manager\template_select_dialog.py:51
@@ -2718,7 +2718,7 @@ msgstr "Choisir document type"
 
 #: tools\..\koi\doc_manager\template_select_dialog.py:67
 msgid "Please select one or more template."
-msgstr "Veuillez sélectionner un ou plusieurs documents types"
+msgstr "Veuillez sÃ©lectionner un ou plusieurs documents types"
 
 #: tools\..\koi\doc_manager\template_select_dialog.py:70
 msgid "Documents Templates"
@@ -2726,7 +2726,7 @@ msgstr "Documents types"
 
 #: tools\..\koi\gui\AboutBox.py:16
 msgid "About {}..."
-msgstr "À propos de {}..."
+msgstr "Ã€ propos de {}..."
 
 #: tools\..\koi\gui\AboutBox.py:24
 msgid ""
@@ -2745,16 +2745,47 @@ msgid ""
 "as long as you give those freedoms and duties to anybody you give this "
 "program to.\n"
 msgstr ""
-"Ce programme vous est donné avec quelques libertés et devoirs importants. "
-"Nous croyons qu'ils aideront à construire une monde meilleur. Ils sont "
-"rassemblés dans la license d'utilisation GNU General Public Licence ci-"
-"dessous. <b>Cette license a valeur légale.</b> Veillez à la lire "
+"Ce programme vous est donnÃ© avec quelques libertÃ©s et devoirs importants. "
+"Nous croyons qu'ils aideront Ã  construire une monde meilleur. Ils sont "
+"rassemblÃ©s dans la license d'utilisation GNU General Public Licence ci-"
+"dessous. <b>Cette license a valeur lÃ©gale.</b> Veillez Ã  la lire "
 "attentivement. L'utilisation de ce logiciel implique l'acceptation des "
-"termes de la licence.<br/>En deux mots, nous vous donnons la liberté :"
+"termes de la licence.<br/>En deux mots, nous vous donnons la libertÃ© :"
 "<ul><li>d'utiliser le programme;</li><li>d'en inspecter le code pour vous "
 "assurer de ce qu'il fait;</li><li>de le modifier;</li><li>d'en distribuer "
-"des copies</li></ul>pour autant que vous placiez la même licence sur les "
-"programmes dérivés de celui-ci.\n"
+"des copies</li></ul>pour autant que vous placiez la mÃªme licence sur les "
+"programmes dÃ©rivÃ©s de celui-ci.\n"
+
+#: tools\..\koi\gui\AboutDemoBox.py:11
+msgid "Welcome to {}..."
+msgstr "Bienvenue dans la dÃ©mo de {}..."
+
+#: tools\..\koi\gui\AboutDemoBox.py:18
+msgid ""
+"\n"
+"  <p>Welcome to the demo of {0}. This demo is fully functional and it\n"
+"    comes with an example database. That should be enough to have a full\n"
+"    tour of {0}.</p>\n"
+"  <p>The first screen you'll see is a list of orders that were done\n"
+"    in our imaginary company. If you double click on one of them,\n"
+"    you'll see its details. From there on, you can browse around\n"
+"    and test everything.</p>\n"
+"  <p>As it is the demo version, all the data you'll change will be visible\n"
+"    on internet. The demonstration database will be reased from time to time."
+"</p>\n"
+"  <p>Enjoy and feel free to contact us in case of problems :\n"
+"    <a href=\"mailto:koimes@proximus.be\">koimes@proximus.be</a></p>\n"
+msgstr ""
+"<p>Bienvenue dans la dÃ©mo de {0}. Cette dÃ©mo est complÃ¨tement fonctionnelle et "
+"utilise une base de donnÃ©es dÃ©jÃ  remplie. Cela vous permettra de faire un "
+"tour complet du programme. <p>Le premier Ã©cran que vous allez voir est la "
+"liste des commandes en cours. Si vous double-clickez sur une d'entre elles, "
+"vous verrez son dÃ©tail. De lÃ , nous vous invitons Ã  examiner les menus pour "
+"explorer les possibilitÃ©s. <p>Comme il s'agit d'une dÃ©monstration, tout ce "
+"que vous allez modifier sera visible sur Internet. De plus la base de donnÃ©es "
+"sera effacÃ©e de temps en temps. <p>Profitez bien de KoÃ¯ et en cas de "
+"problÃ¨me, n'hÃ©sitez pas Ã  nous envoyer un email <a href=\"mailto:"
+"koimes@proximus.be\">koimes@proximus.be</a>"
 
 #: tools\..\koi\gui\ask_date.py:32
 msgid "Pick a date"
@@ -2762,7 +2793,7 @@ msgstr ""
 
 #: tools\..\koi\gui\ComboDelegate.py:400
 msgid "Can't be empty"
-msgstr "Ne peut être vide"
+msgstr "Ne peut Ãªtre vide"
 
 #: tools\..\koi\gui\ComboDelegate.py:407
 msgid "Below lower bound"
@@ -2770,7 +2801,7 @@ msgstr "Trop bas"
 
 #: tools\..\koi\gui\ComboDelegate.py:409 tools\..\koi\gui\ComboDelegate.py:412
 msgid "Error while parsing data"
-msgstr "Format de données incorrect"
+msgstr "Format de donnÃ©es incorrect"
 
 #: tools\..\koi\gui\dialog_utils.py:351
 msgid "Error !"
@@ -2790,7 +2821,7 @@ msgstr "Avertissement !"
 
 #: tools\..\koi\gui\dialog_utils.py:393
 msgid "The data have been changed."
-msgstr "Les données ont été changées"
+msgstr "Les donnÃ©es ont Ã©tÃ© changÃ©es"
 
 #: tools\..\koi\gui\dialog_utils.py:393
 msgid "Do you want to save your changes?"
@@ -2812,7 +2843,7 @@ msgstr "Information"
 #: tools\..\koi\gui\dialog_utils.py:467 tools\..\koi\gui\dialog_utils.py:480
 #: tools\..\koi\gui\dialog_utils.py:496
 msgid "On line <b>{}</b>:"
-msgstr "À la ligne <b>{}</b>:"
+msgstr "Ã€ la ligne <b>{}</b>:"
 
 #: tools\..\koi\gui\dialog_utils.py:530
 msgid "A bit of help"
@@ -2824,7 +2855,7 @@ msgstr "Syntaxe invalide"
 
 #: tools\..\koi\gui\horse_panel.py:229 tools\..\koi\gui\horse_panel.py:432
 msgid "The company"
-msgstr "La Précision Liégeoise"
+msgstr "La PrÃ©cision LiÃ©geoise"
 
 #: tools\..\koi\gui\indicators_panel.py:154
 msgid "Recompute"
@@ -2840,7 +2871,7 @@ msgstr "{} mois avant"
 
 #: tools\..\koi\gui\indicators_panel.py:197
 msgid "{} months after"
-msgstr "{} mois après"
+msgstr "{} mois aprÃ¨s"
 
 #: tools\..\koi\gui\MetaFormDialog.py:113
 msgid "New"
@@ -2856,7 +2887,7 @@ msgstr "Il y a eu une erreur pendant l'effacement"
 
 #: tools\..\koi\gui\MetaFormDialog.py:523
 msgid "You have selected nothing for delete."
-msgstr "Vous n'avez rien sélectionné qui doit être effacé"
+msgstr "Vous n'avez rien sÃ©lectionnÃ© qui doit Ãªtre effacÃ©"
 
 #: tools\..\koi\gui\PersistentFilter.py:80
 msgid "Choose filter's name"
@@ -2888,19 +2919,19 @@ msgstr "Filtre :"
 
 #: tools\..\koi\gui\PersistentFilter.py:191
 msgid "Query :"
-msgstr "Requête :"
+msgstr "RequÃªte :"
 
 #: tools\..\koi\gui\PersistentFilter.py:205
 msgid "Shared"
-msgstr "Partagé"
+msgstr "PartagÃ©"
 
 #: tools\..\koi\gui\PersistentFilter.py:229
 msgid "The filter's query can't be empty"
-msgstr "La requête du filtre ne peut être vide"
+msgstr "La requÃªte du filtre ne peut Ãªtre vide"
 
 #: tools\..\koi\gui\PersistentFilter.py:291
 msgid "The filter you want to delete was never saved"
-msgstr "Le filtre que vous voulez supprimer n'a pas encore été sauvé !"
+msgstr "Le filtre que vous voulez supprimer n'a pas encore Ã©tÃ© sauvÃ© !"
 
 #: tools\..\koi\gui\PersistentFilter.py:296
 msgid "You can't delete the filter because it doesn't belong to you."
@@ -2915,8 +2946,8 @@ msgid ""
 "There is already a filter with that name. You must delete it first if you "
 "want to use that name."
 msgstr ""
-"Il y a déjà un filtre avec ce nom. Vous devez d'abord effacer celui-là si "
-"vous voulez utiliser le même nom."
+"Il y a dÃ©jÃ  un filtre avec ce nom. Vous devez d'abord effacer celui-lÃ  si "
+"vous voulez utiliser le mÃªme nom."
 
 #: tools\..\koi\gui\PersistentFilter.py:344
 msgid "This is not your filter !"
@@ -2936,7 +2967,7 @@ msgstr "Pointage pas possible sur les devis"
 
 #: tools\..\koi\gui\ProxyModel.py:2699
 msgid "Insert row"
-msgstr "Insérer une ligne"
+msgstr "InsÃ©rer une ligne"
 
 #: tools\..\koi\gui\ProxyModel.py:2705
 msgid "Append row"
@@ -2972,7 +3003,7 @@ msgstr "Machines"
 
 #: tools\..\koi\people_admin\people_admin_mapping.py:15
 msgid "Unpaid day off"
-msgstr "Congé sans-solde"
+msgstr "CongÃ© sans-solde"
 
 #: tools\..\koi\people_admin\people_admin_mapping.py:16
 msgid "Free day"
@@ -2984,11 +3015,11 @@ msgstr "Heures supp."
 
 #: tools\..\koi\people_admin\people_admin_mapping.py:20
 msgid "Recuperation"
-msgstr "Récupération"
+msgstr "RÃ©cupÃ©ration"
 
 #: tools\..\koi\people_admin\people_admin_mapping.py:24
 msgid "Unemployment short"
-msgstr "Petit chômage"
+msgstr "Petit chÃ´mage"
 
 #: tools\..\koi\people_admin\people_admin_mapping.py:27
 msgid "Work accident"
@@ -3000,7 +3031,7 @@ msgstr "VA"
 
 #: tools\..\koi\people_admin\people_admin_mapping.py:35
 msgid "OFF"
-msgstr "CGÉ"
+msgstr "CGÃ‰"
 
 #: tools\..\koi\people_admin\people_admin_mapping.py:37
 msgid "UOFF"
@@ -3048,11 +3079,11 @@ msgstr "Description :"
 
 #: tools\..\koi\quality\NonConformityDialog.py:274
 msgid "Remove non conformity"
-msgstr "Enlever la non conformité"
+msgstr "Enlever la non conformitÃ©"
 
 #: tools\..\koi\quality\NonConformityDialog.py:275
 msgid "Please confirm you want to remove the issue {} ({})"
-msgstr "Êtes-vous sûr de supprimer la non conformité {} ({}) ?"
+msgstr "ÃŠtes-vous sÃ»r de supprimer la non conformitÃ© {} ({}) ?"
 
 #: tools\..\koi\quality\NonConformityDialog.py:293
 msgid "{} ({})"
@@ -3060,7 +3091,7 @@ msgstr "{} ({})"
 
 #: tools\..\koi\quality\NonConformityDialog.py:349
 msgid "Non conformity"
-msgstr "Non conformité"
+msgstr "Non conformitÃ©"
 
 #: tools\..\koi\quality\NonConformityDialog.py:356
 msgid "Add"
@@ -3075,12 +3106,12 @@ msgid ""
 "<p>Please fill in some details about the non conformity. This non conformity "
 "is concerns</p> <p> <b>{}</b> : {}</p>"
 msgstr ""
-"<p>Veuillez donner quelques informations sur la non conformité. Cette non "
-"conformité concerne</p> <p> <b>{}</b> : {}</p>"
+"<p>Veuillez donner quelques informations sur la non conformitÃ©. Cette non "
+"conformitÃ© concerne</p> <p> <b>{}</b> : {}</p>"
 
 #: tools\..\koi\quality\NonConformityDialog.py:411
 msgid "Create a non conformity"
-msgstr "Créer une non conformité"
+msgstr "CrÃ©er une non conformitÃ©"
 
 #: tools\..\koi\reporting\audit_order_report.py:46
 msgid "What"
@@ -3104,28 +3135,28 @@ msgstr "Audit commande {}"
 
 #: tools\..\koi\reporting\delivery_slip_report.py:59
 msgid "Delivery slip <b>{}</b>"
-msgstr "Bon de livraison n° {}"
+msgstr "Bon de livraison nÂ° {}"
 
 #: tools\..\koi\reporting\delivery_slip_report.py:70
 msgid "!!! This delivery slip has been DEACTIVATED !!!"
-msgstr "!!! Ce bordereau a été DÉSACTIVÉ !!!"
+msgstr "!!! Ce bordereau a Ã©tÃ© DÃ‰SACTIVÃ‰ !!!"
 
 #: tools\..\koi\reporting\delivery_slip_report.py:74
 msgid "Order number <b>{}</b>"
-msgstr "Numéro de commande <b>{}</b>"
+msgstr "NumÃ©ro de commande <b>{}</b>"
 
 #: tools\..\koi\reporting\delivery_slip_report.py:78
 #: tools\..\koi\reporting\order_confirmation_report.py:201
 #: tools\..\koi\reporting\preorder_report.py:94
 msgid "Reference"
-msgstr "Réf. P.L."
+msgstr "RÃ©f. P.L."
 
 #: tools\..\koi\reporting\delivery_slip_report.py:78
 #: tools\..\koi\reporting\order_confirmation_report.py:201
 #: tools\..\koi\reporting\preorder_report.py:94
 #: tools\..\koi\reporting\production_status_detailed_report.py:78
 msgid "Designation"
-msgstr "Désignation"
+msgstr "DÃ©signation"
 
 #: tools\..\koi\reporting\delivery_slip_report.py:111
 #, fuzzy
@@ -3133,12 +3164,12 @@ msgid ""
 "Sauf avis contraire stipule ci-dessus, les marchandises circulent aux<br/> "
 "frais du delivery_slips et a ses risques et perils."
 msgstr ""
-"Sauf avis contraire stipulé ci-dessus, les marchandises circulent aux<br/>\n"
-"frais du client et à ses risques et périls."
+"Sauf avis contraire stipulÃ© ci-dessus, les marchandises circulent aux<br/>\n"
+"frais du client et Ã  ses risques et pÃ©rils."
 
 #: tools\..\koi\reporting\delivery_slip_report.py:113
 msgid "Les frais de port seront portes en facture."
-msgstr "Les frais de port seront portés en facture."
+msgstr "Les frais de port seront portÃ©s en facture."
 
 #: tools\..\koi\reporting\delivery_slip_report.py:118
 msgid "Signature :"
@@ -3146,7 +3177,7 @@ msgstr "Signature :"
 
 #: tools\..\koi\reporting\delivery_slip_report.py:118
 msgid "Reception date :"
-msgstr "Date de réception : "
+msgstr "Date de rÃ©ception : "
 
 #: tools\..\koi\reporting\machine_barcodes.py:139
 msgid "Without zone"
@@ -3162,14 +3193,14 @@ msgstr "Cde"
 
 #: tools\..\koi\reporting\monthly_report.py:76
 msgid "Qties"
-msgstr "Qtés"
+msgstr "QtÃ©s"
 
 #: tools\..\koi\reporting\monthly_report.py:76
 msgid ""
 "To bill\n"
 "this month"
 msgstr ""
-"À facturer\n"
+"Ã€ facturer\n"
 "ce mois"
 
 #: tools\..\koi\reporting\monthly_report.py:76
@@ -3178,11 +3209,11 @@ msgstr "Encours"
 
 #: tools\..\koi\reporting\monthly_report.py:192
 msgid "Monthly financial report"
-msgstr "État mensuel"
+msgstr "Ã‰tat mensuel"
 
 #: tools\..\koi\reporting\order_activity_report.py:57
 msgid "Order activity report"
-msgstr "Rapport d'activité commande"
+msgstr "Rapport d'activitÃ© commande"
 
 #: tools\..\koi\reporting\order_activity_report.py:62
 msgid "Customer : {}"
@@ -3190,19 +3221,19 @@ msgstr "Client : {}"
 
 #: tools\..\koi\reporting\order_activity_report.py:63
 msgid "Order number : {} (Horse ID:{})"
-msgstr "Numéro de commande : {} (Horse ID:{})"
+msgstr "NumÃ©ro de commande : {} (Horse ID:{})"
 
 #: tools\..\koi\reporting\order_activity_report.py:64
 msgid "Preorder number : {}"
-msgstr "N° devis : {}"
+msgstr "NÂ° devis : {}"
 
 #: tools\..\koi\reporting\order_activity_report.py:65
 msgid "Customer number : {}"
-msgstr "N° commande client : {}"
+msgstr "NÂ° commande client : {}"
 
 #: tools\..\koi\reporting\order_activity_report.py:66
 msgid "Creation date : {}"
-msgstr "Date de création : {}"
+msgstr "Date de crÃ©ation : {}"
 
 #: tools\..\koi\reporting\order_activity_report.py:67
 msgid "Completion : {}"
@@ -3210,15 +3241,15 @@ msgstr "Date de fin : {}"
 
 #: tools\..\koi\reporting\order_activity_report.py:68
 msgid "Current state : {}"
-msgstr "État actuel : {}"
+msgstr "Ã‰tat actuel : {}"
 
 #: tools\..\koi\reporting\order_activity_report.py:70
 msgid "Activity synthesis"
-msgstr "Synthèse des activités"
+msgstr "SynthÃ¨se des activitÃ©s"
 
 #: tools\..\koi\reporting\order_activity_report.py:99
 msgid "No work reported"
-msgstr "Aucun travail rapporté"
+msgstr "Aucun travail rapportÃ©"
 
 #: tools\..\koi\reporting\order_activity_report.py:108
 msgid "<b>QUAL !</b>"
@@ -3234,36 +3265,36 @@ msgstr "Il n'y a pas de bordereau de livraison."
 
 #: tools\..\koi\reporting\order_activity_report.py:140
 msgid "Delivery slip {} created on {}"
-msgstr "Bordereau de livraison n° {} créé le {}"
+msgstr "Bordereau de livraison nÂ° {} crÃ©Ã© le {}"
 
 #: tools\..\koi\reporting\order_activity_report.py:143
 msgid "{} : {} unit(s)"
-msgstr "{} : {} unités"
+msgstr "{} : {} unitÃ©s"
 
 #: tools\..\koi\reporting\order_activity_report.py:145
 msgid "Delivery slip {} DESACTIVATED"
-msgstr "Bon de livraison n° {} DÉSACTIVÉ"
+msgstr "Bon de livraison nÂ° {} DÃ‰SACTIVÃ‰"
 
 #: tools\..\koi\reporting\order_activity_report.py:148
 msgid "Quality"
-msgstr "Qualité"
+msgstr "QualitÃ©"
 
 #: tools\..\koi\reporting\order_activity_report.py:151
 msgid "There are no quality issues"
-msgstr "Il n'y a pas d'évènement lié à la qualité."
+msgstr "Il n'y a pas d'Ã©vÃ¨nement liÃ© Ã  la qualitÃ©."
 
 #: tools\..\koi\reporting\order_activity_report.py:157
 msgid "Issue <b>{}</b> created on {} by {} : {}"
-msgstr "Évènement n° {} créé le {} par {} : {}"
+msgstr "Ã‰vÃ¨nement nÂ° {} crÃ©Ã© le {} par {} : {}"
 
 #: tools\..\koi\reporting\order_activity_report.py:169
 #: tools\..\koi\reporting\preorder_report.py:73
 msgid "Preorder {}"
-msgstr "N° devis {}"
+msgstr "NÂ° devis {}"
 
 #: tools\..\koi\reporting\order_activity_report.py:193
 msgid "Order Activity Report"
-msgstr "Rapport d'activité commande"
+msgstr "Rapport d'activitÃ© commande"
 
 #: tools\..\koi\reporting\order_confirmation_report.py:59
 #: tools\..\koi\reporting\preorder_report.py:175
@@ -3272,11 +3303,11 @@ msgstr "Signature :"
 
 #: tools\..\koi\reporting\order_confirmation_report.py:162
 msgid "We have well received your order {} and thank you heartily."
-msgstr "Nous avons bien reçu votre commande et vous en remercions."
+msgstr "Nous avons bien reÃ§u votre commande et vous en remercions."
 
 #: tools\..\koi\reporting\order_confirmation_report.py:168
 msgid "Confirmation of order {}, your ref. : {}"
-msgstr "Confirmation de commande : {}, votre réf. : {}"
+msgstr "Confirmation de commande : {}, votre rÃ©f. : {}"
 
 #: tools\..\koi\reporting\order_confirmation_report.py:172
 msgid "Confirmation of order {}"
@@ -3285,7 +3316,7 @@ msgstr "Confirmation de commande {}"
 #: tools\..\koi\reporting\order_confirmation_report.py:201
 #: tools\..\koi\reporting\preorder_report.py:94
 msgid "Unit Price"
-msgstr "Prix unité"
+msgstr "Prix unitÃ©"
 
 #: tools\..\koi\reporting\order_confirmation_report.py:201
 #: tools\..\koi\reporting\preorder_report.py:94
@@ -3295,19 +3326,19 @@ msgstr "Prix"
 #: tools\..\koi\reporting\order_report.py:176
 #: tools\..\koi\reporting\order_report.py:503
 msgid "Quantity : {} - Deadline: {}"
-msgstr "Quantité : {} - Échéance : {}"
+msgstr "QuantitÃ© : {} - Ã‰chÃ©ance : {}"
 
 #: tools\..\koi\reporting\preorder_report.py:70
 msgid "Preorder {}, your ref. : {}"
-msgstr "N° devis : {}, votre réf. : {}"
+msgstr "NÂ° devis : {}, votre rÃ©f. : {}"
 
 #: tools\..\koi\reporting\production_status_detailed_report.py:77
 msgid "NOrd"
-msgstr "N°Cde"
+msgstr "NÂ°Cde"
 
 #: tools\..\koi\reporting\production_status_detailed_report.py:77
 msgid "Customer (d/l-Price)"
-msgstr "Client (éch.-p.vte)"
+msgstr "Client (Ã©ch.-p.vte)"
 
 #: tools\..\koi\reporting\production_status_detailed_report.py:77
 msgid "Tot"
@@ -3323,23 +3354,23 @@ msgstr "Listing charge atelier"
 
 #: tools\..\koi\reporting\rlab.py:266 tools\..\koi\reporting\utils.py:153
 msgid "Page {} of {}, printed on {} by {}"
-msgstr "Page {} de {}, imprimé le {} par {}"
+msgstr "Page {} de {}, imprimÃ© le {} par {}"
 
 #: tools\..\koi\reporting\rlab.py:479
 msgid "Employees badges"
-msgstr "Badges employés"
+msgstr "Badges employÃ©s"
 
 #: tools\..\koi\reporting\rlab.py:530
 msgid "Non billable tasks"
-msgstr "Tâches non facturables"
+msgstr "TÃ¢ches non facturables"
 
 #: tools\..\koi\reporting\rlab.py:574
 msgid "There currently are no unbillable operations defined"
-msgstr "Il n'y a aucune opération indirecte définie pour l'instant"
+msgstr "Il n'y a aucune opÃ©ration indirecte dÃ©finie pour l'instant"
 
 #: tools\..\koi\reporting\rlab.py:586
 msgid "Presence tasks"
-msgstr "Présence"
+msgstr "PrÃ©sence"
 
 #: tools\..\koi\reporting\rlab.py:594
 msgid "Clock IN"
@@ -3351,7 +3382,7 @@ msgstr "Pointage OUT"
 
 #: tools\..\koi\reporting\supply_order_report.py:62
 msgid "Order number <b>{}</b>, your ref. : {}"
-msgstr "N° cde : {}, votre réf. : {}"
+msgstr "NÂ° cde : {}, votre rÃ©f. : {}"
 
 #: tools\..\koi\reporting\supply_order_report.py:66
 msgid "Delivery date : {}"
@@ -3359,17 +3390,17 @@ msgstr "Date de livraison : {}"
 
 #: tools\..\koi\reporting\supply_order_report.py:79
 msgid "Ref."
-msgstr "Réf."
+msgstr "RÃ©f."
 
 #: tools\..\koi\reporting\supply_order_report.py:79
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:346
 #: tools\..\koi\supply\SupplyOrderOverview.py:270
 msgid "Unit price"
-msgstr "Prix unité"
+msgstr "Prix unitÃ©"
 
 #: tools\..\koi\reporting\supply_order_report.py:114
 msgid "Daniel Dumont<br/>Administrateur delegue"
-msgstr "Daniel Dumont<br/>Administrateur délégué"
+msgstr "Daniel Dumont<br/>Administrateur dÃ©lÃ©guÃ©"
 
 #: tools\..\koi\reporting\supply_order_report.py:115
 msgid "Pierre Jodogne<br/>Superviseur de production"
@@ -3377,7 +3408,7 @@ msgstr "Pierre Jodogne<br/>Superviseur de production"
 
 #: tools\..\koi\server\admin_gui.py:358
 msgid "Please select a backup file"
-msgstr "Veuillez sélectionner un fichier de backup"
+msgstr "Veuillez sÃ©lectionner un fichier de backup"
 
 #: tools\..\koi\server\admin_gui.py:782
 msgid "Setting IP addresse in delivery_slips zip"
@@ -3409,20 +3440,20 @@ msgstr "Scannez votre badge d'abord"
 
 #: tools\..\koi\server\clock_client.py:504
 msgid "The operation definition with {} is unknown"
-msgstr "La définition d'opération n° {} est inconnue"
+msgstr "La dÃ©finition d'opÃ©ration nÂ° {} est inconnue"
 
 #: tools\..\koi\server\clock_client.py:527
 #: tools\..\koi\server\clock_client.py:608
 msgid "Bad state"
-msgstr "État incorrect"
+msgstr "Ã‰tat incorrect"
 
 #: tools\..\koi\server\clock_client.py:618
 msgid "Nothing to do with operation {}"
-msgstr "Rien à faire sur l'opération {}"
+msgstr "Rien Ã  faire sur l'opÃ©ration {}"
 
 #: tools\..\koi\server\clock_client.py:657
 msgid "The machine {} is not allowed for the operation"
-msgstr "La machine n° {} n'est pas autorisée pour cette opération"
+msgstr "La machine nÂ° {} n'est pas autorisÃ©e pour cette opÃ©ration"
 
 #: tools\..\koi\server\clock_client.py:660
 msgid "Machine barcode makes no sense here"
@@ -3434,15 +3465,15 @@ msgstr "Code barre non reconnu"
 
 #: tools\..\koi\server\clock_client.py:1133
 msgid "Scan an operation to start !"
-msgstr "Scannez une opération pour démarrer !"
+msgstr "Scannez une opÃ©ration pour dÃ©marrer !"
 
 #: tools\..\koi\server\clock_client.py:1143
 msgid "Ongoing tasks"
-msgstr "Tâches en cours"
+msgstr "TÃ¢ches en cours"
 
 #: tools\..\koi\server\clock_client.py:1162
 msgid "You have no ongoing task"
-msgstr "Aucune tâche en cours"
+msgstr "Aucune tÃ¢che en cours"
 
 #: tools\..\koi\server\clock_client.py:1252
 msgid "Please scan your badge"
@@ -3450,7 +3481,7 @@ msgstr "Veuillez scanner votre badge"
 
 #: tools\..\koi\server\clock_client.py:1351
 msgid "Your activity"
-msgstr "Votre activité"
+msgstr "Votre activitÃ©"
 
 #: tools\..\koi\server\clock_client.py:1394
 msgid "Part {}"
@@ -3458,36 +3489,36 @@ msgstr "Partie {}"
 
 #: tools\..\koi\server\clock_client.py:1411
 msgid "Task selection"
-msgstr "Sélection tâche"
+msgstr "SÃ©lection tÃ¢che"
 
 #: tools\..\koi\server\clock_client.py:1421
 msgid "You're working on this task !"
-msgstr "Vous travaillez déjà sur cette tâche ! "
+msgstr "Vous travaillez dÃ©jÃ  sur cette tÃ¢che ! "
 
 #: tools\..\koi\server\clock_client.py:1423
 msgid "You're working on this task with {} machines!"
-msgstr "Vous travaillez sur cette tâche avec {} machines"
+msgstr "Vous travaillez sur cette tÃ¢che avec {} machines"
 
 #: tools\..\koi\server\clock_client.py:1445
 msgid "You are already working on that operation !"
-msgstr "Vous travaillez déjà sur cette opération"
+msgstr "Vous travaillez dÃ©jÃ  sur cette opÃ©ration"
 
 #: tools\..\koi\server\clock_client.py:1452
 msgid "Other people on this operation : "
-msgstr "Autres personnes sur cette opération : "
+msgstr "Autres personnes sur cette opÃ©ration : "
 
 #: tools\..\koi\server\clock_client.py:1490
 msgid "Select a machine to start on this operation"
-msgstr "Scannez une machine pour commencer l'opération"
+msgstr "Scannez une machine pour commencer l'opÃ©ration"
 
 #: tools\..\koi\server\clock_client.py:1492
 #: tools\..\koi\server\clock_client.py:1494
 msgid "Select current machine to stop"
-msgstr "Sélectionnez une machine pour arrêter"
+msgstr "SÃ©lectionnez une machine pour arrÃªter"
 
 #: tools\..\koi\server\clock_client.py:1495
 msgid "Select another machine to start"
-msgstr "Sélectionnez une autre machine pour commencer"
+msgstr "SÃ©lectionnez une autre machine pour commencer"
 
 #: tools\..\koi\server\clock_client.py:1632
 msgid "Select a machine"
@@ -3495,15 +3526,15 @@ msgstr "Choisissez une machine"
 
 #: tools\..\koi\server\json_decorator.py:67
 msgid "General failure. Guru meditation. {}"
-msgstr "Erreur générale. Sic transit gloria mundi. {}"
+msgstr "Erreur gÃ©nÃ©rale. Sic transit gloria mundi. {}"
 
 #: tools\..\koi\server\json_decorator.py:69
 msgid "The task {} is not imputable"
-msgstr "La tâche {} n'ets pas imputable"
+msgstr "La tÃ¢che {} n'ets pas imputable"
 
 #: tools\..\koi\server\json_decorator.py:70
 msgid "Operation definition {} is not imputable"
-msgstr "La définition d'opération {} n'est pas imputable"
+msgstr "La dÃ©finition d'opÃ©ration {} n'est pas imputable"
 
 #: tools\..\koi\server\json_decorator.py:71
 msgid "There's no employee with id= {}"
@@ -3515,7 +3546,7 @@ msgstr "La syntaxe du code barres est OK mais pas son contenu"
 
 #: tools\..\koi\server\json_decorator.py:73
 msgid "Encountered an error '{}' while recording presence for employee_id : {}"
-msgstr "Erreur {} lors du comptage de présence de la personne n° {}"
+msgstr "Erreur {} lors du comptage de prÃ©sence de la personne nÂ° {}"
 
 #: tools\..\koi\server\json_decorator.py:74
 msgid "The barcode syntax is incorrect {}"
@@ -3523,11 +3554,11 @@ msgstr "La syntaxe du code barre {} est incorrecte"
 
 #: tools\..\koi\server\json_decorator.py:75
 msgid "The operation {} is unknown"
-msgstr "L'opération {} est inconnue"
+msgstr "L'opÃ©ration {} est inconnue"
 
 #: tools\..\koi\server\json_decorator.py:76
 msgid "The operation definition {} is unknown"
-msgstr "La définition d'opération n° {} est inconnue"
+msgstr "La dÃ©finition d'opÃ©ration nÂ° {} est inconnue"
 
 #: tools\..\koi\server\json_decorator.py:77
 msgid "The order part {} is not in production"
@@ -3535,12 +3566,12 @@ msgstr "La commande {} n'est pas en production"
 
 #: tools\..\koi\server\json_decorator.py:79
 msgid "Invalid parameter {}"
-msgstr "Paramètre invalide {}"
+msgstr "ParamÃ¨tre invalide {}"
 
 #: tools\..\koi\server\json_decorator.py:80
 msgid "The number of parameters is invalid. I expected {}, you gave {}"
 msgstr ""
-"Le nombre de paramètres est incorrect. J'attendais {}, vous avez donné {}"
+"Le nombre de paramÃ¨tres est incorrect. J'attendais {}, vous avez donnÃ© {}"
 
 #: tools\..\koi\server\json_decorator.py:82
 msgid "Too much off time on the {}"
@@ -3548,7 +3579,7 @@ msgstr "Trop d'absences le {}"
 
 #: tools\..\koi\server\json_decorator.py:84
 msgid "File name cannot be empty"
-msgstr "Le nom de fichier ne peut être vide."
+msgstr "Le nom de fichier ne peut Ãªtre vide."
 
 #: tools\..\koi\server\json_decorator.py:85
 msgid "Cannot print an empty report"
@@ -3556,26 +3587,26 @@ msgstr "Je ne peux imprimer un rapport vide"
 
 #: tools\..\koi\server\json_decorator.py:88
 msgid "Database error {}"
-msgstr "Erreur de base de données {}"
+msgstr "Erreur de base de donnÃ©es {}"
 
 #: tools\..\koi\server\json_decorator.py:89
 msgid ""
 "Operation {} is not imputable *or* order part {} is not in production *or* "
 "is not known"
 msgstr ""
-"L'opération n'est pas imputable ou la partie de commande {} n'est pas en "
-"production ou l'opération n'est pas connue"
+"L'opÃ©ration n'est pas imputable ou la partie de commande {} n'est pas en "
+"production ou l'opÃ©ration n'est pas connue"
 
 #: tools\..\koi\server\json_decorator.py:90
 msgid ""
 "The machine you want {} is not compatible with those ({}) associated to the "
 "operation"
 msgstr ""
-"La machine {} ne fait pas partie de celles ({}) associée à cette opération"
+"La machine {} ne fait pas partie de celles ({}) associÃ©e Ã  cette opÃ©ration"
 
 #: tools\..\koi\server\json_decorator.py:91
 msgid "The machine with ID {} is not known"
-msgstr "La machine n° {} est inconnue"
+msgstr "La machine nÂ° {} est inconnue"
 
 #: tools\..\koi\session\LoginDialog.py:23
 msgid "{} Login"
@@ -3595,7 +3626,7 @@ msgstr "Veuillez vous identifier"
 
 #: tools\..\koi\session\LoginDialog.py:88
 msgid "You can't log"
-msgstr "Vous ne pouvez accéder au système"
+msgstr "Vous ne pouvez accÃ©der au systÃ¨me"
 
 #: tools\..\koi\session\LoginDialog.py:88
 msgid "The user or password is not valid."
@@ -3603,7 +3634,7 @@ msgstr "Le nom d'utilisateur ou le mot de passe n'est pas valide"
 
 #: tools\..\koi\stock\stock_overview.py:108
 msgid "Item Nr"
-msgstr "N° item"
+msgstr "NÂ° item"
 
 #: tools\..\koi\stock\stock_overview.py:109
 msgid "Fullname"
@@ -3632,7 +3663,7 @@ msgstr "Commande fournisseur"
 
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:222
 msgid "<h1>Ref. : {}</h1>"
-msgstr "<h1>Réf. : {}</h1>"
+msgstr "<h1>RÃ©f. : {}</h1>"
 
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:232
 msgid "The date is not valid"
@@ -3640,15 +3671,15 @@ msgstr "La date est invalide"
 
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:248
 msgid "The data are not correct"
-msgstr "Les données ne sont pas valides"
+msgstr "Les donnÃ©es ne sont pas valides"
 
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:276
 msgid "Error while saving"
-msgstr "Problème durant la sauvegarde"
+msgstr "ProblÃ¨me durant la sauvegarde"
 
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:276
 msgid "There was an unexpected error while saving your data"
-msgstr "Il y a eu une erreur pendant la sauvegarde de vos données"
+msgstr "Il y a eu une erreur pendant la sauvegarde de vos donnÃ©es"
 
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:360
 msgid "Print supply order"
@@ -3668,7 +3699,7 @@ msgstr "Commande suivante"
 
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:382
 msgid "Previous supplier's order"
-msgstr "Commande précédente"
+msgstr "Commande prÃ©cÃ©dente"
 
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:388
 msgid "Change supplier"
@@ -3683,16 +3714,16 @@ msgstr "Date de livraison"
 #: tools\..\koi\supply\SupplyOrderOverview.py:212
 #: tools\..\koi\supply\SupplyOrderOverview.py:271
 msgid "Creation date"
-msgstr "Date de création"
+msgstr "Date de crÃ©ation"
 
 #: tools\..\koi\supply\EditSupplyOrderPanel.py:444
 #: tools\..\koi\supply\SupplyOrderOverview.py:217
 msgid "Supplier's reference"
-msgstr "Réf. du fournisseur"
+msgstr "RÃ©f. du fournisseur"
 
 #: tools\..\koi\supply\SupplierPlateWidget.py:23
 msgid "Phone : /"
-msgstr "Téléphone :"
+msgstr "TÃ©lÃ©phone :"
 
 #: tools\..\koi\supply\SupplierPlateWidget.py:25
 msgid "Fax : /"
@@ -3708,7 +3739,7 @@ msgstr "Commandes fournisseurs"
 
 #: tools\..\koi\supply\SupplyOrderOverview.py:265
 msgid "Part Nr"
-msgstr "N° partie"
+msgstr "NÂ° partie"
 
 #: tools\..\koi\supply\SupplyOrderOverview.py:266
 msgid "Supplier"
@@ -3716,7 +3747,7 @@ msgstr "Fournisseur"
 
 #: tools\..\koi\supply\SupplyOrderOverview.py:303
 msgid "Supply order detail"
-msgstr "Détail d'une commande fournisseur"
+msgstr "DÃ©tail d'une commande fournisseur"
 
 #: tools\..\koi\user_mgmt\edit_user.py:45
 msgid "User class edit"
@@ -3740,8 +3771,8 @@ msgid ""
 "The template document with reference <code>{}</code> was not found. Check "
 "your templates."
 msgstr ""
-"Le document type avec la référence <code>{}</code> n'a pas été trouvé. "
-"Vérifiez les documents types."
+"Le document type avec la rÃ©fÃ©rence <code>{}</code> n'a pas Ã©tÃ© trouvÃ©. "
+"VÃ©rifiez les documents types."
 
 #: tools\..\koi\reporting\order_confirmation\plugin.py:55
 #: tools\..\koi\reporting\order_confirmation\plugin.py:57
@@ -3754,19 +3785,19 @@ msgstr "Canevas de devis"
 
 #: tools\..\koi\reporting\preorder\preorder_report.py:42
 msgid "Can't print a preorder report for an order that is/was not a preorder"
-msgstr "On ne peut imprimer ce devis car il n'a pas de numéro de devis"
+msgstr "On ne peut imprimer ce devis car il n'a pas de numÃ©ro de devis"
 
 #: tools\..\koi\reporting\preorder\preorder_report.py:91
 msgid ""
 "Unable to open the report template (reference : '{}'). You should check in "
 "the document templates : does it exist ? Is it a .docx document ?"
 msgstr ""
-"Impossible d'ouvrir le document type (référence : '{}'). Vous devriez "
-"vérifier dans les documents types : existe-t-il ? Est-ce bien un document ."
+"Impossible d'ouvrir le document type (rÃ©fÃ©rence : '{}'). Vous devriez "
+"vÃ©rifier dans les documents types : existe-t-il ? Est-ce bien un document ."
 "docx ?"
 
 #~ msgid "Production valuation"
 #~ msgstr "Valorisation production"
 
 #~ msgid "Add documents from the template library"
-#~ msgstr "Ajouter un document type à la librairie"
+#~ msgstr "Ajouter un document type Ã  la librairie"

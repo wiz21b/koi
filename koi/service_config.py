@@ -11,7 +11,8 @@ if False:
 else:
     # remote_indicators_service = JsonCallWrapper(IndicatorsService(), JsonCallWrapper.IN_PROCESS_MODE)
     remote_indicators_service = IndicatorsService()
-    remote_documents_service = DocumentsService()
+    # remote_documents_service = DocumentsService()
+    remote_documents_service = JsonCallWrapper(DocumentsService(), JsonCallWrapper.HTTP_MODE)
 
 __all__ = ['remote_documents_service', 'remote_indicators_service']
 
