@@ -38,6 +38,14 @@ def extract_host_port(url):
 
 
 def upload_document(path, progress_tracker=None, file_id = 0, post_url = '/upload_file3'):
+    """
+
+    :param path:
+    :param progress_tracker:
+    :param file_id: 0 if uploading a new document, not 0 if repplacing an existing document.
+    :param post_url:
+    :return:
+    """
 
     mr = None
     if progress_tracker:
@@ -83,11 +91,11 @@ def upload_document(path, progress_tracker=None, file_id = 0, post_url = '/uploa
         t = server_response.read()
         file_id = int(t)
         mainlog.debug("Successfully uploaded {} bytes".format(mr.total_size()))
+        h.close()
+        return file_id
     else:
-        mainlog.error("Unable to upload, server response status was {}".format(server_response.status))
-    h.close()
+        raise Exception("Unable to upload, server response status was {}".format(server_response.status))
 
-    return file_id
 
 def upload_template(path, progress_tracker, doc_id):
     mainlog.debug("Uploading template (delivery_slips utils)")
