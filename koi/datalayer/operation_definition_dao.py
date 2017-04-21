@@ -2,6 +2,7 @@ from datetime import date,datetime,timedelta
 
 from sqlalchemy.sql.expression import func,and_
 from sqlalchemy.inspection import inspect
+from sqlalchemy.orm import subqueryload
 
 from koi.datalayer.RollbackDecorator import RollbackDecorator
 from koi.datalayer.database_session import session
@@ -67,6 +68,7 @@ class OperationDefinitionDAO:
 
     @RollbackDecorator
     def save(self,opdef):
+        mainlog.debug("operation_definition_dao : save")
         must_refresh_tasks_activity = False
 
         if opdef not in session():
@@ -79,12 +81,12 @@ class OperationDefinitionDAO:
 
 
         session().flush()
+        mainlog.debug("operation_definition_dao : flushed")
 
         if len(opdef.periods) == 0:
             raise Exception("An operation definition must always have at least on period")
 
         if must_refresh_tasks_activity:
-
             mainlog.debug(u"must_refresh_tasks_activity on operation definition {}".format(opdef.operation_definition_id))
 
         #     q = """update tasks
@@ -101,6 +103,9 @@ class OperationDefinitionDAO:
         #     session().expire_all() # FIXME Too hard, must select only the necessary instances
 
         session().commit()
+        mainlog.debug("operation_definition_dao : commited")
+
+        mainlog.debug("operation_definition_dao : save - done")
 
     @RollbackDecorator
     def delete(self,opdef_id):
@@ -217,7 +222,7 @@ class OperationDefinitionDAO:
 
 
     @RollbackDecorator
-    def all_on_order_part(self):
+    def all_on_order_part(self, commit = True):
         """ All opdef that can be linked to an operation (i.e.
         at the "order part level") when defining a new order
         part. """
@@ -227,7 +232,6 @@ class OperationDefinitionDAO:
         #     filter( OperationDefinition.on_operation == True).\
         #     order_by(OperationDefinition.description).all()
 
-        from sqlalchemy.orm import subqueryload
 
         opdefs = session().query(OperationDefinition).\
                  filter( OperationDefinition.on_operation == True).\
@@ -242,7 +246,8 @@ class OperationDefinitionDAO:
             frozen_opdef.periods = frozen_periods
             frozen_opdefs.append(frozen_opdef)
 
-        session().commit()
+        if commit:
+            session().commit()
         chrono_click("all_on_order_part 2")
         return frozen_opdefs
 

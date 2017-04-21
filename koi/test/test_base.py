@@ -87,7 +87,6 @@ class TestBase(unittest.TestCase):
         dao.set_session(session)
 
         cls._operation_definition_dao = cls.dao.operation_definition_dao
-
         cls.dao_employee = cls.dao.employee_dao
         cls.tar_dao = cls.dao.task_action_report_dao
         cls.task_dao = cls.dao.task_dao
@@ -98,8 +97,6 @@ class TestBase(unittest.TestCase):
         cls.month_time_synthesis_dao = cls.dao.month_time_synthesis_dao
         cls._production_file_dao = cls.dao.production_file_dao
         cls.employee_dao = cls.dao.employee_dao
-
-
         cls._order_dao = cls.dao.order_dao
         cls._order_part_dao = cls.dao.order_part_dao
         cls._operation_dao = cls.dao.operation_dao
@@ -112,6 +109,9 @@ class TestBase(unittest.TestCase):
         cls.customer.email = u"kernighan@google.com"
 
         cls._customer_dao.save(cls.customer)
+
+        session().flush()
+
         cls.customer_id = cls.customer.customer_id
 
         cls.opdef = cls._operation_definition_dao.make()
@@ -162,8 +162,8 @@ class TestBase(unittest.TestCase):
         cls.not_imputable_opdef_on_operation.short_id = "MA"
         cls.not_imputable_opdef_on_operation.description = u"OnOperation (not imputable)" + chr(233)
         cls.not_imputable_opdef_on_operation.imputable = False
-        cls.not_imputable_opdef_on_operation.on_operation = True
         cls.not_imputable_opdef_on_operation.on_order = False
+        cls.not_imputable_opdef_on_operation.on_operation = True
         period = OperationDefinitionPeriod()
         period.start_date = date(2010,1,1)
         period.cost = 63.3 # BUG Cost makes no sense for non imputable task or does it ?
@@ -175,6 +175,7 @@ class TestBase(unittest.TestCase):
 
         # A regular operation
 
+        mainlog.debug("Creating a regular operation definition")
         cls.opdef_op = cls._operation_definition_dao.make()
         cls.opdef_op.short_id = "TO"
         cls.opdef_op.description = u"Tournag" + chr(233)
@@ -186,8 +187,12 @@ class TestBase(unittest.TestCase):
         period.start_date = date(2010,1,1)
         period.cost = 63.3
 
-        cls.dao.operation_definition_dao.add_period(period, cls.opdef_op)
+        cls.opdef_op.periods.append(period)
+        cls._operation_definition_dao.save( cls.opdef_op)
+
+        # cls.dao.operation_definition_dao.add_period(period, cls.opdef_op)
         session().flush()
+        mainlog.debug("Creating a regular operation definition => id is {}".format(cls.opdef_op.operation_definition_id))
 
         cls.opdef_order = cls._operation_definition_dao.make()
         cls.opdef_order.short_id = "ZO"

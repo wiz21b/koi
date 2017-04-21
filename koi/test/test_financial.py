@@ -44,6 +44,7 @@ class TestFinancial(TestBase):
     def createOrderWithoutWork(cls):
         order = cls._order_dao.make(u"Test order without work "+chr(233),cls.customer)
         order.state = OrderStatusType.order_ready_for_production
+        order.creation_date = date(2012,1,1)
         cls._order_dao.save(order)
 
         order_part = cls._order_part_dao.make(order)
@@ -434,8 +435,8 @@ class TestFinancial(TestBase):
         d = date.today()
 
         # zero hours done = zero valuation
-        self.assertEqual( 0, enc(0,10,hours_consumed=0,hours_planned=10,unit_price=1,material_price=1,order_part_id=o.order_part_id,ref_date=d))
-        self.assertEqual( 0, enc(3,10,hours_consumed=0,hours_planned=10,unit_price=1,material_price=1,order_part_id=o.order_part_id,ref_date=d))
+        self.assertEqual( 1, enc(0,10,hours_consumed=0,hours_planned=10,unit_price=1,material_price=1,order_part_id=o.order_part_id,ref_date=d))
+        self.assertEqual( 4, enc(3,10,hours_consumed=0,hours_planned=10,unit_price=1,material_price=1,order_part_id=o.order_part_id,ref_date=d))
 
         # nothing produced but all hours or more consumed
         self.assertEqual( 9, enc(0,10,hours_consumed=10,hours_planned=10,unit_price=1,material_price=1,order_part_id=o.order_part_id,ref_date=d))

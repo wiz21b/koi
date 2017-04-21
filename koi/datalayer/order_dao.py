@@ -831,8 +831,10 @@ class OrderDAO(object):
 
         active_orders = self._active_orders_in_month_subquery(month_date)
 
-        list_active_orders = session().query(active_orders).all()
-        # print( sorted([o.active_order_id for o in list_active_orders]))
+        mainlog.debug(active_orders)
+        mainlog.debug(
+            sorted(
+                [o.active_order_id for o in session().query(active_orders).all()]))
 
 
         # # The price of the quantities delivered on an order part *this* month
@@ -876,6 +878,8 @@ class OrderDAO(object):
             outerjoin(qsubq_last_month, qsubq_last_month.c.order_part_id == OrderPart.order_part_id).\
             join(Order).join(Customer).\
             order_by(OrderPart.order_id,OrderPart.position)
+
+        print(query)
 
         res = query.all()
         session().commit()

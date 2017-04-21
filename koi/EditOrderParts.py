@@ -1984,6 +1984,7 @@ class EditOrderPartsWidget(HorsePanel):
                     if op:
                         op = operation_definition_cache.opdef_by_id(op)
                         if not op:
+                            mainlog.error("Didn't find this op def in the cache: {}".format(operation.operation_definition_id))
                             err.append( _("An operation definition is not valid anymore (it was deleted by someone)"))
                     elif mat > 0  or hours > 0:
                         err.append( _("Can't set material price or planned hours when no operation is chosen"))
@@ -2079,15 +2080,17 @@ class EditOrderPartsWidget(HorsePanel):
                         showWarningBox(_("Quantity to do increased for a completed part ({})").format(order_part.description),
                                        _("You have increased a quantity to do above a done quantity. Therefore the order part's state might not be \"completed\" anymore. You should review its state"))
 
-                cmt, cmt_modified = model.comments[i]
+                if action_type != DBObjectActionTypes.TO_DELETE:
+                    mainlog.debug("getting comment {} out of {}.".format(op_ndx, len(model.comments)))
+                    cmt, cmt_modified = model.comments[op_ndx]
 
-                if cmt_modified:
-                    order_part.notes = cmt
-                    mainlog.debug("Comment modified : {}, action_type is {}".format(cmt, action_type))
-                    if action_type == DBObjectActionTypes.UNCHANGED:
-                        # If deleted, we can fogrtget; if created, then creation
-                        # will do the rest, if updated, well, it's ok.
-                        action_type = DBObjectActionTypes.TO_UPDATE
+                    if cmt_modified:
+                        order_part.notes = cmt
+                        mainlog.debug("Comment modified : {}, action_type is {}".format(cmt, action_type))
+                        if action_type == DBObjectActionTypes.UNCHANGED:
+                            # If deleted, we can fogrtget; if created, then creation
+                            # will do the rest, if updated, well, it's ok.
+                            action_type = DBObjectActionTypes.TO_UPDATE
 
                 # Having documents may imply saving them. So we update the
                 # actions to do that.

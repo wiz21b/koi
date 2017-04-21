@@ -19,7 +19,7 @@ class TestCopyPaste(TestBase):
     def setUpClass(cls):
         super(TestCopyPaste,cls).setUpClass()
 
-        operation_definition_cache.reload()
+        # operation_definition_cache.refresh()
 
         app = QApplication.instance()
         if app is None:
@@ -65,8 +65,9 @@ class TestCopyPaste(TestBase):
 
     def setUp(self):
         super(TestCopyPaste,self).setUp()
-        operation_definition_cache.reload()
+        # operation_definition_cache.refresh()
         # self.edit_order_widget._show_blank_order( self.customer.customer_id)
+        #exit()
 
     def test_copy_paste_from_order_overview_to_order_edit(self):
         order = self._make_order() # An order with one part

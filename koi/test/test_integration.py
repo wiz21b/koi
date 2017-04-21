@@ -32,7 +32,7 @@ class TestEditOrderParts(TestBase):
         app.setEffectEnabled(Qt.UI_AnimateCombo, False)
         cls.app = app
 
-        operation_definition_cache.reload()
+        operation_definition_cache.refresh()
         cls.mw = QMainWindow()
         cls.mw.setMinimumSize(1024,768)
         cls.widget = EditOrderPartsWidget(None,None,True,cls.remote_documents_service)
@@ -61,7 +61,7 @@ class TestEditOrderParts(TestBase):
 
     def setUp(self):
         super(TestEditOrderParts,self).setUp()
-        operation_definition_cache.reload()
+        operation_definition_cache.refresh()
 
 
     def _encode_imputable_operation(self,description="Description op 1, TOurnage", pause=False):
@@ -399,21 +399,23 @@ class TestEditOrderParts(TestBase):
     def _fill_order_part(self,description):
         app = self.app
 
+        # Part's description
         QTest.keyEvent(QTest.Click, app.focusWidget(), Qt.Key_0) # modifier, delay
         app.processEvents()
         QTest.keyClicks(app.focusWidget(), description) # modifier, delay
-
         QTest.keyEvent(QTest.Click, app.focusWidget(), Qt.Key_Enter) # modifier, delay
         app.processEvents()
 
+        # Part's quantity
         QTest.keyEvent(QTest.Click, app.focusWidget(), Qt.Key_9) # modifier, delay
         QTest.keyEvent(QTest.Click, app.focusWidget(), Qt.Key_Enter) # modifier, delay
         app.processEvents()
 
-        # deadline
+        # deadline, skip it
         QTest.keyEvent(QTest.Click, app.focusWidget(), Qt.Key_Tab) # modifier, delay
         app.processEvents()
 
+        # Unit price
         QTest.keyEvent(QTest.Click, app.focusWidget(), Qt.Key_1) # modifier, delay
         QTest.keyEvent(QTest.Click, app.focusWidget(), Qt.Key_Enter) # modifier, delay
         app.processEvents()
@@ -593,27 +595,33 @@ class TestEditOrderParts(TestBase):
 
         self._fill_order_part("Order part zero")
 
+        # Skip a line, effectively creating a bloank order part
         QTest.keyEvent(QTest.Click, app.focusWidget(), Qt.Key_Escape) # modifier, delay
         QTest.keyEvent(QTest.Click, widget.controller_part.view, Qt.Key_F5, Qt.ShiftModifier) # modifier, delay
         app.processEvents()
 
         self._fill_order_part("Order part two")
 
+        # Save will compress the blank order part
         QTest.keyEvent(QTest.Click, app.focusWidget(), Qt.Key_S, Qt.ControlModifier ) # modifier, delay
         app.processEvents()
 
+        # Go up. We are now on top of a couple order parts list.
         QTest.keyEvent(QTest.Click, widget.controller_part.view, Qt.Key_Up) # modifier, delay
         app.processEvents()
         QTest.keyEvent(QTest.Click, widget.controller_part.view, Qt.Key_Up) # modifier, delay
         app.processEvents()
         QTest.keyEvent(QTest.Click, widget.controller_part.view, Qt.Key_Up) # modifier, delay
         app.processEvents()
+
 
         QTest.keyEvent(QTest.Click, widget.controller_part.view, Qt.Key_F8) # modifier, delay
         app.processEvents()
 
+        # app.exec_()
         QTest.keyEvent(QTest.Click, app.focusWidget(), Qt.Key_S, Qt.ControlModifier ) # modifier, delay
         app.processEvents()
+
 
         order = dao.order_dao.find_by_id(widget._current_order.order_id)
         assert len(order.parts) == 2

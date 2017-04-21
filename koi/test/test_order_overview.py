@@ -33,6 +33,12 @@ class TestOrderOverview(TestBase):
                                                         True)
         cls.mw.setCentralWidget(cls.order_overview_widget)
         cls.mw.show()
+
+        # This is a big hack to select the "in production" order parts filter
+        # on the overview. Without that, the "completed" order parts filter
+        # is applied and no order parts gets shown :-(
+
+        cls.order_overview_widget.persistent_filter.get_filters_combo().setCurrentIndex(1)
         QTest.qWaitForWindowShown(cls.mw)
         cls.app.processEvents()
 
@@ -53,7 +59,7 @@ class TestOrderOverview(TestBase):
     def setUp(self):
         super(TestOrderOverview,self).setUp()
         self._clear_database_content()
-        operation_definition_cache.reload()
+        operation_definition_cache.refresh()
 
     @Slot()
     def _click_context_menu(self):
@@ -104,7 +110,7 @@ class TestOrderOverview(TestBase):
         # self.order_overview_widget.month_today()
         self.order_overview_widget.refresh_action()
         self.order_overview_widget.retake_focus()
-        #self.app.exec_()
+        # self.app.exec_()
 
         # Select the first order part (we assume they are properly ordered)
         v = self.order_overview_widget.current_orders_overview.table_view

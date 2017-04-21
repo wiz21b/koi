@@ -217,7 +217,11 @@ class TestOrderDao(TestBase):
 
 
     def test_order_parts_for_monthly_report(self):
+        d = date.today()
+        now = datetime( d.year-1, d.month, 1)
+
         order = self._make_order()
+        order.creation_date = now.date()
         order.parts[0].qty = 16
         order.parts[0].sell_price = 23
         session().commit()
@@ -225,18 +229,12 @@ class TestOrderDao(TestBase):
 
         dao.order_dao.change_order_state(order.order_id, OrderStatusType.order_ready_for_production)
 
-        d = date.today()
-        now = datetime( d.year-1, d.month, 1)
 
         self.add_work_on_order_part(order.parts[0],now)
         session().commit()
 
-
-
         delivery_slip_id = self.delivery_slip_dao.make_delivery_slip_for_order(order.order_id, {order.parts[0].order_part_id : 1}, now, False)
-
         delivery_slip_id = self.delivery_slip_dao.make_delivery_slip_for_order(order.order_id, {order.parts[0].order_part_id : 2}, now + timedelta(2), False)
-
         delivery_slip_id = self.delivery_slip_dao.make_delivery_slip_for_order(order.order_id, {order.parts[0].order_part_id : 4}, now + timedelta(33), False)
 
         mainlog.debug(now + timedelta(33))
@@ -244,6 +242,9 @@ class TestOrderDao(TestBase):
         delivery_slip_id = self.delivery_slip_dao.make_delivery_slip_for_order(order.order_id, {order.parts[0].order_part_id : 8}, now + timedelta(64), False)
 
         result = dao.order_dao.order_parts_for_monthly_report(now + timedelta(65))
+
+        mainlog.debug(result)
+
         self.assertEqual( 8 * order.parts[0].sell_price, result[0].bill_this_month)
         self.assertEqual( 16 * order.parts[0].sell_price, result[0].total_sell_price)
         assert result[0].part_qty_out == 15
@@ -305,6 +306,7 @@ class TestOrderDao(TestBase):
 
     def test_encours_and_migrate_qty(self):
         order = self._make_order()
+        order.creation_date = date(2000,1,1)
         order.parts[0]._tex = 123
         order.parts[0].qty = 24+order.parts[0]._tex
         order.parts[0].sell_price = 10
@@ -325,6 +327,7 @@ class TestOrderDao(TestBase):
 
         result = dao.order_dao.order_parts_for_monthly_report(date(2014,3,3))
         self.assertEqual( 3 * 10, result[0].bill_this_month)
+
         self.assertEqual( 3, result[0].part_qty_out - result[0].q_out_last_month)
         self.assertEqual( 123+24, result[0].part_qty_out)
 

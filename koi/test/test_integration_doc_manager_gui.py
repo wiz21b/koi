@@ -39,7 +39,7 @@ class TestEditOrderPartsDocManager(TestBase):
         app.setEffectEnabled(Qt.UI_AnimateCombo, False)
         cls.app = app
 
-        operation_definition_cache.reload()
+        operation_definition_cache.refresh()
         cls.mw = QMainWindow()
         cls.mw.setMinimumSize(1024,768)
         cls.widget = EditOrderPartsWidget(None, None, False, cls.remote_documents_service)
@@ -71,7 +71,7 @@ class TestEditOrderPartsDocManager(TestBase):
 
     def setUp(self):
         super(TestEditOrderPartsDocManager,self).setUp()
-        operation_definition_cache.reload()
+        operation_definition_cache.refresh()
 
 
     def _encode_imputable_operation(self,description="Description op 1, TOurnage", pause=False):

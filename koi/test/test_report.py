@@ -21,7 +21,7 @@ class TestReport(TestBase):
         _make_preorder_report(order,n)
         mainlog.debug("Analyzing {}".format(n))
         mainlog.debug(os.path.getsize(n))
-        assert os.path.getsize(n) > 28000
+        assert os.path.getsize(n) > 26000
         os.remove(n)
 
     def test_print_iso_status(self):

@@ -68,9 +68,9 @@ def init_test_database():
     admin_url = configuration.get("Database","admin_url")
     client_url = configuration.get("Database","url")
 
-    login, password, dbname, host, port = _extract_db_params_from_url(client_url)
+    # login, password, dbname, host, port = _extract_db_params_from_url(client_url)
 
-    set_up_database(admin_url, login, password)
+    set_up_database(admin_url, client_url)
     init_db_session(admin_url)
     create_all_tables()
     disconnect_db()
@@ -85,7 +85,9 @@ def init_test_database():
     init_sequences(session())
 
     add_user('dd','dd','Gandalf','TimeTrackModify,ModifyParameters')
+    session().flush()
+    session().expunge_all()
 
 if __name__ == "__main__":
-    pass
-    # init_test_database()
+    # pass
+    init_test_database()

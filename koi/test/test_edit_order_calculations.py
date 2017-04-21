@@ -43,7 +43,7 @@ class TestEditOrderPartsComputations(TestBase):
 
     def setUp(self):
         super(TestEditOrderPartsComputations,self).setUp()
-        operation_definition_cache.reload()
+        operation_definition_cache.refresh()
 
 
     def _encode_imputable_operation(self):
@@ -70,27 +70,6 @@ class TestEditOrderPartsComputations(TestBase):
 
 
         ed = app.focusWidget()
-        # print "----"
-        # print ed
-        # print ed.view()
-        # ed.setView(QTableView())
-        # print ed.view()
-        # ed.hidePopup()
-        # print hex(int(ed.view().windowFlags()))
-        # ed.view().setUpdatesEnabled(True)
-        # ed.view().setAttribute(Qt.WidgetAttribute.WA_Disabled,False)
-        # ed.view().setAttribute(Qt.WidgetAttribute.WA_DontShowOnScreen,False)
-        # ed.view().setAttribute(Qt.WidgetAttribute.WA_ForceDisabled,False)
-        # ed.view().setAttribute(Qt.WidgetAttribute.WA_ForceUpdatesDisabled,False)
-        # ed.view().setAttribute(Qt.WidgetAttribute.WA_UpdatesDisabled,False)
-        # ed.view().hideEvent(QHideEvent())
-        # ed.view().setVisible(False)
-        # ed.view().hide()
-        # ed.view().setMinimumWidth(1500)
-        # # https://qt-project.org/forums/viewthread/37418
-        # ed.view().close()
-        # ed.view().repaint()
-        # ed.view().update()
         app.processEvents()
         app.processEvents()
 
@@ -185,6 +164,8 @@ class TestEditOrderPartsComputations(TestBase):
 
 
         widget.customer_order_name.setText(u"AKZO123"+ chr(233))
+
+        widget.controller_part.view.setFocus(Qt.OtherFocusReason)
 
         QTest.keyEvent(QTest.Click, widget.controller_part.view, Qt.Key_Down) # modifier, delay
         app.processEvents()
@@ -293,6 +274,7 @@ class TestEditOrderPartsComputations(TestBase):
 
         self._fill_order_part("Order part new")
 
+
         app.processEvents()
 
         QTest.keyEvent(QTest.Click, app.focusWidget(), Qt.Key_Escape ) # Stop editing
@@ -309,6 +291,8 @@ class TestEditOrderPartsComputations(TestBase):
 
         QTest.keyEvent(QTest.Click, app.focusWidget(), Qt.Key_Escape ) # Stop editing
         widget.controller_part.view.setFocus(Qt.OtherFocusReason)
+
+        # app.exec_()
 
         self.assertEqual(9*1+111*10+9*1,widget.total_selling_price_label.value)
 
