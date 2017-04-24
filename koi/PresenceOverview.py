@@ -89,7 +89,10 @@ class PresenceOverviewWidget(HorsePanel):
     def cell_entered(self,ndx):
         employee_id = self._employee_id_on_row(ndx)
 
-        if employee_id:
+        if not employee_id:
+            self._show_totals_day_off( None)
+
+        elif employee_id:
             chrono.chrono_start()
 
             employee = None
@@ -250,11 +253,16 @@ class PresenceOverviewWidget(HorsePanel):
 
 
     def _show_totals_day_off(self, employee_id):
+
+        mainlog.debug("_show_totals_day_off : {}".format(employee_id))
+
         def form_layout_row_set_visible(layout, row_ndx, is_visible):
             for i in range(layout.columnCount()):
                 l = layout.itemAtPosition(row_ndx, i)
                 if l and l.widget():
                     l.widget().setVisible(is_visible)
+
+        det_to_show = dict()
 
         row = 0
         for det in DayEventType.symbols():
@@ -272,15 +280,31 @@ class PresenceOverviewWidget(HorsePanel):
                 # ndx = self._day_off_table_model.index(row,self.YEAR_EVENT_COLUMN)
                 # self._day_off_table_model.setData(ndx, v, Qt.DisplayRole)
 
-            if not yearly and not monthly:
-                form_layout_row_set_visible(self.days_off_layout, row+1, False)
-            else:
+            if yearly or monthly:
+                det_to_show[det] = { 'monthly' : monthly, 'yearly' : yearly}
+
+        if det_to_show:
+            # If there are some days spent on some counters, then we display
+            # those counters *only*
+            mainlog.debug("_show_totals_day_off : showing some events ".format(str(det_to_show)))
+            row = 0
+            for det in DayEventType.symbols():
+                if det in det_to_show:
+                    monthly= det_to_show[det]['monthly']
+                    yearly = det_to_show[det]['yearly']
+                    form_layout_row_set_visible(self.days_off_layout, row+1, True)
+                    self.day_off_total_duration_labels[det].setText(yearly or '-')
+                    self.day_off_month_duration_labels[det].setText(monthly or '-')
+                else:
+                    form_layout_row_set_visible(self.days_off_layout, row + 1, False)
+        else:
+            # If there are no days spent on any counter, then we display
+            # all counters at the 0 mark.
+            mainlog.debug("_show_totals_day_off : showing no event")
+            row = 0
+            for det in DayEventType.symbols():
                 form_layout_row_set_visible(self.days_off_layout, row+1, True)
-
-                self.day_off_total_duration_labels[det].setText(yearly or '-')
-                self.day_off_month_duration_labels[det].setText(monthly or '-')
-
-            row += 1
+                row += 1
 
         # self.day_off_table_view.resizeColumnsToContents()
 

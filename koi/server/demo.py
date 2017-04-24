@@ -11,6 +11,8 @@ init_i18n('en_EN') # The server speaks english
 
 from koi.base_logging import mainlog,init_logging
 
+
+
 from koi.datalayer.create_database import create_blank_database
 from koi.datalayer.database_session import session
 from koi.Configurator import configuration
@@ -29,6 +31,8 @@ def daterange(start_date, end_date):
 
 max_past_days = 30*6
 grace_period = 30*4
+grace_period = 5
+
 world_begin = datetime.now() - timedelta(days=max_past_days+grace_period)
 
 customers_texts = ["Tessier-Ashpool", "Tyrell Corporation", "Cybertech", "CHOAM", "Skynet", "LexCorp", "Primatech",
@@ -101,13 +105,18 @@ def _make_timetrack(task_id, employee_id, start_time, duration):
     tt.task_id = task_id
     tt.employee_id = employee_id
     tt.duration = duration
-    tt.start_time = start_time
+    tt.start_time = datetime( start_time.year, start_time.month, start_time.day  ) + timedelta(hours=8 + random.random()*6 )
     tt.encoding_date = central_clock.today() - timedelta(days=3)
     tt.managed_by_code = False
+
+    mainlog.debug("TT : {} -> {}".format(tt.start_time, tt.duration))
+
     return tt
 
 
 def create_demo_database( nb_orders=50):
+    mainlog.setLevel(logging.DEBUG)
+
     create_blank_database(configuration.get("Database", "admin_url"), configuration.get("Database", "url"))
     dao = DAO()
     dao.set_session(session())
@@ -477,7 +486,7 @@ def create_demo_database( nb_orders=50):
                 tasks_on_day[d].append(task)
 
 
-    for day in range(max_past_days):
+    for day in range( int(max_past_days)):
         d = world_begin + timedelta(days=2 + day)
         d = date( d.year, d.month, d.day)
 
@@ -516,6 +525,14 @@ def create_demo_database( nb_orders=50):
                         dts.day = d
                         dts.presence_time = total_duration
                         session().add( dts)
+                    else:
+                        from koi.people_admin.people_admin_mapping import DayEventType, DayEvent
+                        from koi.people_admin.people_admin_service import people_admin_service
+
+                        de = DayEvent()
+                        de.employee_id = employee.employee_id
+                        de.event_type = random.choice(DayEventType.symbols())
+                        people_admin_service.set_event_on_days( de, [ (d, 1) ])
 
     for i in range(3):
         for order in session().query(Order).filter(Order.state == OrderStatusType.order_ready_for_production).all():

@@ -176,6 +176,8 @@ class Timeline(object):
         total_time = timedelta(0)
 
         for start,end,description in self.spans:
+
+            mainlog.debug("Span : {} -> {}".format(start, end))
             s = self.time_to_x( max(min_time, start))
             e = self.time_to_x( min(max_time, end))
             total_time += end - start

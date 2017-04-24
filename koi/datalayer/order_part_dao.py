@@ -1427,9 +1427,14 @@ class OrderPartDAO(object):
         # we're interested in the previous month so we extend the period by one day
         valuations = self.wip_valuation_over_time( ts_begin - timedelta(days=1), ts_end)
 
-        encours_this_month = valuations[ts_end.date()]
-        encours_previous_month = valuations[ month_before]
-        turnover = billable_amount_on_slips + encours_this_month - encours_previous_month
+        if valuations:
+            encours_this_month = valuations[ts_end.date()]
+            encours_previous_month = valuations[ month_before]
+            turnover = billable_amount_on_slips + encours_this_month - encours_previous_month
+        else:
+            encours_this_month = 0
+            encours_previous_month = 0
+            turnover = billable_amount_on_slips + encours_this_month - encours_previous_month
 
         if turnover < 0:
             turnover = 0

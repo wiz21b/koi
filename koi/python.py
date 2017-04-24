@@ -37,6 +37,7 @@ parser.add_argument('--console', action='store_true', default=False, help='Activ
 parser.add_argument('--debug', action='store_true', default=False, help='Verbose debug output output')
 parser.add_argument('--dev', action='store_true', default=False, help='Equals --console --debug --no-update')
 parser.add_argument('--demo', action='store_true', default=False, help='Run as the demo')
+parser.add_argument('--screenshots', action='store_true', default=False, help='Make a collection of screenshots')
 parser.add_argument('--echo-sql', action='store_true', default=False, help='Show SQL statements')
 parser.add_argument('--no-update', action='store_true', default=False, help='Run without trying to update')
 # parser.add_argument('--watchdog-file', action='store_true', default="watchdog", help='Watch dog file')
@@ -320,6 +321,7 @@ class KoiBase:
         # Make sure the method name is unique on self
         method_name = "_qaction_triggered_{}".format( getattr( widget, KoiBase.INSTANCE_NAME_FIELD))
 
+        # Adding a method to the main windows. We do that to have callbacks.
         setattr( self._main_window, method_name, lambda: self._main_window.stack.add_panel(widget))
         action = QAction(title, self._main_window)
         action.triggered.connect(getattr( self._main_window, method_name))
@@ -1046,10 +1048,48 @@ def timer_test():
     if w and w.isVisible():
         w.accept()
 
+def make_screenshot():
+    global window
+
+
+    from PySide.QtCore import QTimer
+    from PySide.QtGui import QPixmap
+
+    def screenshot_callback():
+        screenshot = QPixmap.grabWidget(window)
+        screenshot = QPixmap.grabWindow(QApplication.desktop().winId())
+        screenshot.save("screenshot-main.png")
+
+    def screenshot_callback2():
+        window._qaction_triggered_FinancialKPIPanel()
+        screenshot = QPixmap.grabWidget(window)
+        screenshot.save("screenshot-financial.png")
+
+    def screenshot_callback3a():
+        window.show_presence_overview()
+        window.presence_overview_widget.table_view.setCurrentIndex( window.presence_overview_widget.table_view.model().index(4,4))
+        window.presence_overview_widget.table_view.setCurrentIndex( window.presence_overview_widget.table_view.model().index(5,5))
+
+    def screenshot_callback3():
+        window.show_presence_overview()
+        window.presence_overview_widget.table_view.setCurrentIndex( window.presence_overview_widget.table_view.model().index(4,4))
+        window.presence_overview_widget.table_view.setCurrentIndex( window.presence_overview_widget.table_view.model().index(5,5))
+
+        screenshot = QPixmap.grabWidget(window)
+        screenshot = QPixmap.grabWindow(QApplication.desktop().winId())
+        screenshot.save("screenshot-presence.png")
+
+    QTimer.singleShot(1000, screenshot_callback)
+    QTimer.singleShot(3000, screenshot_callback2)
+    QTimer.singleShot(4000, screenshot_callback2)
+    QTimer.singleShot(6000, screenshot_callback3a)
+    QTimer.singleShot(8000, screenshot_callback3)
+    mainlog.info("Screenshots done")
+    # screenshot_callback()
 
 
 def all_systems_go():
-    global user_session,configuration,window
+    global user_session,configuration,window, args
 
     mainlog.debug("all_systems_go() : init dao")
     dao.set_session(session())
@@ -1060,6 +1100,7 @@ def all_systems_go():
     window = MainWindow(dao)
     window.setMinimumSize(1024,768)
     splash.finish(window)
+
 
     mainlog.debug("all_systems_go() : login dialog")
     if not user_session.is_active(): # the configuration may have forced a user
@@ -1103,8 +1144,11 @@ def all_systems_go():
         window.module.wire( _koi_base)
 
         # window.showMaximized() # If I maximize what happens to multiscreens ?
-        window.show()
+        window.showMaximized()
         # splash = SplashScreen(pixmap)
+
+        if args.screenshots:
+            make_screenshot()
 
         app.exec_()
     else:
