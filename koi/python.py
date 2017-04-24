@@ -54,7 +54,11 @@ if args.debug:
 mainlog.info(copyright())
 mainlog.info(license_short())
 
-init_i18n()
+if args.screenshots:
+    init_i18n("en_UK")
+else:
+    init_i18n()
+
 load_configuration()
 
 upgrade_process(args)
@@ -1067,13 +1071,11 @@ def make_screenshot():
 
     def screenshot_callback3a():
         window.show_presence_overview()
+        window.presence_overview_widget.table_view.setCurrentIndex( window.presence_overview_widget.table_view.model().index(1,1))
         window.presence_overview_widget.table_view.setCurrentIndex( window.presence_overview_widget.table_view.model().index(4,4))
-        window.presence_overview_widget.table_view.setCurrentIndex( window.presence_overview_widget.table_view.model().index(5,5))
 
     def screenshot_callback3():
         window.show_presence_overview()
-        window.presence_overview_widget.table_view.setCurrentIndex( window.presence_overview_widget.table_view.model().index(4,4))
-        window.presence_overview_widget.table_view.setCurrentIndex( window.presence_overview_widget.table_view.model().index(5,5))
 
         screenshot = QPixmap.grabWidget(window)
         screenshot = QPixmap.grabWindow(QApplication.desktop().winId())

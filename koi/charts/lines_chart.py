@@ -1010,13 +1010,21 @@ class LinesChart(QFrame):
         painter.setPen(text_pen)
 
         painter.setFont(self.title_font)
-        fm = painter.fontMetrics()
-
 
         r = QRect(self.margin,0,self.width() - 2*self.margin,self.height())
         painter.drawText(r, Qt.AlignLeft + Qt.TextWordWrap, self.title)
 
 
+    def draw_no_data(self, painter):
+        text_pen = QPen()
+        text_pen.setCapStyle(Qt.RoundCap)
+        text_pen.setColor(QColor(128, 128, 128)) # alpha=255=fully opaque
+        text_pen.setWidth(1)
+        painter.setPen(text_pen)
+
+        painter.setFont(self.title_font)
+        r = QRect( self.margin, 0, self.width() - 2*self.margin, self.height())
+        painter.drawText(r, (Qt.AlignCenter | Qt.AlignLeft) + Qt.TextWordWrap, _("No data"))
 
     def paintEvent(self,event):
 
@@ -1029,6 +1037,7 @@ class LinesChart(QFrame):
 
         if self.no_draw:
             self.draw_title(painter)
+            self.draw_no_data(painter)
             return
 
         self._draw_grid(painter, self.y_base, self.width(), self.total_height, 6)
