@@ -5,11 +5,13 @@ from koi.business_charts import NonConformityInternal, DirectIndirectEvolutionCh
     NumberOfCreatedOrderParts, NumberOfCustomerWhoOrdered, IndirectWorkEvolutionChart, ToBillThisMonth, \
     ValuationThisMonth, TurnOverThisMonth, RunningValuationChart, ToFacturePerMonthChart, DirectWorkCostEvolutionChart, \
     SoldeCarnetCommande, DirectWorkEvolutionChart, EstimatedVersusActualTimePerMonthChart
-from koi.gui.indicators_panel import IndicatorsPanel
-from koi.service_config import remote_documents_service, remote_indicators_service
-from koi.db_mapping import TimeTrack, DeliverySlipPart
 from koi.datalayer.employee_mapping import RoleType
+from koi.db_mapping import TimeTrack, DeliverySlipPart
+from koi.gui.indicators_panel import IndicatorsPanel
+from koi.gui.koi_base import KoiModuleBase
 
+# This *is* used.
+from koi.service_config import remote_indicators_service
 
 class ISOIndicatorsWidget(IndicatorsPanel):
 
@@ -84,11 +86,6 @@ class MonthlyProductionReportOverviewWidget(IndicatorsPanel):
                  ],
              ] )
 
-
-
-class KoiModuleBase:
-    def wire(self, koi_base):
-        pass
 
 class IndicatorsModule(KoiModuleBase):
     def __init__(self):

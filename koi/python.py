@@ -6,13 +6,13 @@
 
 #noinspection PyUnresolvedReferences
 import os
-# This is a bug fix for
-# https://bitbucket.org/anthony_tuininga/cx_freeze/issue/138/cryptography-module
+
+from koi.gui.koi_base import KoiBase
+
 os.environ['OPENSSL_CONF'] = 'fix'
 
 import sys
 import locale
-from urllib.request import urlopen
 import argparse
 import logging
 
@@ -269,7 +269,7 @@ from koi.FindOrder import FindOrderDialog
 from koi.configuration.charts_config import IndicatorsModule
 from koi.delivery_slips.DeliverySlipPanel import DeliverySlipPanel
 
-from koi.gui.horse_panel import HorsePanelTabs, HorsePanel
+from koi.gui.horse_panel import HorsePanelTabs
 from koi.session.LoginDialog import LoginDialog
 
 from koi.junkyard.services import services
@@ -282,62 +282,10 @@ from koi.session.UserSession import user_session
 # noinspection PyUnresolvedReferences
 from koi.service_config import remote_documents_service
 
-class KoiBase:
-
-    INSTANCE_NAME_FIELD = "koi_instance_name"
-
-    def __init__(self):
-        self._instances = dict()
-
-    def set_main_window(self, main_window):
-        self._main_window = main_window
-
-    def register_instance(self, obj, name):
-        # Ensure each instance is uniquely named.
-        assert isinstance( name, str)
-        assert obj is not None
-        assert name not in self._instances.keys()
-        assert obj not in self._instances.values(), "{} of name {} is already in the tracked instances".format(obj, name)
-
-        self._instances[name] = obj
-        setattr( obj, KoiBase.INSTANCE_NAME_FIELD, name)
-
-
-    def _locate_menu(self, location):
-        for name, menu in self._main_window.menus:
-            if name == location:
-                return menu
-
-        raise Exception("Menu location '{}' not found".format(location))
-
-    def add_menu_item(self, location, widget_name, roles = []):
-
-        widget = self._instances[widget_name]
-        menu = self._locate_menu( location)
-
-        if isinstance(widget, HorsePanel):
-            title = widget.get_panel_title()
-        else:
-            title = "#UNSET TITLE#"
-
-        # Set up the triggered signal so that it triggers the display of the panel
-
-        # Make sure the method name is unique on self
-        method_name = "_qaction_triggered_{}".format( getattr( widget, KoiBase.INSTANCE_NAME_FIELD))
-
-        # Adding a method to the main windows. We do that to have callbacks.
-        setattr( self._main_window, method_name, lambda: self._main_window.stack.add_panel(widget))
-        action = QAction(title, self._main_window)
-        action.triggered.connect(getattr( self._main_window, method_name))
-        menu.addAction(action)
-
-        if roles:
-            action.setEnabled( user_session.has_any_roles(roles))
-
 _koi_base = KoiBase()
+_koi_base.set_user_session( user_session)
 
-
-class MainWindow (QMainWindow, KoiBase):
+class MainWindow (QMainWindow):
 
     def __init__(self,dao):
         super(MainWindow,self).__init__()
@@ -351,6 +299,7 @@ class MainWindow (QMainWindow, KoiBase):
 
     def closeEvent( self, event): # a QCloseEvent
 
+        # Require user action before closing (if needed).
         close_ok = self.stack.close_all_tabs()
 
         if not close_ok:

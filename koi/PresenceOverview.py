@@ -110,11 +110,11 @@ class PresenceOverviewWidget(HorsePanel):
                           max(1,ndx.column())))
 
 
+            chrono.chrono_click("Retrieveing data")
             tars = dao.task_action_report_dao.get_reports_for_employee_id_on_date(employee_id,d)
             work_timetracks = dao.timetrack_dao.all_work_for_employee_date_manual(employee_id, d)
             presence_timetracks = dao.timetrack_dao.all_presence_for_employee_date_managed_by_code_full(employee_id, d)
             # employee = dao.employee_dao.find_by_id(employee_id)
-
             special_activities = dao.special_activity_dao.find_on_day(employee_id, d)
 
             chrono.chrono_click("Redrawing")

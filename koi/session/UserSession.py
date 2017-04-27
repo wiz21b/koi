@@ -1,7 +1,6 @@
 from koi.datalayer.SQLAEnum import EnumSymbol
-from koi.Configurator import mainlog,configuration
 
-class UserSession(object):
+class UserSession:
     def __init__(self):
         self.invalidate()
 

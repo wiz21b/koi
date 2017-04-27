@@ -72,3 +72,11 @@ for n in fnames:
 
 for n in knames:
     print("    d['{}'] = obj.{} # Key".format(n,n))
+
+
+
+print("def dict_to_sqla_obj( d : dict) -> object:")
+for n in fnames:
+
+    col_type = type(getattr(model, n).property.columns[0].type)
+    print("    obj.{} = d['{}']  # {}".format(n, n, col_type))

@@ -12,6 +12,7 @@ from koi.date_utils import month_before,month_after,date_to_pg,timestamp_to_pg,_
 from koi.db_mapping import OrderPart
 from koi.utils import CacheResult
 from koi.dao import dao
+from koi.server.json_decorator import JsonCallable
 
 def month_diff(begin, end):
     """Return the number of months between d1 and d2,
@@ -172,7 +173,7 @@ class IndicatorsService:
     def __init__(self):
         self._turnover_computation_cache = dict()
 
-    #@JsonCallable([])
+    @JsonCallable([])
     def clear_caches(self):
         self._turnover_computation_cache = dict()
 
@@ -193,7 +194,7 @@ class IndicatorsService:
 
 
 
-    #@JsonCallable([date, date])
+    @JsonCallable([datetime, datetime])
     @CacheResult
     @RollbackDecorator
     def solde_carnet_commande_chart(self, begin : datetime = None, end : datetime = None):
@@ -334,10 +335,10 @@ order by dates.day
         return GraphData( x_axis,[_("Remaining"),_("Consumed"),_("Sell price")],[soldes, consumed, planned])
 
 
-    #@JsonCallable([date, date])
+    @JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def oqd_chart(self, begin = None, end = None):
+    def oqd_chart(self, begin : date = None, end : date = None):
         begin,end,duration = _standard_period2(begin,end)
 
         r = session().connection().execute("""
@@ -403,10 +404,10 @@ order by date_trunc( 'MONTH', month_start.month_start_day)
 
 
 
-    #@JsonCallable([date, date])
+    @JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def deadline_delivery_otd_chart(self, begin = None, end = None):
+    def deadline_delivery_otd_chart(self, begin : date = None, end : date= None):
         begin,end,duration = _standard_period2(begin,end)
 
         r = session().connection().execute("""
@@ -470,10 +471,10 @@ order by month_start_day""".format(timestamp_to_pg(begin), duration)).fetchall()
 
 
 
-    #@JsonCallable([date, date])
+    @JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def done_versus_planned_hours_on_completed_parts_chart(self, begin = None, end = None):
+    def done_versus_planned_hours_on_completed_parts_chart(self, begin : date = None, end : date = None):
         begin,end,duration = _standard_period2(begin,end)
 
         r = session().connection().execute("""
@@ -552,10 +553,10 @@ order by date_trunc( 'MONTH', completion_date);
 
 
 
-    #@JsonCallable([date, date])
+    @JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def direct_vs_indirect_chart(self, begin = None, end = None):
+    def direct_vs_indirect_chart(self, begin : date = None, end : date = None):
         begin,end,duration = _standard_period2(begin,end)
 
         r = session().connection().execute("""with
@@ -612,10 +613,10 @@ group by month_start_day
 
 
 
-    #@JsonCallable([date, date])
+    @JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def number_of_internal_non_conformity_chart(self, begin = None, end = None):
+    def number_of_internal_non_conformity_chart(self, begin : date = None, end : date = None):
         begin,end,duration = _standard_period2(begin,end)
 
         r = session().connection().execute("""
@@ -681,7 +682,7 @@ order by date_trunc( 'MONTH', month_start_day);
 
 
 
-    #@JsonCallable([date, date])
+    @JsonCallable([date, date])
     #@dto_maker.JsonCallable()
     @CacheResult
     @RollbackDecorator
@@ -714,10 +715,10 @@ order by date_trunc( 'MONTH', month_start.month_start_day)
 
 
 
-    #@JsonCallable([date, date])
+    @JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def evolution_encours_chart(self, begin = None, end = None):
+    def evolution_encours_chart(self, begin : date = None, end : date = None):
         global dao
 
         begin,end,duration = _standard_period2(begin,end)
@@ -739,10 +740,10 @@ order by date_trunc( 'MONTH', month_start.month_start_day)
         return GraphData(x_axis, [''], [a_encours_this_month]) # data are one serie of values => [values]
 
 
-    #@JsonCallable([date, date])
+    @JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def number_of_customer_who_ordered_chart(self, begin = None, end = None):
+    def number_of_customer_who_ordered_chart(self, begin : date = None, end : date = None):
         begin,end,duration = _standard_period2(begin,end)
 
         r = session().connection().execute("""
@@ -774,10 +775,10 @@ order by date_trunc( 'MONTH', month_start.month_start_day)
         return GraphData(x_legends, [''], [values]) # data are one serie of values => [values]
 
 
-    #@JsonCallable([date, date])
+    @JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def number_of_created_order_parts_chart(self, begin = None, end = None):
+    def number_of_created_order_parts_chart(self, begin : date = None, end : date = None):
         begin,end,duration = _standard_period2(begin,end)
 
         r = session().connection().execute("""
@@ -805,10 +806,10 @@ order by date_trunc( 'MONTH', month_start.month_start_day)
         return GraphData(x_legends, [''], [values]) # data are one serie of values => [values]
 
 
-    #@JsonCallable([date, date])
+    @JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def order_parts_value_chart(self, begin = None, end = None):
+    def order_parts_value_chart(self, begin : date = None, end : date = None):
         begin,end,duration = _standard_period2(begin,end)
 
         r = session().connection().execute("""
@@ -837,10 +838,10 @@ order by date_trunc( 'MONTH', month_start.month_start_day)
 
 
 
-    #@JsonCallable([date, date])
+    @JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def preorder_parts_value_chart(self, begin = None, end = None):
+    def preorder_parts_value_chart(self, begin : date = None, end : date = None):
         begin,end,duration = _standard_period2(begin,end)
 
         r = session().connection().execute("""
@@ -877,11 +878,11 @@ order by data.month_start_day
 
 
 
-    #@JsonCallable([date, date])
+    @JsonCallable([date, date])
     #@dto_maker.JsonCallable()
     @CacheResult
     @RollbackDecorator
-    def indirect_work_evolution_chart(self, begin = None, end = None):
+    def indirect_work_evolution_chart(self, begin : date = None, end : date = None):
         begin,end,duration = _standard_period2(begin,end)
 
         r = session().connection().execute("""
@@ -921,9 +922,10 @@ order by short_ids.short_id, month_start_day
         return GraphData(x_legends, legends ,array)
 
 
+    @JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def estimated_versus_actual_time_per_month_chart(self, begin = None, end = None):
+    def estimated_versus_actual_time_per_month_chart(self, begin : date = None, end : date = None):
 
         begin,end,duration = _standard_period2(begin,end)
 
@@ -983,10 +985,10 @@ order by dates.day
 
 
 
-
+    @JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def direct_work_evolution_chart(self, begin = None, end = None):
+    def direct_work_evolution_chart(self, begin : date = None, end : date = None):
         begin,end,duration = _standard_period2(begin,end)
 
         r = session().connection().execute("""with dates as  (
@@ -1020,10 +1022,10 @@ order by days, short_id""".format(timestamp_to_pg(begin), duration, timestamp_to
         x_legends, legends, array = to_arrays(r) # x,y value
         return GraphData(x_legends, legends ,array)
 
-
+    @JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def to_facture_per_month_chart(self, begin = None, end = None):
+    def to_facture_per_month_chart(self, begin : date = None, end : date = None):
         begin,end,duration = _standard_period2(begin,end)
 
         mainlog.debug("to_facture_per_month_chart {} - {}".format(begin, end))
@@ -1099,10 +1101,10 @@ order by dates.day
 
 
 
-
+    @JsonCallable([date, date])
     @CacheResult
     @RollbackDecorator
-    def direct_work_cost_chart(self, begin = None, end = None):
+    def direct_work_cost_chart(self, begin : date = None, end : date = None):
         begin,end,duration_in_months = _standard_period2(begin,end)
 
         r = session().connection().execute("""
@@ -1139,34 +1141,39 @@ left join data on data.m = dates.month
             self._turnover_computation_cache[begin_date] = dao.order_part_dao.compute_turnover_on( begin_date)
         return self._turnover_computation_cache[begin_date]
 
+    @JsonCallable([date, date])
     @CacheResult
-    def to_bill_this_month_indicator(self, begin=None, end=None):
+    def to_bill_this_month_indicator(self, begin : date =None, end : date=None):
         to_facture, encours_this_month, encours_previous_month, turnover = self._compute_turnover_info(end)
         return to_facture
 
 
+    @JsonCallable([date, date])
     @CacheResult
-    def valuation_this_month_indicator(self, begin=None, end=None):
+    def valuation_this_month_indicator(self, begin : date =None, end : date =None):
         to_facture, encours_this_month, encours_previous_month, turnover = self._compute_turnover_info(end)
         mainlog.debug("valuation_this_month_indicator = {}".format(encours_this_month))
         return encours_this_month
 
 
+    @JsonCallable([date, date])
     @CacheResult
-    def valuation_last_month_indicator(self, begin=None, end=None):
+    def valuation_last_month_indicator(self, begin : date =None, end : date =None):
         to_facture, encours_this_month, encours_previous_month, turnover = self._compute_turnover_info(end)
         return encours_previous_month
 
 
+    @JsonCallable([date, date])
     @CacheResult
-    def turn_over_indicator(self, begin=None, end=None):
+    def turn_over_indicator(self, begin : date =None, end : date=None):
         to_facture, encours_this_month, encours_previous_month, turnover = self._compute_turnover_info(end)
         return turnover
 
 
 
+    @JsonCallable([date, date])
     @CacheResult
-    def valution_production_chart(self, begin, end):
+    def valution_production_chart(self, begin :date , end : date):
 
         mainlog.debug("valution_production_chart : from {} to {}".format(begin, end))
         valuations = dao.order_part_dao.wip_valuation_over_time(begin, end)

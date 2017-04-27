@@ -7,7 +7,8 @@ from koi.datalayer.database_session import session
 from koi.datalayer.RollbackDecorator import RollbackDecorator
 
 import sqlalchemy
-from koi.junkyard.dto_maker import JsonCallable, Sequence
+from koi.junkyard.dto_maker import Sequence
+from koi.server.json_decorator import JsonCallable
 from koi.junkyard.sqla_dict_bridge import make_change_tracking_dto
 
 

@@ -421,6 +421,7 @@ def super_encoder(*args):
     if len(args) == 0:
         return None
     elif len(args) > 1:
+        # Convert many args into a list of many args
         return super_encoder(args)
     elif len(args) == 1:
         obj = args[0]
@@ -432,7 +433,7 @@ def super_encoder(*args):
         elif isinstance(obj,list) or isinstance(obj,tuple):
             return [super_encoder(list_obj) for list_obj in obj]
         else:
-            return obj
+            return obj # The JSON encoder will do the rest
 
 def super_encoder_OLD(obj):
     # Will catch the first level of KeyedTuple.
@@ -677,8 +678,25 @@ def JsonCallable(param_types = [], result_encoder=super_encoder):
         def __init__(self, func):
             super(JsonCallableDecorator,self).__init__(func)
 
-            self._prototype = inspect.getargspec(self._original_func).args[1:]
+            proto = inspect.getfullargspec(self._original_func)
+            # In the args, we skip the 'self' (first arg)
+            self._prototype = proto.args[1:]
             self._json_param_types = param_types
+
+            i = 0
+            for arg_name in proto.args[1:]:
+
+                if arg_name not in proto.annotations:
+                    mainlog.error("Untyped parameter in {}".format(func))
+                    raise Exception("Untyped parameter")
+
+                # t = proto.annotations[arg_name]
+                # if not t == param_types[i]:
+                #     mainlog.error("Prototypes don't match {} != {}".format( t, param_types[i]))
+                #     raise Exception("Prototypes don't match {} != {}".format( t, param_types[i]))
+
+                i += 1
+
             self._json_param_result_encoder = result_encoder
 
         # def __get__(self, instance, cls=None):
@@ -810,7 +828,7 @@ def JsonCallable(param_types = [], result_encoder=super_encoder):
 
 
 def jsonFuncWrapper(decorated_func):
-    """ Wraps a method so that its parameter can come from various sources,
+    """ Wraps a method so that its parameters can come from various sources,
     such as : regular python call, or JSON call.
 
     The method is expected to be decorated with the JsonCallable
@@ -890,10 +908,12 @@ def jsonFuncWrapper(decorated_func):
 
         # There are three situations
         # * Direct call to service : in that case the *args are just plain python object
-        # * Simulated HTTP call : in that case, we receive the args in a form that comes out of the "params" dict specified by the JSON spec.
+        # * Simulated HTTP call : in that case, we receive the args in a form that comes out
+        #   of the "params" dict specified by the JSON spec.
         # * Actual HTTP call : same as simulated HTTP call
-        # Therefore, the wrapper can receive the same parameter in different forms (for ex. a datetime or a JSONified datetime)
-        # We should have two code paths : one for "direct" parameters and one for "json" parameters
+        # Therefore, the wrapper can receive the same parameter in different forms
+        # (for ex. a datetime or a JSONified datetime). We should have two code paths :
+        # one for "direct" parameters and one for "json" parameters
 
         def _param_cast(param, type_):
             mainlog.debug("Casting {} of type {} into {}".format(param, type(param), type_))
@@ -908,7 +928,7 @@ def jsonFuncWrapper(decorated_func):
                 # is the expected type of the items in the list.
                 # FIXME This type checking is ignored it what's inside
                 # the array/list are dictionaries (because the actualy type
-                # is inferred from the dictionary)...
+                # is inferred from the JSON params dictionary)...
 
                 cast = [ _param_cast(i,type_[0]) for i in param]
 
@@ -920,7 +940,7 @@ def jsonFuncWrapper(decorated_func):
                 cast = param
 
             elif type(param) == dict:
-                mainlog.debug("It's a dict")
+                mainlog.debug("It's a dict : {}".format(param))
                 cast = json_object_hook(param)
 
             elif type(param) == EnumSymbol:
@@ -1015,7 +1035,7 @@ def jsonFuncWrapper(decorated_func):
 def make_server_json_server_dispatcher(json_dispatcher, wrapped_service):
     """ Extends the given json dispatcher (a JsonRpc instance)
     with the marked methods of the sevrice instance. The service
-    instane is expected to be wrapped in a JsonCallWrapper.
+    instance is expected to be wrapped in a JsonCallWrapper.
 
     The names of the Json methods are built with following
     a class_name_dot_method name. This introduces some hard
@@ -1195,7 +1215,7 @@ class JsonCallWrapper(object):
 
             mainlog.debug("http_call : endpoint name is {}".format(endpoint_name))
             # Get param list, then remove 'self'
-            param_names = inspect.getargspec(original_func)[0][1:]
+            param_names = inspect.getfullargspec(original_func).args[1:]
 
             rpc_data = dict()
             rpc_data['jsonrpc'] = '2.0'

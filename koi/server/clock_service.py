@@ -68,7 +68,7 @@ class ClockService(object):
     # @JSonServer([int, date], person_data_encoder)
 
     @JsonCallable([int, date], person_data_encoder)
-    def get_person_data(self, employee_id, start_date):
+    def get_person_data(self, employee_id : int, start_date : date):
         """ Get a lot of information about a person :
         * person data (totally independent of the start_date)
         * presence hours per day (on a period of 4 days, sorted from the oldest
@@ -133,13 +133,13 @@ class ClockService(object):
 
     #@JSonServer([int])
     @JsonCallable([int])
-    def get_machine_data(self, machine_id):
+    def get_machine_data(self, machine_id : int):
         return machine_service.find_machine_by_id(machine_id)
 
 
     #@JSonServer([int, datetime])
     @JsonCallable([int, datetime])
-    def get_ongoing_tasks(self,employee_id, time):
+    def get_ongoing_tasks(self,employee_id : int, time : datetime):
         """ Gives a "light" list of ongoing tasks on a moment 'time'
         for a given employee.
 
@@ -164,7 +164,7 @@ class ClockService(object):
             return None
 
     @JsonCallable([list])
-    def get_multiple_tasks_data(self, task_id_list):
+    def get_multiple_tasks_data(self, task_id_list : list):
 
         tasks_data = dict()
 
@@ -213,7 +213,7 @@ class ClockService(object):
         return tasks_data
 
     @JsonCallable([int])
-    def get_task_data(self,task_id):
+    def get_task_data(self,task_id : int):
         try:
             # FIXME use _flatten in TaskDAO
 
@@ -268,7 +268,7 @@ class ClockService(object):
 
     # @JSonServer([int, datetime, str, TaskActionReportType])
     @JsonCallable([int, datetime, str, TaskActionReportType])
-    def record_presence(self, employee_id, time, location, action):
+    def record_presence(self, employee_id :int , time : datetime, location : str, action : TaskActionReportType):
 
         if action in (TaskActionReportType.day_in, TaskActionReportType.day_out):
 
@@ -288,7 +288,10 @@ class ClockService(object):
 
 
     @JsonCallable([int,int,datetime,str,TaskActionReportType,int])
-    def record_pointage_on_operation(self,operation_id,employee_id,action_time,location,action_kind,machine_id):
+    def record_pointage_on_operation(self,operation_id : int, employee_id : int,
+                                     action_time : datetime, location : str,
+                                     action_kind : TaskActionReportType,
+                                     machine_id : int):
 
         # First, load the operation and figure out if a task is associated to the operation/machine.
         # self._figure_task_for_operation_and_machine(operation_id, machine_id)
@@ -299,16 +302,16 @@ class ClockService(object):
 
 
     @JsonCallable([int,int,int,datetime,str,TaskActionReportType])
-    def record_pointage_on_order(self, order_id, operation_definition_id, employee_id,
-                                 action_time, location, action_kind):
+    def record_pointage_on_order(self, order_id : int, operation_definition_id : int, employee_id : int,
+                                 action_time : datetime, location : str, action_kind : TaskActionReportType):
 
         task_id = dao.task_dao._get_task_for_order(order_id, operation_definition_id)
         self._recordActionOnWorkTask(task_id, employee_id, action_time, location, action_kind)
 
 
     @JsonCallable([int,int,datetime,str,TaskActionReportType])
-    def record_pointage_on_unbillable(self, operation_definition_id, employee_id,
-                                      action_time, location, action_kind):
+    def record_pointage_on_unbillable(self, operation_definition_id : int , employee_id : int,
+                                      action_time : datetime, location : str, action_kind : TaskActionReportType):
 
         mainlog.debug("record_pointage_on_unbillable ")
 
@@ -512,7 +515,7 @@ class ClockService(object):
 
 
     @JsonCallable([int,int,datetime,str,TaskActionReportType])
-    def record_pointage(self,barcode,employee_id,action_time,location,action_kind):
+    def record_pointage(self,barcode:int,employee_id:int,action_time:datetime,location:str,action_kind:TaskActionReportType):
 
         mainlog.debug("Record pointage {} {} {} {} {}".format(barcode,employee_id,action_time,location,action_kind))
 
@@ -550,12 +553,12 @@ class ClockService(object):
 
 
     @JsonCallable([int,int,int])
-    def get_next_action_for_employee_operation_machine(self, employee_id, operation_id, machine_id):
+    def get_next_action_for_employee_operation_machine(self, employee_id : int, operation_id : int, machine_id : int):
         return dao.operation_dao.find_next_action_for_employee_operation_machine(employee_id, operation_id, machine_id)
 
 
     @JsonCallable([int, int])
-    def get_operation_information(self, employee_id, operation_id):
+    def get_operation_information(self, employee_id : int, operation_id : int):
         """ Retrieve information about an operation.
         The operation is meant to be imputable.
 
@@ -590,7 +593,7 @@ class ClockService(object):
 
 
     @JsonCallable([int, int])
-    def get_operation_definition_information(self, employee_id, operation_definition_id):
+    def get_operation_definition_information(self, employee_id : int, operation_definition_id : int):
         """ Retrieve information about an operation.
         The operation is meant to be imputable.
 

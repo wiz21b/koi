@@ -252,6 +252,7 @@ def _has_primary_key_set(knames, d):
 
 
 def dict_to_sqla(metadata : SQLAMetaData, model, d, recursive_set, with_persistence=True):
+
     fnames, rnames, single_rnames, knames = metadata.attributes_names(model)
 
     if with_persistence:

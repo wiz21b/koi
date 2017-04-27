@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<!--
+
+    This page and some its pictures are (c) Copyright Stefan Champailler 2017.
+    They are licensed to you under the terms of the Creative Commons
+    Attribution-NonCommercial-NoDerivatives 4.0 International License.
+    See https://creativecommons.org for an explanation of these terms.
+
+    Other pictures are from Wikipedia or other sources.
+-->
+
+<html>
+   <meta charset="UTF-8">
+<head>
+  <title>Koï Manufacturing Execution System</title>
+    <!-- I use no black because some say it's better.
+         The red is the Chinese Pantone red (see their webpage). -->
+
+  <style>
+
+    * {
+    font-family: calibri;
+    }
+
+    h2 {
+    text-color: red;
+    padding:1em 0 0 0;
+    }
+
+    .column-left{   position:absolute; left:5px;      top:2px; width: 20%; }
+    .column-center{ position:absolute; left:24%;      top:2px; width: 60%; }
+
+    div.container {
+    position:relative;
+    width: 80%;
+    margin-left: auto ;
+    margin-right: auto ;
+    }
+
+html, body {
+    height: 100%;
+    width: 100%;
+  padding: 0;
+    margin: 0;
+    color: #202040;
+
+}
+
+    p {
+    hyphens: auto;
+    }
+
+    a {
+    color: black;
+    font-weight: bold;
+    text-decoration: none;
+    padding-bottom: 0em;
+    border-bottom: .2em solid #BE132D;
+    }
+
+    a.important {
+    padding: 5px;
+    border: .2em solid #BE132D;
+    border-radius: .4em;
+    text-decoration: none;
+    color: black;
+    }
+
+    img.screenshot {
+    border: 5px solid white;
+    cursor : pointer;
+    }
+    </style>
+
+    <script type="text/javascript"> <!--
+    function UnCryptMailto( s )
+    {
+        var n = 0;
+        var r = "";
+        for( var i = 0; i < s.length; i++)
+        {
+            n = s.charCodeAt( i );
+            if( n >= 8364 )
+            {
+                n = 128;
+            }
+            r += String.fromCharCode( n - 1 );
+        }
+        return r;
+    }
+
+    function linkTo_UnCryptMailto( s )
+    {
+        location.href=UnCryptMailto( s );
+    }
+    // --> </script>
+
+<!-- Core CSS file -->
+<link rel="stylesheet" href="photoswipe/photoswipe.css">
+
+<!-- Skin CSS file (styling of UI - buttons, caption, etc.)
+     In the folder of skin CSS file there are also:
+     - .png and .svg icons sprite,
+     - preloader.gif (for browsers that do not support CSS animations) -->
+<link rel="stylesheet" href="photoswipe/default-skin/default-skin.css">
+
+<!-- Core JS file -->
+<script src="photoswipe/photoswipe.min.js"></script>
+
+<!-- UI JS file -->
+<script src="photoswipe/photoswipe-ui-default.min.js"></script>
+
+</head>
+<body>
+
+
+<div class="container">
+  <div class="column-left"><img src="koi_mes.png" width="100%"/></div>
+
+  <div class="column-center">
+    <h1>Koï Manufacturing Execution System</h1>
+
+    <p>Koï M.E.S. is a very specialised piece of software helping you to follow what happens on the production floor.
+    <!-- img src="workshop.jpg" width="200px" style="float:right; padding-left:20px; padding-bottom:20px "/ -->
+    It only does that but does it well. It is meant to be highly productive.</p>
+    <p>Koï is made for small and mid-size structures, 5 to 20 people on the production floor working on discrete stuff.
+      It is efficient especially in agile environments (i.e. many different jobs instead of a few recurring ones).</p>
+    <p>Koï is made with reliability in mind. It's been in production use since 2013.</p>
+
+<p style="text-align:center; cursor: pointer;  clear: both; ">
+    <img src="screenshot-main.png" width="192" class="screenshot" onclick="openPhotoSwipe(0);"/>
+    <img src="screenshot-presence.png" width="192" class="screenshot"  onclick="openPhotoSwipe(1);"/>
+    <img src="screenshot-financial.png" width="192" class="screenshot"  onclick="openPhotoSwipe(2);"/>
+</p>
+
+
+    <h2>Try it</h2>
+    <p><a class="important" href="koi_client1.11.9_demo.exe"><b>Click here to start</b></a></p>
+    <p>Note that the data will be erased from time to time.
+       Please note that firewalls may interfere with Koï.</p>
+
+    <h2>Price</h2>
+    <p>Efficiency is our core value, so our plans are dead simple :</p>
+    <ul>
+      <li><b>Professional</b> : Contact us for requests, quotes, support, references, etc.</li>
+      <li><b>Community</b> : You install Koï yourself, and run it the way you want. Find everything on <a href="https://github.com/wiz21b/koi">GitHub</a>.</li>
+    </ul>
+    <p><a class="important" href="mailto:koimes@proximus.be"><b>Click here to contact us</b></a></p>
+
+
+    <h2>Open source</h2>
+    <p>Koï is open source because we think that the only way to tune it for maximum productivity is to actually program it (a bit).
+       More precisely, it's Affero GPLv3.</p>
+
+<!--
+    <iframe src="http://webchat.freenode.net?randomnick=1&channels=%23koi-mes&uio=d4" width="647" height="400"></iframe>
+ -->
+
+  </div>
+</div>
+
+
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe.
+         It's a separate element, as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. PhotoSwipe keeps only 3 slides in DOM to save memory. -->
+        <div class="pswp__container">
+            <!-- don't modify these 3 pswp__item elements, data is added later on -->
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+</div>
+<script>
+var openPhotoSwipe = function( index) {
+    var pswpElement = document.querySelectorAll('.pswp')[0];
+
+    // build items array
+    var items = [
+        {
+            src: 'screenshot-main.png',
+            w: 1920,
+            h: 1080
+        },
+        {
+            src: 'screenshot-presence.png',
+            w: 1920,
+            h: 1080
+        },
+        {
+            src: 'screenshot-financial.png',
+            w: 1920,
+            h: 1047
+        }
+    ];
+
+    // define options (if needed)
+    var options = {
+			 // history & focus options are disabled on CodePen
+      	history: false,
+      	focus: false,
+
+        showAnimationDuration: 0,
+        hideAnimationDuration: 0
+
+    };
+
+    var gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
+gallery.init();
+gallery.goTo(index);
+
+};
+
+// openPhotoSwipe();
+
+document.getElementById('gallery').onclick = openPhotoSwipe;
+</script>
+
+
+
+</body>
+</html>

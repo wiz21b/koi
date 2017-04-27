@@ -17,7 +17,7 @@ from koi.people_admin.people_admin_mapping import DayEvent, DayEventType
 class DayEventService(object):
 
     @JsonCallable([date])
-    def events_for_month(self, base_date):
+    def events_for_month(self, base_date : date):
         begin, end = month_period_as_date(base_date)
 
         db_events = session().query(DayEvent.day_event_id,
@@ -30,8 +30,8 @@ class DayEventService(object):
         return db_events
 
 
-    @JsonCallable([date])
-    def events_for_year(self, year):
+    @JsonCallable([int])
+    def events_for_year(self, year : int):
 
         begin_date = date(year,1,1)
         end_date = date(year,12,31)
@@ -57,15 +57,16 @@ class DayEventService(object):
         return emp
 
 
+    # FIXME In Python 3.6 one can use List[int]
     @JsonCallable([list])
-    def remove_events( self, event_ids):
+    def remove_events( self, event_ids : list):
         if event_ids:
             session().query(DayEvent).filter( DayEvent.day_event_id.in_(event_ids)).delete(synchronize_session=False)
             session().commit()
 
 
     @JsonCallable([DayEvent, list])
-    def set_event_on_days( self, day_event, days_duration):
+    def set_event_on_days( self, day_event : DayEvent, days_duration : list):
         """ Set an event on several days each time with a specific duration.
 
         :param day_event:

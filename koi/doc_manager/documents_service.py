@@ -20,7 +20,7 @@ class DocumentsService(object):
         pass
 
     @JsonCallable([str])
-    def find_category_by_short_name(self, short_name):
+    def find_category_by_short_name(self, short_name : str):
         r = session().query( *all_non_relation_columns(DocumentCategory)).filter(DocumentCategory.short_name == short_name).one()
         session().commit()
         return r
@@ -32,7 +32,7 @@ class DocumentsService(object):
         return r
 
     @JsonCallable([int, int])
-    def set_document_category(self, document_id, category_id):
+    def set_document_category(self, document_id : int, category_id : int):
         category = session().query(DocumentCategory).filter(DocumentCategory.document_category_id == category_id).one()
         """@type : DocumentCategory"""
 
@@ -44,7 +44,7 @@ class DocumentsService(object):
 
 
     @JsonCallable([str])
-    def reference_to_document_id(self, horse_reference):
+    def reference_to_document_id(self, horse_reference : str):
 
         # Only the document with a non-empty reference can be matched (because of
         # the unique constraint)
@@ -56,7 +56,7 @@ class DocumentsService(object):
 
     @JsonCallable([int])
     @RollbackDecorator
-    def find_by_id(self, document_id):
+    def find_by_id(self, document_id : int):
         # Polymorphic !!!
         q = with_polymorphic(Document,[TemplateDocument])
         doc = session().query(q).filter(Document.document_id == document_id).one()
@@ -89,7 +89,7 @@ class DocumentsService(object):
 
     @JsonCallable([int])
     @RollbackDecorator
-    def delete(self, document_id):
+    def delete(self, document_id : int):
         # This is expected to work polymorphically on Documents' children.
         # So you can delete anything that inherits from Document.
 
@@ -106,7 +106,7 @@ class DocumentsService(object):
 
     @JsonCallable([int, str, str])
     @RollbackDecorator
-    def update_name_and_description(self, document_id, name, description):
+    def update_name_and_description(self, document_id : int, name : str, description : str):
 
         if not name:
             raise ServerException(ServerErrors.file_name_cannot_be_empty)
