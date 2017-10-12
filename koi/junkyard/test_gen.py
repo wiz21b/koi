@@ -33,6 +33,7 @@ From server to client, it is quite possible that lazy eavaluation is not needed.
 
 import json
 from pprint import pprint
+import logging
 
 from koi.base_logging import init_logging, mainlog
 init_logging()
@@ -51,6 +52,166 @@ from koi.db_mapping import Employee, FilterQuery, Order, OrderPart, Customer, Pr
 from koi.datalayer.DeclEnumP3 import DeclEnumType
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import ColumnProperty, joinedload
+
+from koi.junkyard.instrumentation import InstrumentedObject, InstrumentedRelation
+
+import sqlalchemy
+
+mainlog.setLevel( logging.DEBUG)
+
+def _attribute_analysis( model):
+    mainlog.debug("Analysing model {}".format(model))
+
+
+    # print("-"*80)
+    # for prop in inspect(model).iterate_properties:
+    #     if isinstance(prop, ColumnProperty):
+    #         print( type(prop.columns[0].type))
+    #         print( type( inspect( getattr(model, prop.key))))
+
+    # Warning ! Some column properties are read only !
+    fnames = [prop.key for prop in inspect(model).iterate_properties
+              if isinstance(prop, ColumnProperty)]
+
+    ftypes = dict()
+    for fname in fnames:
+        t = inspect( getattr(model, fname)).type
+        # print( type( inspect( getattr(model, fname)).type))
+        ftypes[fname] = type(t)
+
+    #print(ftypes)
+    single_rnames = []
+    rnames = dict()
+    for key, relation in inspect(model).relationships.items():
+        print( relation.mapper.class_)
+        # print( relation.argument.class_)
+        if relation.uselist == False:
+            single_rnames.append(key)
+        else:
+            rnames[key] = relation.mapper.class_
+
+    # Order is important to rebuild composite keys (I think, not tested so far.
+    # See SQLA comment for query.get operation :
+    # http://docs.sqlalchemy.org/en/rel_1_0/orm/query.html#sqlalchemy.orm.query.Query.get )
+    knames = [key.name for key in inspect(model).primary_key]
+
+    mainlog.debug(
+        "For model {}, I have these attributes : primary keys={}, fields={}, realtionships={} (single: {})".format(
+            model, knames, fnames, rnames, single_rnames))
+
+    return ( ftypes, rnames, single_rnames, knames)
+
+
+
+class SqlaSession:
+
+    def __init__(self, db_session):
+        self._db_session = db_session
+        self._model_analysis = dict()
+
+    def _analyse_model(self, model):
+        # Caching for performance
+        if model not in self._model_analysis:
+            self._model_analysis[model] = _attribute_analysis(model)
+        return self._model_analysis[model]
+
+
+    def copy_fields(self, org, dest, model):
+        fnames, rnames, single_rnames, knames = self._analyse_model(model)
+        for fname in fnames:
+            setattr( dest, fname, getattr( org, fname))
+
+    def save_object(self, llobj):
+
+        model = llobj._model()
+        fnames, rnames, single_rnames, knames = self._analyse_model( model)
+
+        key_field = getattr( model, knames[0])
+        key_value = getattr( llobj, knames[0])
+        sqla_obj = self._db_session.query(model).filter(key_field == key_value).first()
+
+        if not sqla_obj:
+            sqla_obj = model()
+            self._db_session.add(sqla_obj)
+
+        self.copy_fields(llobj, sqla_obj, model)
+
+    def load_object(self, klass, pk_field, pk_value):
+
+        mainlog.debug("Loading object from SQL")
+        obj = self._db_session.query(klass).filter( pk_field == pk_value).one()
+        fnames, rnames, single_rnames, knames = self._analyse_model(klass)
+
+        llo = LazyLoad( rnames, self, klass)
+        self.copy_fields( obj, llo, klass)
+        llo.clear_changes()
+
+        self._db_session.commit()
+        return llo
+
+    def load_relationship(self, llobj, rel_field):
+
+        fnames, rnames, single_rnames, knames = self._analyse_model( llobj._model)
+
+        relation = getattr( llobj._model, rel_field)
+        key_field = getattr(llobj._model, knames[0])
+        key_value = getattr(llobj, knames[0])
+        relation_model = rnames[rel_field]
+
+        # We load the relationship in a joined load on the
+        # parent entity.
+
+        mainlog.debug("Loading relationship from SQL")
+        res = self._db_session.query(llobj._model).filter( key_field == key_value).options(
+            joinedload(relation)).one()
+
+        instru = InstrumentedRelation()
+
+        for rel_obj in getattr( res, rel_field):
+            llo = LazyLoad(rnames, self, relation_model)
+            self.copy_fields(rel_obj, llo, relation_model)
+            llo.clear_changes()
+            instru.append(llo)
+
+        self._db_session.commit()
+        return instru
+
+
+class LazyLoad:
+    def __init__(self, relations, session, model):
+
+        self._session = session
+        self._model = model
+
+        fnames, rnames, single_rnames, knames = session._analyse_model( model)
+
+
+        # relations says if a relationship is loaded or not
+        self._relations = dict.fromkeys( rnames)
+
+        self._iobj = InstrumentedObject()
+        self._iobj.init_fields( list(fnames.keys()) + list(rnames.keys()))
+
+    def __getattr__(self, item):
+        if item in self._relations and not self._relations[item]:
+            setattr( self._iobj, item, self._session.load_relationship(self, item))
+            self._relations[item] = True
+        return getattr( self._iobj, item)
+
+
+class OrderLL(LazyLoad):
+    def __init__(self):
+        super().__init__( [ 'parts' ] )
+
+
+sqla_session = SqlaSession( session())
+o = sqla_session.load_object( Order, Order.order_id, 5255)
+
+# print(o)
+# print(o.state)
+# print(o.parts)
+
+# exit()
 
 serialized = """{
     "fullname": "Daniel Dumont",
@@ -126,50 +287,6 @@ serialized = """{
     "is_active": true
 }"""
 
-import sqlalchemy
-
-def _attribute_analysis( model):
-    mainlog.debug("Analysing model {}".format(model))
-
-
-    # print("-"*80)
-    # for prop in inspect(model).iterate_properties:
-    #     if isinstance(prop, ColumnProperty):
-    #         print( type(prop.columns[0].type))
-    #         print( type( inspect( getattr(model, prop.key))))
-
-    # Warning ! Some column properties are read only !
-    fnames = [prop.key for prop in inspect(model).iterate_properties
-              if isinstance(prop, ColumnProperty)]
-
-    ftypes = dict()
-    for fname in fnames:
-        t = inspect( getattr(model, fname)).type
-        # print( type( inspect( getattr(model, fname)).type))
-        ftypes[fname] = type(t)
-
-    #print(ftypes)
-    single_rnames = []
-    rnames = dict()
-    for key, relation in inspect(model).relationships.items():
-        print( relation.mapper.class_)
-        # print( relation.argument.class_)
-        if relation.uselist == False:
-            single_rnames.append(key)
-        else:
-            rnames[key] = relation.mapper.class_
-
-    # Order is important to rebuild composite keys (I think, not tested so far.
-    # See SQLA comment for query.get operation :
-    # http://docs.sqlalchemy.org/en/rel_1_0/orm/query.html#sqlalchemy.orm.query.Query.get )
-    knames = [key.name for key in inspect(model).primary_key]
-
-    mainlog.debug(
-        "For model {}, I have these attributes : primary keys={}, fields={}, realtionships={} (single: {})".format(
-            model, knames, fnames, rnames, single_rnames))
-
-    return ( ftypes, rnames, single_rnames, knames)
-
 
 
 def make_func_name( class_):
@@ -193,7 +310,472 @@ def converter_str_to_sqla_type(ftype):
 
     return "(lambda p : none_or_x(p,{}))".format(cvrt)
 
+from sqlalchemy import Table, Column, Integer, String, Float, MetaData, ForeignKey, Date, DateTime, Sequence, Boolean, LargeBinary, Binary, Index, Numeric
 
+class SQLATypeSupport:
+    def __init__(self, sqla_model):
+        self._model = sqla_model
+        self.fnames, self.rnames, self.single_rnames, self.knames = _attribute_analysis( self._model)
+
+        fields = dict()
+        for f, t in self.fnames.items():
+            print("{} {}".format(f,t))
+            if t == String:
+                fields[f] = str
+            elif isinstance(t, Integer):
+                fields[f] = int
+        self._fields = fields
+
+    def base_type(self):
+        return self._model
+
+    def type_name(self):
+        return self._model.__name__
+
+    def make_instance_code(self):
+        return "{}()".format( self.type_name())
+
+    def fields(self):
+        return self._fields.keys()
+
+    def relations(self):
+        return self.rnames
+
+    def field_type(self, field_name):
+        return self._fields[field_name]
+
+    def field_read_code(self, repr, field_name):
+        return "{}.{}".format(repr, field_name)
+
+    def relation_read_code(self, expression, relation_name):
+        return "{}.{}.iterator()".format(expression, relation_name)
+
+    def relation_write_code(self, expression, relation_name, source_walker):
+        return "{}.{} = map( serialize_relation_from_{}, {})".format( "zzz",relation_name, source_walker.type_name(), expression)
+
+    def write_serializer_to_self_head(self, source, out_lines):
+        #return
+        out_lines.append("def serialize( source : {}, dest : {}):".format(  source.type_name(), self.type_name()))
+
+
+    def write_serializer_to_self_tail(self, source, out_lines):
+        pass
+
+
+    def write_serializer_to_self_field(self, source_walker, field_name, out_lines):
+        c = cast(source_walker.field_type(field_name), None)
+        expr = "d.{}={}".format(field_name, c.format(source_walker.field_read_code("source", field_name)))
+        out_lines.append("    {}".format(expr))
+
+
+    def write_serializer_to_self_relation(self, source_walker, relation_name, out_lines):
+        expr = "d.{}={}".format(relation_name,
+                                self.relation_write_code(
+                                    source_walker.relation_read_code("source", relation_name),
+                                    relation_name,
+                                    source_walker))
+        out_lines.append("    {}".format(expr))
+
+    def gen_write_field(self, instance, field, value):
+        return "{}.{} = {}".format( instance, field, value)
+
+    def gen_basetype_to_type_conversion(self, field, code):
+        return "( {})".format(code)
+
+    def gen_read_field(self, instance, field):
+        return "{}.{}".format(instance, field)
+
+    def gen_type_to_basetype_conversion(self, field, code):
+        return "( {})".format(code)
+
+    def gen_read_relation( self, instance, relation_name):
+        return "{}.{}".format(instance, relation_name)
+
+
+class DictTypeSupport:
+    def __init__(self):
+        self._lines=[]
+
+    def base_type(self):
+        return dict
+
+    def type_name(self):
+        return "dict"
+
+    def fields(self):
+        return []
+
+    def relations(self):
+        return []
+
+    def field_type(self, field_name):
+        return str
+
+    def make_instance_code(self):
+        return "{}()".format( self.type_name())
+
+    def field_read_code(self, expression, field_name):
+        """ Generates a piece of code to access the field
+        named filed_name from an expression of type
+        dict.
+        """
+        return "{}['{}']".format(expression, field_name)
+
+    def relation_read_code(self, expression, relation_name):
+        return "{}['{}'].iterator()".format(expression, relation_name)
+
+    def add_line(self, line):
+        self._lines.append(line)
+
+    def write_serializer_to_self_head(self, source, out_lines):
+        """ Creates a function that will read a source
+        object and serializes its content to a dict.
+
+        :param source:
+        :return:
+        """
+
+        #out_lines.append("def serialize_relationship_from_dict(d : dict)")
+        out_lines.append("def serialize( source : {}, dest : {}):".format(  source.type_name(), self.type_name()))
+        #out_lines.append("    d = dict()")
+
+    def write_serializer_to_self_tail(self, source, out_lines):
+        out_lines.append("    return d")
+
+    def write_serializer_to_self_field(self, source_walker, field_name, out_lines):
+        c = cast(source_walker.field_type(field_name), None)
+        print(c)
+        expr = "d['{}']={}".format( field_name, c.format(source_walker.field_read_code( "source",  field_name)))
+        out_lines.append("    {}".format(expr))
+
+
+    def write_serializer_to_self_relation(self, source_walker, relation_name, out_lines):
+        expr = "d['{}']={}".format(relation_name, source_walker.relation_read_code("source", relation_name))
+        out_lines.append("    {}".format(expr))
+
+    def gen_write_field(self, instance, field, value):
+        return "{}['{}'] = {}".format(instance, field, value)
+
+    def gen_basetype_to_type_conversion(self, field, code):
+        return "( {})".format( code)
+
+
+    def gen_read_field(self, instance, field):
+        return "{}['{}']".format(instance, field)
+
+
+    def gen_type_to_basetype_conversion(self, field, code):
+        return "( {})".format(code)
+
+
+    def gen_read_relation(self, instance, relation_name):
+        return "{}['{}']".format(instance, relation_name)
+
+
+def cast( source_type = None, dest_type = None):
+    print("Casting {} -> {}".format( source_type, dest_type))
+
+    if dest_type == None and source_type == str:
+        return "{}"
+
+print("///////////////////////////////////////")
+
+
+class TypeSupportFactory:
+    def __init__(self):
+        self.type_supports = dict()
+
+    def make_type_support(self, base_type):
+        raise NotImplementedError()
+
+    def serializer_dest_type_name(self, base_type):
+        raise NotImplementedError()
+
+    def serializer_source_type_name(self, base_type):
+        raise NotImplementedError()
+
+    def get_type_support(self, base_type):
+        if base_type not in self.type_supports:
+            self.make_type_support(base_type)
+
+        return self.type_supports[base_type]
+
+
+class SQLAFactory(TypeSupportFactory):
+    def __init__(self):
+        super().__init__()
+
+    def make_type_support(self, base_type):
+        self.type_supports[base_type] = SQLATypeSupport(base_type)
+
+    def serializer_source_type_name(self, base_type):
+        return str(base_type.type_name())
+
+    def serializer_dest_type_name(self, base_type):
+        return str(base_type.type_name())
+
+class DictFactory(TypeSupportFactory):
+    def __init__(self):
+        super().__init__()
+
+    def make_type_support(self, base_type):
+        self.type_supports[base_type] = DictTypeSupport()
+
+    def serializer_source_type_name(self, base_type):
+        return "dict"
+
+    def serializer_dest_type_name(self, base_type):
+        return "dict"
+
+
+
+
+class SQLAWalker:
+
+    def __init__(self):
+        self._code = [] # array of string
+        self._indentation = 0
+
+    def _indent_right(self):
+        self._indentation += 1
+
+    def _indent_left(self):
+        self._indentation -= 1
+
+    def _append_code(self, lines):
+
+        if type(lines) == str:
+            lines = [lines]
+        elif type(lines) == list:
+            pass
+        else:
+            raise Exception("Unexpected data")
+
+        for line in lines:
+            self._code.append( "    "*self._indentation + line)
+
+    def generated_code(self):
+        return "\n".join( self._code)
+
+    def gen_type_to_basetype_conversion(self, source_type, base_type):
+        if source_type == String and base_type == str:
+            return "{}".format
+
+    def proto_serializer(self, walked_type_name,
+                        source_type_support_factory : TypeSupportFactory,
+                        dest_type_support_factory : TypeSupportFactory,
+                        source_type,
+                        dest_type):
+
+        n = self.name_serializer(walked_type_name,
+                        source_type_support_factory,
+                        dest_type_support_factory,
+                        source_type,
+                        dest_type)
+
+        self._append_code("def {}( source, dest : None):".format(n))
+        self._indent_right()
+        self._append_code(    "if dest is None:")
+        self._indent_right()
+        self._append_code(        "dest = {}".format( dest_type.make_instance_code()))
+        self._indent_left()
+        self._indent_left()
+
+        return
+
+    def name_serializer(self, walked_type_name,
+                        source_type_support_factory : TypeSupportFactory,
+                        dest_type_support_factory : TypeSupportFactory,
+                        source_type,
+                        dest_type):
+        return "serialize_{}_{}_to_{}".format(
+            walked_type_name,
+            source_type_support_factory.serializer_source_type_name(source_type),
+            dest_type_support_factory.serializer_dest_type_name(dest_type))
+
+    def walk(self, start_type, source_factory : TypeSupportFactory, dest_factory : TypeSupportFactory):
+        """ Walks the structure dictated by the type encapsulated in this walker.
+        Build a serializer that will gets its data from the source type
+        and stores them in the destination type.
+        The type encapsulated in this walker can therefore be different
+        than the source type and destination type (that's unlikely though).
+
+        :param source_type_support:
+        :param dest_type_support:
+        :return:
+        """
+
+        fields, relations, single_rnames, knames = _attribute_analysis(start_type)
+
+        fields_tm = dict()
+        for f, t in fields.items():
+            # print("{} {}".format(f, t))
+            if t == String:
+                fields_tm[f] = str
+            elif isinstance(t, Integer):
+                fields_tm[f] = int
+
+        fields_names = fields.keys()
+        relations_names = relations
+
+        source_instance = "source"
+        dest_instance = "dest"
+
+        source_type_support = source_factory.get_type_support(start_type)
+        dest_type_support = dest_factory.get_type_support(start_type)
+
+        self.proto_serializer(start_type.__name__,
+                                source_factory,
+                                dest_factory,
+                                source_type_support,
+                                dest_type_support)
+        self._indent_right()
+
+        for field in fields_names:
+            read_field_code = source_type_support.gen_read_field
+            conversion_out_code = source_type_support.gen_type_to_basetype_conversion
+            conversion_in_code = dest_type_support.gen_basetype_to_type_conversion
+            write_field_code = dest_type_support.gen_write_field
+
+            field_transfer = \
+                write_field_code(
+                    dest_instance,
+                    field,
+                    conversion_in_code(
+                        field,
+                        conversion_out_code(
+                            field,
+                            read_field_code( source_instance, field))))
+
+            self._append_code(field_transfer)
+
+        # Relation :
+        # Create object or update object ?
+        # for relation_name in relations_names:
+        #     dest_type_support.write_serializer_to_self_relation(source_type_support, relation_name, lines)
+        #     dest_type_support.write_serializer_to_self_tail(source_type_support, lines)
+
+
+        def gen_copy_to_relation( source_relation_access_code, dest_relation_access_code, create_or_load_instance_code, serializer_code):
+            self._append_code("for item in {}:".format(source_relation_access_code))
+            self._indent_right()
+            self._append_code(    "dest = {}".format(create_or_load_instance_code))
+            self._append_code(    "{}.append( {})".format(
+                dest_relation_access_code,
+                serializer_code('item')))
+            self._indent_left()
+            return
+
+
+        for relation_name, relation in relations_names.items():
+
+            global type_supports
+
+            # Relation type must be converted to the same destination
+            # as the source type
+            rel_type_support = type_supports[relation] # relation in the walked structure
+
+            create_or_load_instance_code = rel_type_support.make_instance_code()
+            read_rel_code = source_type_support.gen_read_relation( source_instance, relation_name)
+            serialize_code = "{}({{}}, dest)".format(
+                self.name_serializer( relation.__name__,
+                                      source_factory,
+                                      dest_factory,
+                                      rel_type_support,
+                                      rel_type_support)).format
+            write_rel_code = dest_type_support.gen_read_relation( source_instance, relation_name)
+
+            # Comment aller chercher le bon serializer ???
+            gen_copy_to_relation( read_rel_code,
+                                  write_rel_code,
+                                  create_or_load_instance_code,
+                                  serialize_code)
+
+        self._indent_left()
+
+"""
+when I walk the structure, I need to know the conversions that apply.
+the conversions are dictated by a overall strategy such as dict to SQLA entities
+so the walker needs to know the overall strategy.
+so the walker cannot be reduced to a source type and a destination type because in the relations of the source type lie other types.
+so we need something along the lines of :
+
+convert( structure_walker, type_strategy = from_dict_to_sqla, source_object, dest_object = None)
+"""
+
+from koi.datalayer.sqla_mapping_base import Base
+from sqlalchemy.ext.declarative import DeclarativeMeta
+
+type_supports = dict()
+type_supports[Employee] = SQLATypeSupport(Employee)
+type_supports[FilterQuery] = SQLATypeSupport(FilterQuery)
+type_supports[dict] = DictTypeSupport()
+
+
+# w.walk(dict_to_SQLA_conversion_strategy,
+#        Employee,
+#        DictFactory(),
+#        SQLAFactory())
+
+w = SQLAWalker()
+
+#src_factory = SQLAFactory()
+#dest_factory = SQLAFactory()
+src_factory = DictFactory()
+dest_factory = SQLAFactory()
+
+w.walk(FilterQuery,
+       src_factory,
+       dest_factory)
+
+w.walk(Employee,
+       src_factory,
+       dest_factory)
+
+print(w.generated_code())
+
+# w.walk(Employee,
+#        DictFactory(),
+#        DictFactory())
+
+# w.walk(type_supports[dict],
+#        type_supports[Employee])
+#
+# w.walk(type_supports[Employee],
+#        type_supports[dict])
+
+exit()
+
+def walk( source_walker, dest_walker):
+    if dest_walker.fields():
+        fields_names = dest_walker.fields()
+    elif source_walker.fields():
+        fields_names = source_walker.fields()
+    else:
+        raise Exception("Neither Source or destination announce fields to share !")
+
+    if dest_walker.relations():
+        relations_names = dest_walker.relations()
+    elif source_walker.relations():
+        relations_names = source_walker.relations()
+    else:
+        raise Exception("Neither Source or destination announce relations to share !")
+
+
+    lines = []
+    dest_walker.write_serializer_to_self_head(source_walker, lines)
+    for field in fields_names:
+        dest_walker.write_serializer_to_self_field( source_walker, field, lines)
+    for relation_name in relations_names:
+        dest_walker.write_serializer_to_self_relation( source_walker, relation_name, lines)
+    dest_walker.write_serializer_to_self_tail( source_walker, lines)
+    print("\n".join(lines))
+
+sqla_walker = SQLATypeSupport(Employee)
+dict_walker = DictTypeSupport()
+walk(dict_walker, sqla_walker)
+#walk(sqla_walker, dict_walker)
+exit()
 
 def generate_DTO( the_klass, excludes = [], extra_fields=[]):
     fnames, rnames, single_rnames, knames = _attribute_analysis(the_klass)
@@ -228,6 +810,7 @@ def generate_DTO( the_klass, excludes = [], extra_fields=[]):
     pl("        return d")
 
     pl("    # ------------------------------------------------------------------")
+
     pl("    def dict_of_strings_to_object(self, d):".format( make_func_name(the_klass)))
     pl("        # Copies a dict of string to a regular object, applying \n" +
        "        # conversions to strings")
@@ -340,6 +923,16 @@ def generate_QtDTO( the_klass, excludes = [], extra_fields=[]):
 
 
     pl("    # ------------------------------------------------------------------")
+
+    # The whole problem here is to make sure we just serialize the changes
+    # that occured on the Qt DTO. If we don't do that, we might trigger
+    # a load of all the object's relationship when we save.
+
+    # Therefore, from a lazy loading problem, we inherit a lazy writing
+    # one... That translates to write only what needs to be xritten.
+    # Which also is a problem of knowing what to delete.
+    # So we basically reimplement SQLAlchemy UnitOfWork pattern...
+
     pl("    def to_dict(self):".format( make_func_name(the_klass)))
     pl("        d = dict()")
 
@@ -385,6 +978,28 @@ class QtDTO:
             a.append( type( qt_dto_name).load_from_dict( d))
         session().commit()
         return a
+
+
+class Proto:
+
+    def __init__(self):
+        self._simple_attr = None
+        self._simple_attr_old = None
+
+    @property
+    def simple_attr(self):
+        return self._simple_attr
+
+    def to_dict(self):
+        d = dict()
+        if self._simple_attr != self._simple_attr_old:
+            d['simple_attr'] = self._simple_attr
+
+
+    def save(self):
+        d = self.to_dict()
+        if d:
+            send(d)
 
 
 from sqlalchemy.orm import RelationshipProperty

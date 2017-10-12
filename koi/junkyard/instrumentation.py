@@ -1,6 +1,12 @@
+from koi.base_logging import mainlog
+
 class InstrumentedObject:
     def __init__(self):
         self.clear_changes()
+
+    def init_fields(self, fnames):
+        for fname in fnames:
+            object.__setattr__(self, fname, None)
 
     def has_changed(self):
         return len(self._changed) > 0
@@ -40,19 +46,38 @@ class InstrumentedRelation(list):
         self.clear_changes()
         self._loaded = False
 
+        self._changed = False
+        self._deleted = set()
+        self._added = set()
+
         return super(InstrumentedRelation,self).__init__(self)
 
     def lazy_load(self):
         # Redefine this if you wan to enable lazy loading.
+        # For example, load the content of the whole relationship
+        # at once.
 
         pass
 
+    def lazy_save(self):
+
+        for x in self._changed:
+            x.lazy_save()
+
+        for x in self._added:
+            x.lazy_save()
+
+        for x in self._deleted:
+            x.delete()
+
     def _check_lazy_load(self):
-        mainlog.debug("echk lazy load")
+        # mainlog.debug("echk lazy load")
         if not self._loaded:
-            mainlog.debug("lazy load")
+            # mainlog.debug("lazy load")
+            self.clear_changes()
             self.lazy_load()
             self._loaded = True
+
 
     def clear_changes(self):
         object.__setattr__(self, "_changed", False)
@@ -215,9 +240,9 @@ import collections
 
 class CheckedList(list, collections.MutableSequence):
     def _check_lazy_load(self):
-        mainlog.debug("echk lazy load")
+        # mainlog.debug("echk lazy load")
         if not self._loaded:
-            mainlog.debug("lazy load")
+            # mainlog.debug("lazy load")
             self.lazy_load()
             self._loaded = True
 
