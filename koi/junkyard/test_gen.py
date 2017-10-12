@@ -485,6 +485,9 @@ class TypeSupportFactory:
     def __init__(self):
         self.type_supports = dict()
 
+    def register_type_support(self, ts):
+        self.type_supports[ts.base_type()] = ts
+
     def make_type_support(self, base_type):
         raise NotImplementedError()
 
@@ -496,6 +499,7 @@ class TypeSupportFactory:
 
     def get_type_support(self, base_type):
         if base_type not in self.type_supports:
+            print("--- {}".format(base_type))
             self.make_type_support(base_type)
 
         return self.type_supports[base_type]
@@ -593,7 +597,8 @@ class SQLAWalker:
             source_type_support_factory.serializer_source_type_name(source_type),
             dest_type_support_factory.serializer_dest_type_name(dest_type))
 
-    def walk(self, start_type, source_factory : TypeSupportFactory, dest_factory : TypeSupportFactory):
+    def walk(self, start_type, source_factory : TypeSupportFactory, dest_factory : TypeSupportFactory,
+             fields_to_skip = []):
         """ Walks the structure dictated by the type encapsulated in this walker.
         Build a serializer that will gets its data from the source type
         and stores them in the destination type.
@@ -632,6 +637,9 @@ class SQLAWalker:
         self._indent_right()
 
         for field in fields_names:
+            if field in fields_to_skip:
+                continue
+
             read_field_code = source_type_support.gen_read_field
             conversion_out_code = source_type_support.gen_type_to_basetype_conversion
             conversion_in_code = dest_type_support.gen_basetype_to_type_conversion
@@ -673,7 +681,8 @@ class SQLAWalker:
 
             # Relation type must be converted to the same destination
             # as the source type
-            rel_type_support = type_supports[relation] # relation in the walked structure
+
+            rel_type_support = source_factory.get_type_support(relation) # relation in the walked structure
 
             create_or_load_instance_code = rel_type_support.make_instance_code()
             read_rel_code = source_type_support.gen_read_relation( source_instance, relation_name)
@@ -706,31 +715,37 @@ convert( structure_walker, type_strategy = from_dict_to_sqla, source_object, des
 from koi.datalayer.sqla_mapping_base import Base
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
-type_supports = dict()
-type_supports[Employee] = SQLATypeSupport(Employee)
-type_supports[FilterQuery] = SQLATypeSupport(FilterQuery)
-type_supports[dict] = DictTypeSupport()
+class EmployeeTypeSupport(SQLATypeSupport):
+    def __init__(self):
+        super().__init__(Employee)
+    def gen_type_to_basetype_conversion(self, field, code):
+        if field == "_roles":
+            return "nop( {})".format(code)
+        else:
+            return code
 
-
-# w.walk(dict_to_SQLA_conversion_strategy,
-#        Employee,
-#        DictFactory(),
-#        SQLAFactory())
 
 w = SQLAWalker()
 
 #src_factory = SQLAFactory()
 #dest_factory = SQLAFactory()
-src_factory = DictFactory()
-dest_factory = SQLAFactory()
+src_factory = SQLAFactory()
+src_factory.register_type_support( EmployeeTypeSupport())
+dest_factory = DictFactory()
 
 w.walk(FilterQuery,
        src_factory,
        dest_factory)
 
+
+w.walk(FilterQuery,
+       dest_factory,
+       src_factory)
+
 w.walk(Employee,
        src_factory,
-       dest_factory)
+       dest_factory,
+       fields_to_skip=["password"])
 
 print(w.generated_code())
 
