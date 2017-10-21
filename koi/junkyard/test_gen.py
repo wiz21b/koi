@@ -31,6 +31,9 @@ From server to client, it is quite possible that lazy eavaluation is not needed.
 
 """
 
+from datetime import datetime
+import zlib
+from time import time
 import json
 from pprint import pprint
 import logging
@@ -49,6 +52,7 @@ init_db_session(configuration.database_url, metadata, False or configuration.ech
 
 from koi.datalayer.database_session import session
 from koi.db_mapping import Employee, FilterQuery, Order, OrderPart, Customer, ProductionFile, Operation
+from koi.datalayer.employee_mapping import RoleType
 from koi.datalayer.DeclEnumP3 import DeclEnumType
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import ColumnProperty, joinedload
@@ -83,7 +87,7 @@ def _attribute_analysis( model):
     single_rnames = []
     rnames = dict()
     for key, relation in inspect(model).relationships.items():
-        print( relation.mapper.class_)
+        # print( relation.mapper.class_)
         # print( relation.argument.class_)
         if relation.uselist == False:
             single_rnames.append(key)
@@ -312,14 +316,17 @@ def converter_str_to_sqla_type(ftype):
 
 from sqlalchemy import Table, Column, Integer, String, Float, MetaData, ForeignKey, Date, DateTime, Sequence, Boolean, LargeBinary, Binary, Index, Numeric
 
-class SQLATypeSupport:
+class TypeSupport:
+    pass
+
+class SQLATypeSupport(TypeSupport):
     def __init__(self, sqla_model):
         self._model = sqla_model
         self.fnames, self.rnames, self.single_rnames, self.knames = _attribute_analysis( self._model)
 
         fields = dict()
         for f, t in self.fnames.items():
-            print("{} {}".format(f,t))
+            #print("{} {}".format(f,t))
             if t == String:
                 fields[f] = str
             elif isinstance(t, Integer):
@@ -386,13 +393,16 @@ class SQLATypeSupport:
         return "{}.{}".format(instance, field)
 
     def gen_type_to_basetype_conversion(self, field, code):
-        return "( {})".format(code)
+        return code
+
+    def gen_init_relation(self, instance_name, relation_name):
+        return ""
 
     def gen_read_relation( self, instance, relation_name):
         return "{}.{}".format(instance, relation_name)
 
 
-class DictTypeSupport:
+class DictTypeSupport(TypeSupport):
     def __init__(self):
         self._lines=[]
 
@@ -468,6 +478,9 @@ class DictTypeSupport:
         return "( {})".format(code)
 
 
+    def gen_init_relation(self, instance_name, relation_name):
+        return "{}['{}'] = []".format(instance_name, relation_name)
+
     def gen_read_relation(self, instance, relation_name):
         return "{}['{}']".format(instance, relation_name)
 
@@ -499,7 +512,7 @@ class TypeSupportFactory:
 
     def get_type_support(self, base_type):
         if base_type not in self.type_supports:
-            print("--- {}".format(base_type))
+            mainlog.debug("Creating a new type support for {}".format(base_type))
             self.make_type_support(base_type)
 
         return self.type_supports[base_type]
@@ -510,19 +523,21 @@ class SQLAFactory(TypeSupportFactory):
         super().__init__()
 
     def make_type_support(self, base_type):
+        mainlog.debug("Making SQLAType support for {}".format(base_type))
         self.type_supports[base_type] = SQLATypeSupport(base_type)
 
-    def serializer_source_type_name(self, base_type):
-        return str(base_type.type_name())
+    def serializer_source_type_name(self, base_type : TypeSupport):
+        return str( base_type.__class__.__name__)
 
-    def serializer_dest_type_name(self, base_type):
-        return str(base_type.type_name())
+    def serializer_dest_type_name(self, base_type : TypeSupport):
+        return str( base_type.__class__.__name__)
 
 class DictFactory(TypeSupportFactory):
     def __init__(self):
         super().__init__()
 
     def make_type_support(self, base_type):
+        mainlog.debug("Making DictTypeSupport support for {}".format(base_type))
         self.type_supports[base_type] = DictTypeSupport()
 
     def serializer_source_type_name(self, base_type):
@@ -533,21 +548,28 @@ class DictFactory(TypeSupportFactory):
 
 
 
+SKIP = "!skip"
 
-class SQLAWalker:
 
+class CodeWriter:
     def __init__(self):
         self._code = [] # array of string
         self._indentation = 0
 
-    def _indent_right(self):
+    def indent_right(self):
         self._indentation += 1
 
-    def _indent_left(self):
+
+    def indent_left(self):
         self._indentation -= 1
 
-    def _append_code(self, lines):
+        if len(self._code) >= 1 and self._code[-1]:
+            self._code.append("")
 
+    def append_blank(self):
+        self._code.append("")
+
+    def append_code(self, lines):
         if type(lines) == str:
             lines = [lines]
         elif type(lines) == list:
@@ -556,10 +578,25 @@ class SQLAWalker:
             raise Exception("Unexpected data")
 
         for line in lines:
-            self._code.append( "    "*self._indentation + line)
+            self._code.append("    " * self._indentation + line)
+
 
     def generated_code(self):
-        return "\n".join( self._code)
+        return "\n".join(self._code)
+
+class Serializer:
+    def __init__(self, name, code_fragment):
+        self.name, self.code_fragment = name, code_fragment
+
+
+class SQLAWalker:
+
+    def __init__(self, source_factory : TypeSupportFactory, dest_factory : TypeSupportFactory):
+        self.source_factory = source_factory
+        self.dest_factory = dest_factory
+        self.serializers = {}
+
+        self.fragments = []
 
     def gen_type_to_basetype_conversion(self, source_type, base_type):
         if source_type == String and base_type == str:
@@ -569,7 +606,8 @@ class SQLAWalker:
                         source_type_support_factory : TypeSupportFactory,
                         dest_type_support_factory : TypeSupportFactory,
                         source_type,
-                        dest_type):
+                        dest_type,
+                        cw : CodeWriter):
 
         n = self.name_serializer(walked_type_name,
                         source_type_support_factory,
@@ -577,15 +615,15 @@ class SQLAWalker:
                         source_type,
                         dest_type)
 
-        self._append_code("def {}( source, dest : None):".format(n))
-        self._indent_right()
-        self._append_code(    "if dest is None:")
-        self._indent_right()
-        self._append_code(        "dest = {}".format( dest_type.make_instance_code()))
-        self._indent_left()
-        self._indent_left()
+        cw.append_code("def {}( source, dest = None):".format(n))
+        cw.indent_right()
+        cw.append_code(    "if dest is None:")
+        cw.indent_right()
+        cw.append_code(        "dest = {}".format( dest_type.make_instance_code()))
+        cw.indent_left()
+        cw.indent_left()
 
-        return
+        return n
 
     def name_serializer(self, walked_type_name,
                         source_type_support_factory : TypeSupportFactory,
@@ -597,8 +635,9 @@ class SQLAWalker:
             source_type_support_factory.serializer_source_type_name(source_type),
             dest_type_support_factory.serializer_dest_type_name(dest_type))
 
-    def walk(self, start_type, source_factory : TypeSupportFactory, dest_factory : TypeSupportFactory,
-             fields_to_skip = []):
+
+    def walk(self, start_type, base_type, dest_type, relations_control = {}):
+
         """ Walks the structure dictated by the type encapsulated in this walker.
         Build a serializer that will gets its data from the source type
         and stores them in the destination type.
@@ -610,7 +649,25 @@ class SQLAWalker:
         :return:
         """
 
-        fields, relations, single_rnames, knames = _attribute_analysis(start_type)
+        fields_to_skip = []
+        fields_to_add = []
+        cw = CodeWriter()
+
+        print("{} of type {}".format(start_type,TypeSupport))
+        if isinstance(start_type,TypeSupport):
+            source_type_support = start_type
+            start_type = source_type_support.base_type()
+        else:
+            source_type_support = self.source_factory.get_type_support(start_type)
+
+
+        if isinstance(dest_type,TypeSupport):
+            default_dest_type_support = dest_type
+        else:
+            default_dest_type_support = self.dest_factory.get_type_support(start_type)
+
+
+        fields, relations, single_rnames, knames = _attribute_analysis(base_type)
 
         fields_tm = dict()
         for f, t in fields.items():
@@ -626,24 +683,28 @@ class SQLAWalker:
         source_instance = "source"
         dest_instance = "dest"
 
-        source_type_support = source_factory.get_type_support(start_type)
-        dest_type_support = dest_factory.get_type_support(start_type)
 
-        self.proto_serializer(start_type.__name__,
-                                source_factory,
-                                dest_factory,
-                                source_type_support,
-                                dest_type_support)
-        self._indent_right()
+        serializer_func_name = self.proto_serializer( base_type.__name__,
+            self.source_factory,
+            self.dest_factory,
+            source_type_support,
+            default_dest_type_support,
+            cw)
 
-        for field in fields_names:
+        print("Registereing serializer {} {}".format(source_type_support, serializer_func_name))
+
+        self.serializers[ (source_type_support,base_type) ] = Serializer(serializer_func_name,cw)
+
+        cw.indent_right()
+
+        for field in sorted(list(fields_names) + fields_to_add):
             if field in fields_to_skip:
                 continue
 
             read_field_code = source_type_support.gen_read_field
             conversion_out_code = source_type_support.gen_type_to_basetype_conversion
-            conversion_in_code = dest_type_support.gen_basetype_to_type_conversion
-            write_field_code = dest_type_support.gen_write_field
+            conversion_in_code = default_dest_type_support.gen_basetype_to_type_conversion
+            write_field_code = default_dest_type_support.gen_write_field
 
             field_transfer = \
                 write_field_code(
@@ -655,7 +716,7 @@ class SQLAWalker:
                             field,
                             read_field_code( source_instance, field))))
 
-            self._append_code(field_transfer)
+            cw.append_code(field_transfer)
 
         # Relation :
         # Create object or update object ?
@@ -664,90 +725,270 @@ class SQLAWalker:
         #     dest_type_support.write_serializer_to_self_tail(source_type_support, lines)
 
 
-        def gen_copy_to_relation( source_relation_access_code, dest_relation_access_code, create_or_load_instance_code, serializer_code):
-            self._append_code("for item in {}:".format(source_relation_access_code))
-            self._indent_right()
-            self._append_code(    "dest = {}".format(create_or_load_instance_code))
-            self._append_code(    "{}.append( {})".format(
+        def gen_copy_to_relation( source_relation_access_code,
+                                  dest_relation_access_code,
+                                  create_or_load_instance_code,
+                                  serializer_code,
+                                  cw : CodeWriter):
+            cw.append_code("for item in {}:".format(source_relation_access_code))
+            cw.indent_right()
+            cw.append_code(    "d = {}".format(create_or_load_instance_code))
+
+            cw.append_code(    "{}.append( {})".format(
                 dest_relation_access_code,
                 serializer_code('item')))
-            self._indent_left()
+            cw.indent_left()
             return
 
+        AUTO="!auto"
 
-        for relation_name, relation in relations_names.items():
+        rel_to_walk = relations_names.copy()
 
-            global type_supports
+        for k, v in relations_control.items():
+            rel_to_walk[k] = v
 
-            # Relation type must be converted to the same destination
-            # as the source type
+        # if hasattr(source_type_support, "relations_control"):
+        #     for k,v in source_type_support.relations_control.items():
+        #         rel_to_walk[k] = v
 
-            rel_type_support = source_factory.get_type_support(relation) # relation in the walked structure
+        for relation_name, relation in rel_to_walk.items():
 
-            create_or_load_instance_code = rel_type_support.make_instance_code()
+            if relation == SKIP:
+                cw.append_blank()
+                cw.append_code('# Skipping relation {}'.format(relation_name))
+                continue
+
+            destination_type_support = default_dest_type_support
+
+            mainlog.debug("Relation to check {}".format(relation))
+            if hasattr(relation,"__mapper__"):
+                mainlog.debug("Checking SQLA relationship {}".format(relation))
+                rel_type_support = self.source_factory.get_type_support(relation)  # relation in the walked structure
+            elif isinstance(relation, TypeSupport):
+                rel_type_support = relation
+            elif type(relation) == tuple:
+                rel_type_support, destination_type_support = relation
+            else:
+                raise Exception("Unsupported type {}".format(relation))
+
+            assert isinstance( rel_type_support, TypeSupport), "Wrong type {}".format(rel_type_support)
+
+            create_or_load_instance_code = destination_type_support.make_instance_code()
             read_rel_code = source_type_support.gen_read_relation( source_instance, relation_name)
-            serialize_code = "{}({{}}, dest)".format(
-                self.name_serializer( relation.__name__,
-                                      source_factory,
-                                      dest_factory,
-                                      rel_type_support,
-                                      rel_type_support)).format
-            write_rel_code = dest_type_support.gen_read_relation( source_instance, relation_name)
 
+            if rel_type_support not in self.serializers:
+                raise Exception("While producing code to handle relation \"{}.{}\", I need a serializer that reads from {} and converts to {}".format(
+                    base_type.__name__,
+                    relation_name,
+                    rel_type_support.base_type(),
+                    destination_type_support.base_type()
+                ))
+
+            serialize_code = "{}({{}}, d)".format(
+                self.serializers[ (rel_type_support, ]) ].name ).format
+                # self.name_serializer( relation_name,
+                #                       self.source_factory,
+                #                       self.dest_factory,
+                #                       rel_type_support,
+                #                       rel_type_support)).format
+            write_rel_code = destination_type_support.gen_read_relation( dest_instance, relation_name)
+            init_dest_relation = destination_type_support.gen_init_relation( dest_instance, relation_name)
+
+            cw.append_blank()
+            cw.append_code( init_dest_relation)
             # Comment aller chercher le bon serializer ???
             gen_copy_to_relation( read_rel_code,
                                   write_rel_code,
                                   create_or_load_instance_code,
-                                  serialize_code)
+                                  serialize_code,
+                                  cw)
 
-        self._indent_left()
+        cw.append_code("return dest")
+        cw.indent_left()
+
+        self.fragments.append(cw)
+
+        return
+
+    def generated_code(self):
+        lines = ""
+        for f in self.fragments:
+            lines += f.generated_code()
+            lines += "\n"
+        return lines
+
+
 
 """
 when I walk the structure, I need to know the conversions that apply.
 the conversions are dictated by a overall strategy such as dict to SQLA entities
 so the walker needs to know the overall strategy.
-so the walker cannot be reduced to a source type and a destination type because in the relations of the source type lie other types.
-so we need something along the lines of :
+so the walker cannot be reduced to a source type and a destination type
+because in the relations of the source type lie other types.
 
-convert( structure_walker, type_strategy = from_dict_to_sqla, source_object, dest_object = None)
+The walker walks the relationships.
+Thus for each of them, it must know the appropriate source
+type and destination type.
+A relation (i.e. a list) of instances of source type will be serializsed.
+Thererefore, the walker must know :
+- the relation name in the source type
+- the relation instance's type in the source type
+- the serializer able to read the relation instance's type
+- the serializer able to write the destination type
+
+So to walk A.rel of type X
+into dest type
+
+the walker must know "rel", "type of rel", "dest type"
+
+
+
 """
 
 from koi.datalayer.sqla_mapping_base import Base
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
 class EmployeeTypeSupport(SQLATypeSupport):
+
     def __init__(self):
         super().__init__(Employee)
+
     def gen_type_to_basetype_conversion(self, field, code):
-        if field == "_roles":
-            return "nop( {})".format(code)
+        if field == "roles":
+            return "','.join([ r.name for r in {} ])".format(code)
         else:
             return code
 
 
-w = SQLAWalker()
+class RoleTypeSupport(SQLATypeSupport):
+
+    def __init__(self):
+        super().__init__(Employee)
+
+
+class ShortenedOperationSupport(SQLATypeSupport):
+    def __init__(self):
+        super().__init__(Operation)
+
+    def gen_type_to_basetype_conversion(self, field, code):
+        if field == 'value':
+            return "float({})".format(code)
+        else:
+            return code
+
+    relations_control = {"tasks": SKIP}
+
+shortened_operation_support = ShortenedOperationSupport()
+
+class ShortenedOrderPart(SQLATypeSupport):
+    def __init__(self):
+        super().__init__(OrderPart)
+
+    relations_control = { "operations" : shortened_operation_support,
+                          "delivery_slip_parts" : SKIP,
+                          "production_file" : SKIP }
+
+
+    def gen_type_to_basetype_conversion(self, field_name, field_access_code):
+        """ Transform a field value into its representation
+        in one of the fundamental python type"""
+        if field_name in ('sell_price', 'total_sell_price'):
+            return "float({})".format(field_access_code)
+        elif field_name == "state":
+            return "({}).value".format(field_access_code)
+        else:
+            return field_access_code
+
+
+# dict -> QtObject
+# dict -> SQLA object
+
 
 #src_factory = SQLAFactory()
 #dest_factory = SQLAFactory()
-src_factory = SQLAFactory()
-src_factory.register_type_support( EmployeeTypeSupport())
-dest_factory = DictFactory()
-
-w.walk(FilterQuery,
-       src_factory,
-       dest_factory)
+# src_factory = SQLAFactory()
+# src_factory.register_type_support( EmployeeTypeSupport())
+# dest_factory = DictFactory()
 
 
-w.walk(FilterQuery,
-       dest_factory,
-       src_factory)
+# for name, model in Base._decl_class_registry.items():
+#     if not name.startswith("_sa_"):
+#         w.walk(model, src_factory, dest_factory)
 
-w.walk(Employee,
-       src_factory,
-       dest_factory,
-       fields_to_skip=["password"])
 
+
+
+# w.walk(FilterQuery,
+#        src_factory,
+#        dest_factory)
+#
+#
+# w.walk(Employee,
+#        src_factory,
+#        dest_factory,
+#        fields_to_skip=["password"],
+#        fields_to_add=["roles"])
+
+
+
+"""
+Si je veux optimiser le cahrgement d'un graphe SQLA.
+Je commence par optimiser la requête.
+Vu le fonctionnement du walker, cette requête devra forcémet
+garder une structure de graphe comparable à celle de la
+"declarative base" de SQLA.
+Si ce n'est pas le cas, le SQLAWalker n'est d'aucune utilité.
+Dans ce cas il faudrait par ex. un SQLAQueryResultWalker.
+Mais le problèmes est alors : où va-t-on trouver le schema
+des données ? Donc le principe du alker ne marche que quand
+on connait le schema *a priori*.
+On peut peut-être le tordre pour que ça marhe malgré tout.
+À suivre...
+"""
+
+shortened_order_part = ShortenedOrderPart()
+
+sqla_factory = SQLAFactory()
+sqla_factory.register_type_support( shortened_operation_support)
+sqla_factory.register_type_support( shortened_order_part)
+
+dict_factory = DictFactory()
+dict_ts = DictTypeSupport()
+
+w = SQLAWalker( dict_factory, sqla_factory)
+w.walk( dict_ts, Operation, shortened_operation_support, relations_control = { "tasks" : SKIP })
+
+w.walk( dict_ts, OrderPart, shortened_order_part, relations_control = {"delivery_slip_parts" : SKIP,
+                                                                     "production_file" : SKIP,
+                                                                     "operations" : (dict_ts, Operation, shortened_operation_support)})
 print(w.generated_code())
+
+
+
+# duality problem : in OrderPArt I talk about the type support.
+# But in the Operation, I juste make a serializer.
+# Which one should we base everything on ?
+
+w = SQLAWalker(SQLAFactory(), DictFactory())
+w.walk(shortened_operation_support)
+w.walk(ShortenedOrderPart())
+# w.walk(Order,
+#        relations_control={"tasks":SKIP})
+
+print(" -"*80)
+print(w.generated_code())
+
+with open("test.py","w") as fout:
+    fout.write("# Generated {}\n\n".format( datetime.now()))
+    fout.write(w.generated_code())
+
+import test
+
+# exec( compile(w.generated_code(), "<string>", "exec"))
+
+order = session().query(Order).filter(Order.order_id == 5255).one()  # 5266
+
+pprint( test.serialize_OrderPart_ShortenedOrderPart_to_dict( order.parts[0]))
 
 # w.walk(Employee,
 #        DictFactory(),
@@ -1179,9 +1420,6 @@ exec(code)
 
 order = OrderSqlaDTO()
 
-from datetime import datetime
-import zlib
-from time import time
 
 print("----------------------------------------------")
 t = time()
