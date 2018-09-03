@@ -31,6 +31,12 @@ class ObjectModel(QAbstractTableModel):
 
         self.row_protect_func = None
 
+    def headerData(self, section : int, orientation : Qt.Orientation, role : int = Qt.DisplayRole):
+        # This seems like the most sensible way of making headers.
+        # Without that, I need to create special header view, etc.
+        if orientation == Qt.Orientation.Horizontal and role == Qt.DisplayRole:
+            return self._prototypes[section].title
+
     def read_only_objects(self):
         return self._objects
 
@@ -239,7 +245,7 @@ class ObjectModel(QAbstractTableModel):
             # Pay attention, my current hypothesis is this.
             # Since this model is made to work *only* with prototypes
             # (delegates) then all the display must be made through them
-            # therefore, requesting the Qt.DisplayRole should never happen
+            # therefore, requesting the Qt.DisplayRole should never happen.
             # However, this happens : Qt does it. And when it does, it
             # seems it forgets the delegates (or my delegates are not
             # set at the right time...). When I use "unicode" to convert
@@ -328,6 +334,7 @@ class ObjectModel(QAbstractTableModel):
 
         for obj in objects:
 
+            assert obj, "If you need blank objects, use insertRows"
             if obj in self._objects:
                 mainlog.error("Trying to add the same object twice into object model.")
 
@@ -345,6 +352,7 @@ class ObjectModel(QAbstractTableModel):
             blanks = []
             for i in range(count):
                 o = self._blank_object_factory()
+                assert o is not None, "Objects model works on objects, even blank objects"
                 blanks.append(o)
 
             self.insert_objects( row, blanks)

@@ -578,7 +578,7 @@ class BooleanDelegate(StandardTableDelegate):
 
 
 from PySide.QtGui import QStandardItemModel
-
+import enum
 
 
 class EnumComboDelegate(StandardTableDelegate):
@@ -603,8 +603,7 @@ class EnumComboDelegate(StandardTableDelegate):
             self.model.setData( self.model.index(i,0), items[i], Qt.UserRole)
 
     def get_displayed_data(self,index):
-        enum_symbol = index.model().data( index, Qt.UserRole)
-        return enum_symbol.description
+        return index.model().data( index, Qt.DisplayRole)
 
     def setEditorData(self,editor,index):
 
@@ -636,6 +635,100 @@ class EnumComboDelegate(StandardTableDelegate):
         # Therefore I have recreate it each time this method is called
 
         combo = QComboBox(parent)
+        combo.setModel(self.model)
+
+        completer = QCompleter(combo)
+        completer.setModel(self.model)
+        completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion) # PopupCompletion)
+        combo.setCompleter(completer)
+
+        if option:
+            # This is needed to put the combobox in the right place
+            combo.setGeometry(option.rect)
+
+        return combo
+
+
+
+class AutoCompleteComboBox2(QComboBox):
+    def __init__(self, parent=None):
+        super(AutoCompleteComboBox2,self).__init__(parent)
+        self._dropdown_width = 0
+
+    def showPopup(self):
+
+        if not self._dropdown_width:
+            fm = self.view().fontMetrics()
+            m = self.model()
+
+            max_w = 0
+            for i in range( self.model().rowCount()):
+                s = m.data( m.index(i, 0), Qt.DisplayRole)
+                max_w = max( max_w, fm.boundingRect( s).width())
+
+            self._dropdown_width = max( self.width(), int(max_w * 1.1) )
+
+        self.view().setMinimumWidth( self._dropdown_width)
+        super(AutoCompleteComboBox2,self).showPopup()
+
+
+class PythonEnumComboDelegate(StandardTableDelegate):
+    """ The combo delegates will provide a drop down based editor for fixed enumerations.
+    When in display mode, it will work as a simple label.
+    When in edit mode, the delegate operates on the UserRole
+    of the model (so that one can link the actual text
+    representation with the object it represents)
+    """
+
+    # The combo box content is given by a model that
+    # uses the DisplayRole for the labels and the UserRole for the data
+
+    def __init__(self,enumeration,parent=None):
+        StandardTableDelegate.__init__(self,parent)
+
+        assert  issubclass(enumeration, enum.Enum)
+
+        # We expect : symbol = description (short), description (long)
+        self.model = QStandardItemModel(len(enumeration), 1)
+        i = 0
+        for item in enumeration:
+            self.model.setData( self.model.index(i,0), item.value, Qt.DisplayRole)
+            self.model.setData( self.model.index(i,0), item, Qt.UserRole)
+            i += 1
+
+    def get_displayed_data(self,index):
+        return index.model().data( index, Qt.UserRole).value
+
+    def setEditorData(self,editor,index):
+
+        # We provide a suitable default is the source data is null
+        # (which is : leave the index on the first line of the combo)
+
+        # Find the source data in our combo model so that we can
+        # preselect it on the combo
+
+        m = editor.model()
+
+        # Read the source data at the index of the source model
+        data = index.model().data( index,Qt.UserRole)
+        if data:
+            for i in range(m.rowCount()):
+                if m.data(m.index(i,0),Qt.UserRole) == data:
+                    editor.setCurrentIndex( i)
+                    return
+
+
+
+    def setModelData(self,editor,model,index):
+        data = editor.itemData(editor.currentIndex()) # by default Qt.UserRole
+        model.setData(index,data,Qt.UserRole)
+
+    def createEditor(self,parent,option,index):
+
+        # Qt takes ownership of the editor
+        # Therefore I have recreate it each time this method is called
+
+        combo = AutoCompleteComboBox2(parent)
         combo.setModel(self.model)
 
         completer = QCompleter(combo)

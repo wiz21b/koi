@@ -260,6 +260,7 @@ class SpecialActivityTypePrototype(Prototype):
 
 from koi.gui.ComboDelegate import EnumComboDelegate
 
+
 class QualityEventTypePrototype(Prototype):
     def __init__(self,field,title,editable=True,nullable=False):
         super(QualityEventTypePrototype,self).__init__(field,title,editable,nullable)
@@ -268,7 +269,6 @@ class QualityEventTypePrototype(Prototype):
         # you'll have ownership issues with Qt bindings
 
         self.set_delegate(EnumComboDelegate(QualityEventType)) # items, sizes
-
 
 
 class ActionReportTypeComboDelegate(AutoComboDelegate):
@@ -2461,17 +2461,17 @@ class ProxyTableView(PrototypedTableView):
             super(ProxyTableView,self).closeEditor(editor, hint)
 
 
+def make_header_model( prototype) -> QStandardItemModel:
+    headers = QStandardItemModel(1, len(prototype))
+    i = 0
+    for p in prototype:
+        #print(i, p.title)
+        headers.setHeaderData(i, Qt.Orientation.Horizontal, p.title)
+        i = i + 1
+    return headers
+
 
 class PrototypeController(object):
-
-    def make_header_model(self, prototype):
-        headers = QStandardItemModel(1, len(prototype))
-        i = 0
-        for p in prototype:
-            headers.setHeaderData(i, Qt.Orientation.Horizontal, p.title)
-            i = i + 1
-        return headers
-
 
     def paste_rows(self,begin_row,rows):
         if rows == None or len(rows) == 0:
@@ -2743,7 +2743,7 @@ class PrototypeController(object):
             self.view.edit_panel.set_swap_action(self.move_row_up_action)
 
         self.headers_view = QHeaderView(Qt.Orientation.Horizontal)
-        self.header_model = self.make_header_model(self.prototype)
+        self.header_model = make_header_model(self.prototype)
         self.view.setHorizontalHeader(self.headers_view)
         self.headers_view.setModel(self.header_model) # qt's doc : The view does *not* take ownership (bt there's something with the selecion mode
         # self.view.resizeRowsToContent()
@@ -2752,5 +2752,3 @@ class PrototypeController(object):
         # self.timer = QTimer(None)
         # self.timer.timeout.connect(self.test_bug)
         # self.timer.start(200)
-
-
