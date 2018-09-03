@@ -1311,7 +1311,8 @@ class HorseJsonRpc(JsonRpc):
         else:
             super(HorseJsonRpc, self).get_app_error_code(exc)
 
-# JSonServer_wrapping_active = ["zz"]
+#global JSonServer_wrapping_active
+#JSonServer_wrapping_active = []
 # JSonServer_wrapping_active[0] = 'AZE'
 if __name__ == '__main__':
     global JSonServer_wrapping_active
@@ -1320,7 +1321,7 @@ if __name__ == '__main__':
 
 if __name__ == '__main__':
 
-    global JSonServer_wrapping_active
+    #global JSonServer_wrapping_active
 
     from koi.base_logging import mainlog,init_logging
     from koi.Configurator import init_i18n,load_configuration,configuration
@@ -1373,5 +1374,3 @@ if __name__ == '__main__':
 
 
 #     chrono_click()
-
-
