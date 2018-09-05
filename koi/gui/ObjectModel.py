@@ -245,7 +245,7 @@ class ObjectModel(QAbstractTableModel):
             # Pay attention, my current hypothesis is this.
             # Since this model is made to work *only* with prototypes
             # (delegates) then all the display must be made through them
-            # therefore, requesting the Qt.DisplayRole should never happen.
+            # therefore, requesting the Qt.DisplayRole should never happen
             # However, this happens : Qt does it. And when it does, it
             # seems it forgets the delegates (or my delegates are not
             # set at the right time...). When I use "unicode" to convert
@@ -287,8 +287,10 @@ class ObjectModel(QAbstractTableModel):
     def setData(self, index, value, role):
         if role == Qt.UserRole:
             # FIXME need to extend the table if it is too small !
-            setattr( self._objects[index.row()], self._col_to_attr[index.column()], value)
-            self._changed_objects.add(self._objects[index.row()])
+            attr_name = self._col_to_attr[index.column()]
+            if attr_name:
+                setattr( self._objects[index.row()], attr_name, value)
+                self._changed_objects.add(self._objects[index.row()])
             self.dataChanged.emit(index,index)
             return True
         else:

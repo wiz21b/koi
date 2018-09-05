@@ -1,20 +1,18 @@
-#from db_mapping import OperationDefinition
-
 from datetime import datetime,date
+from six import text_type
+import enum
 
-from PySide.QtGui import QAbstractItemDelegate,QStyledItemDelegate,QComboBox,QStyle,QPalette, QLineEdit,QFontMetrics,QValidator,QCompleter, \
-    QPushButton,QIcon,QFileDialog,QImage,QPixmap,QCheckBox,QPlainTextEdit
 from PySide.QtCore import Qt,QRect,QSize, QEvent, QByteArray,QTimer
+from PySide.QtGui import QAbstractItemDelegate,QStyledItemDelegate,QComboBox,QStyle,QPalette, QLineEdit,QFontMetrics,QValidator,QCompleter, \
+    QPushButton,QIcon,QFileDialog,QImage,QPixmap,QCheckBox,QPlainTextEdit, QStyleOptionButton, QApplication
+from PySide.QtGui import QStandardItemModel
 
 from koi.date_parser import DateTimeParser,DurationParser,TimeParser,FutureDateParser
 from koi.gui.completer import AutoCompleteComboBox
 from koi.translators import duration_to_s,date_to_dm,duration_to_hm
-
 #noinspection PyUnresolvedReferences
 from koi.translators import EURO_SIGN
-
 from koi.Configurator import mainlog
-from six import text_type
 
 class StandardTableDelegate(QStyledItemDelegate):
 
@@ -23,7 +21,12 @@ class StandardTableDelegate(QStyledItemDelegate):
         self.edit_next_item = True
 
     def get_displayed_data(self,index):
-        """
+        """ Given an index in the table, returns the *text* that
+        must be displayed in the cell. This ususally depends
+        of the UserRole values in the same cell.
+        Obviously, this only makes sense if the celle content
+        is displayed as text (as opposed to, for example, a
+        checkbox widget).
 
         :param index: Index pointing to the table cell we're displaying
         :return:
@@ -552,33 +555,76 @@ class DateDelegate(FutureDateDelegate):
         self.date_format = "{:%d/%m/%Y}"
 
 
-
 class BooleanDelegate(StandardTableDelegate):
 
-    def __init__(self,items,section_width = None,parent=None):
-        # FIXME I don't think items are still necessary...
+    # Here we'll completely shortcut the editor creation and
+    # replace that by a "mouse press" event handler
+
+    def __init__(self,items,section_width = None,parent=None, editable=True):
         super(BooleanDelegate,self).__init__(parent)
+        self._editable = editable
+
+    def editorEvent( self, event, model, option, index):
+        # editorEvent is called even when there's no editor (as explained in Qt's doc)
+        if not self._editable:
+            return False
+
+        if ((event.type() == QEvent.Type.MouseButtonPress) or (event.type() == QEvent.KeyPress and event.key() == Qt.Key_Space)):
+            data = index.model().data( index,Qt.UserRole)
+
+            # Handle None as well as regular boolean
+            if data:
+                data = False
+            else:
+                data = True
+
+            model.setData( index, data, Qt.UserRole)
+            return True # Event was handled by us.
+        else:
+            return False
 
     def get_displayed_data(self,index):
-        raise Exception("Not implemented yet")
+        return ""
 
     def createEditor(self,parent,option,index):
-        editor = QCheckBox(parent)
-        if option:
-            editor.setGeometry(option.rect)
-        return editor
+        return None
 
     def setEditorData(self,editor,index):
-        ts = index.model().data( index,Qt.UserRole)
-        editor.setChecked( ts == True) # Protects against None
+        pass
 
     def setModelData(self,editor,model,index):
-        data = editor.isChecked()
-        model.setData(index,data,Qt.UserRole)
+        pass
+
+    def paint(self,painter, option, index ):
+        painter.save()
+
+        checkbox_indicator = QStyleOptionButton()
+
+        checkbox_indicator.state |= QStyle.State_Enabled
+
+        if index.model().data( index, Qt.UserRole):
+            checkbox_indicator.state |= QStyle.State_On
+        else:
+            checkbox_indicator.state |= QStyle.State_Off
+
+        checkbox_indicator.rect = QApplication.style().subElementRect( QStyle.SE_CheckBoxIndicator, checkbox_indicator, None )
+
+        x = int( option.rect.center().x() - checkbox_indicator.rect.width() / 2)
+        y = int( option.rect.center().y() - checkbox_indicator.rect.height() / 2)
+
+        checkbox_indicator.rect.moveTo( x, y )
+
+        if (option.state & QStyle.State_Selected):
+            painter.fillRect(option.rect, option.palette.highlight())
+
+        QApplication.style().drawControl( QStyle.CE_CheckBox, checkbox_indicator, painter )
+
+        painter.restore()
 
 
-from PySide.QtGui import QStandardItemModel
-import enum
+
+
+
 
 
 class EnumComboDelegate(StandardTableDelegate):
@@ -697,7 +743,11 @@ class PythonEnumComboDelegate(StandardTableDelegate):
             i += 1
 
     def get_displayed_data(self,index):
-        return index.model().data( index, Qt.UserRole).value
+        e = index.model().data( index, Qt.UserRole)
+        if e:
+            return e.value
+        else:
+            return None
 
     def setEditorData(self,editor,index):
 

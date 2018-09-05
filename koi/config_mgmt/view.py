@@ -7,7 +7,7 @@ import platform
 from PySide.QtCore import Qt,Slot,QModelIndex,QAbstractTableModel,Signal, QPoint
 from PySide.QtCore import QTimer
 from PySide.QtGui import QHBoxLayout,QVBoxLayout,QLineEdit,QLabel,QGridLayout, QColor, QDialog, QMessageBox,QHeaderView,QAbstractItemView, \
-    QKeySequence, QStandardItem,QComboBox, QAction,QMenu,QWidget,QCursor, QSizePolicy, QPushButton, QComboBox, QColor, QBrush, QDialogButtonBox, QLineEdit
+    QKeySequence, QStandardItem,QComboBox, QAction,QMenu,QWidget,QCursor, QSizePolicy, QPushButton, QComboBox, QColor, QBrush, QDialogButtonBox, QLineEdit, QAbstractItemView
 from PySide.QtGui import QDragEnterEvent,QDragMoveEvent, QStandardItem, QStandardItemModel
 
 
@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
 from koi.gui.ObjectModel import ObjectModel
 from koi.gui.ComboDelegate import PythonEnumComboDelegate
-from koi.gui.ProxyModel import PrototypeController,IntegerNumberPrototype,FloatNumberPrototype, DurationPrototype,TrackingProxyModel,OperationDefinitionPrototype,PrototypedTableView,ProxyTableView,OrderPartDisplayPrototype,TextAreaPrototype, FutureDatePrototype,PrototypeArray,TextLinePrototype, Prototype, DatePrototype
+from koi.gui.ProxyModel import PrototypeController,IntegerNumberPrototype,FloatNumberPrototype, DurationPrototype,TrackingProxyModel,OperationDefinitionPrototype,PrototypedTableView,ProxyTableView,OrderPartDisplayPrototype,TextAreaPrototype, FutureDatePrototype,PrototypeArray,TextLinePrototype, Prototype, DatePrototype, BooleanPrototype
 from koi.gui.dialog_utils import SubFrame
 
 from koi.gui.PrototypedModelView import PrototypedModelView
@@ -83,6 +83,35 @@ class ImpactLine:
         self.date_upload = date.today()
         self.approval = ImpactApproval.UNDER_CONSTRUCTION
 
+class ImpactLineExtended:
+
+    def __init__( self, obj : ImpactLine):
+        object.__setattr__( self, "_object", obj)
+        object.__setattr__( self, "selected", False)
+
+    def __getattr__(self,name):
+        if hasattr(  object.__getattribute__( self, "_object"), name):
+            return getattr( self._object, name)
+        else:
+            return object.__getattribute__(self, name)
+
+    def __setattr__(self,name, value):
+        if hasattr(  object.__getattribute__( self, "_object"), name):
+            return setattr( object.__getattribute__( self, "_object"), name, value)
+        else:
+            return object.__setattr__(self, name, value)
+
+il = ImpactLine("test")
+ilo = ImpactLineExtended( il)
+assert ilo.description == "test"
+assert ilo.selected == False
+
+ilo.description = "new"
+ilo.selected = True
+assert ilo.description == "new"
+assert ilo.selected == True, "{} ?".format(ilo.selected)
+
+assert il.description == "new"
 
 
 class Configuration:
@@ -125,6 +154,9 @@ def make_configs():
 def make_impacts():
     impacts = [ ImpactLine("Dilatation issues"),
                 ImpactLine("From mini-series to series") ]
+
+    for i in range( len( impacts)):
+        impacts[i] = ImpactLineExtended( impacts[i] )
     return impacts
 
 
@@ -151,6 +183,60 @@ class ImpactsModel(ObjectModel):
 
     def __init__(self, parent, prototypes, blank_object_factory):
         super(ImpactsModel, self).__init__( parent, prototypes, blank_object_factory)
+
+
+
+class FreezeConfiguration(QDialog):
+    def __init__(self, parent, impacts):
+        super( FreezeConfiguration, self).__init__(parent)
+
+        self._impacts = impacts
+
+        title = _("Freeze a configuration")
+        self.setWindowTitle(title)
+
+        config_impact_proto = []
+        config_impact_proto.append( BooleanPrototype('selected', "", editable=True))
+        config_impact_proto.append( TextLinePrototype('description',_('Description'),editable=True))
+        config_impact_proto.append( IntegerNumberPrototype('version',_('Rev.'),editable=False))
+        config_impact_proto.append( TextLinePrototype('file',_('File'), editable=False))
+        config_impact_proto.append( DatePrototype('date_upload',_('Date'), editable=False))
+        config_impact_proto.append( EnumPrototype('approval',_('Approval'), ImpactApproval, editable=False))
+
+
+        top_layout = QVBoxLayout()
+
+        top_layout.addWidget( QLabel("Please select the impact(s) document(s) that triggers the new configuration. You must select at least one of them."))
+
+        self._model_impact = ImpactsModel( self, config_impact_proto, ImpactLine)
+        self._view_impacts = PrototypedTableView(None, config_impact_proto)
+        self._view_impacts.setModel( self._model_impact)
+        self._view_impacts.verticalHeader().hide()
+        self._view_impacts.horizontalHeader().setResizeMode( QHeaderView.ResizeToContents)
+        # self._view_impacts.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        # self._view_impacts.setSelectionBehavior(QAbstractItemView.SelectRows)
+
+        top_layout.addWidget( self._view_impacts)
+
+        self.buttons = QDialogButtonBox()
+        self.buttons.addButton( QDialogButtonBox.Cancel)
+        self.buttons.addButton( QDialogButtonBox.Ok)
+        top_layout.addWidget(self.buttons)
+
+        self.setLayout(top_layout)
+        self.buttons.accepted.connect(self.accept)
+        self.buttons.rejected.connect(self.reject)
+
+        self._model_impact.reset_objects( self._impacts )
+
+    @Slot()
+    def accept(self):
+        return super(FreezeConfiguration,self).accept()
+
+    @Slot()
+    def reject(self):
+        return super(FreezeConfiguration,self).reject()
+
 
 
 class AddFileToConfiguration(QDialog):
@@ -318,6 +404,18 @@ class EditConfiguration(QWidget):
 
         self._model_impact.reset_objects( self._impacts )
 
+        self._freeze_button.clicked.connect( self.freeze_configuration)
+
+    @Slot()
+    def freeze_configuration(self):
+        dialog = FreezeConfiguration( self, self._impacts)
+        dialog.exec_()
+        if dialog.result() == QDialog.Accepted:
+            self._model_impact.reset_objects( self._impacts )
+
+        dialog.deleteLater()
+
+
     def dragEnterEvent(self, e : QDragEnterEvent):
         """ Only accept what looks like a file drop action
         :param e:
@@ -354,7 +452,7 @@ class EditConfiguration(QWidget):
             filename = os.path.split( full_path_client)[-1]
             paths.append( filename)
 
-        dialog = AddFileToConfiguration( mw, paths[0], [])
+        dialog = AddFileToConfiguration( self, paths[0], [])
         dialog.exec_()
         if dialog.result() == QDialog.Accepted:
             new_line = Line( dialog.description, dialog.version, dialog.type, dialog.filename)
@@ -370,8 +468,6 @@ class EditConfiguration(QWidget):
 if __name__ == "__main__":
 
     app = QApplication(sys.argv)
-
-    print( QApplication.instance().font())
 
     mw = QMainWindow()
     mw.setMinimumSize(768,512)
