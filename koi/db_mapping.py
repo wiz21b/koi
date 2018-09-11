@@ -34,11 +34,11 @@ from koi.machine.machine_mapping import Machine
 
 
 
-id_generator = Sequence('id_generator',1000,None,None,False,None,metadata)
-operation_definition_id_generator = Sequence('operation_definition_id_generator',10000,None,None,False,None,metadata)
-order_id_generator = Sequence('order_id_generator',1,None,None,False,None,metadata)
-order_accounting_id_generator = Sequence('order_accounting_id_generator',1,None,None,False,None,metadata)
-preorder_id_generator = Sequence('preorder_id_generator',10000,None,None,False,None,metadata)
+id_generator = Sequence('id_generator', start=1000, metadata=metadata)
+operation_definition_id_generator = Sequence('operation_definition_id_generator',start=10000, metadata=metadata)
+order_id_generator = Sequence('order_id_generator',start=1, metadata=metadata)
+order_accounting_id_generator = Sequence('order_accounting_id_generator',start=1, metadata=metadata)
+preorder_id_generator = Sequence('preorder_id_generator',start=10000, metadata=metadata)
 
 
 
@@ -1608,7 +1608,7 @@ def defrost_into(obj, sqlaobj, fields_out = []):
 
     for f in fnames:
         if f not in fields_out:
-            mainlog.debug(u"defrost: setattr {} to {} {}".format(f,str(getattr(obj,f)), type(getattr(obj,f))))
+            # mainlog.debug(u"defrost: setattr {} to {} {}".format(f,str(getattr(obj,f)), type(getattr(obj,f))))
             setattr(sqlaobj,f,getattr(obj,f))
 
 

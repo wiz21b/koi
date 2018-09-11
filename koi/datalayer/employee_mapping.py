@@ -32,7 +32,7 @@ class RoleType(DeclEnum):
     view_audit = 'view_audit',_('View audit trail')
     modify_document_templates = 'modify_document_templates', _('Modify the documents templates')
 
-employee_id_generator = Sequence('employee_id_generator',100,None,None,False,None,metadata)
+employee_id_generator = Sequence('employee_id_generator', start=100, metadata=metadata)
 
 
 class Employee(Base):

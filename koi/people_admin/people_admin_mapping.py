@@ -52,7 +52,7 @@ class DayEventType(DeclEnum):
         else:
             return "???"
 
-day_event_id_generator = Sequence('day_event_id_generator',1,None,None,False,None,metadata)
+day_event_id_generator = Sequence('day_event_id_generator',start=1,metadata=metadata)
 
 
 class DayEvent(Base):

@@ -96,9 +96,6 @@ class AnimatedTableView(QTableView):
             self._drop_zones_titles.append(t)
             self._drop_zones_colors.append(category_colors(c))
 
-        mainlog.debug("Set drop zones - done")
-
-
     def show_drop_zones(self, show : bool):
         # Have we at least one drop zone ? Else it's not very useful to display them :-)
         if len(self._drop_zones_titles) >= 1:
@@ -194,10 +191,10 @@ class AnimatedTableView(QTableView):
             mainlog.debug("dragEnterEvent : I accept")
             # Attention ! The actual drop area is smaller
             # than the dragEnter area !
-            
+
             e.acceptProposedAction()
             e.accept()
-            
+
             # I don't use childAt because childAt will be fooled by the buttons
             # I have in this tableview (the buttons are the children of the
             # tableview, not the viewport... I guess)
@@ -206,9 +203,9 @@ class AnimatedTableView(QTableView):
             self._compute_drop_zone(e.pos(), e.mimeData())
             self.show_drop_zones(True)
             self._set_buttons_visible(False)
-                
+
             self.update()
- 
+
         else:
             mainlog.debug("dragEnterEvent : I ignore")
             e.ignore()
@@ -252,7 +249,7 @@ class AnimatedTableView(QTableView):
 
     def dropEvent(self, e):
         e.accept()
-        mainlog.debug("dropEvent")
+        mainlog.debug("AnimatedTableView : accepted dropEvent")
 
         # Event forward
         self._drop_event_handler(e, self._selected_drop_zone)
@@ -410,7 +407,7 @@ class DocumentsModel(ObjectModel):
             # documents_service.delete(doc.document_id)
             self.remove_object(doc)
         else:
-            # the doc is delivery_slips side only
+            # the doc is client side only
             self.remove_object(doc)
 
             # Not necessary to remember this object because
@@ -498,7 +495,7 @@ class DocumentCollectionWidget(QWidget):
 
                     showServerErrorBox( ex)
                     return
-                
+
 
     def set_model(self, model: DocumentsModel):
         """
@@ -631,11 +628,16 @@ class DocumentCollectionWidget(QWidget):
 
         # [] == we don't want to use categories at all (so no drop zones)
         if used_category_short_name != None and used_category_short_name != [] :
+            mainlog.debug("__init__ 1")
             categories = [ self.documents_service.find_category_by_short_name(used_category_short_name) ]
         elif used_category_short_name == [] : # Use all categories
+            mainlog.debug("__init__ doc collection widget 2")
             categories = self.documents_service.categories()
         else: # None => use no categories at all
+            mainlog.debug("__init__ 3")
             categories = None
+
+        mainlog.debug(categories)
         self.set_used_categories(categories)
 
 
@@ -818,7 +820,8 @@ class DocumentCollectionWidget(QWidget):
 
     @Slot(str, int)
     def _add_file_from_drop_zone(self, full_path_client : str, drop_zone : int):
-        mainlog.debug("Drop zone {}".format(drop_zone))
+        mainlog.debug("_add_file_from_drop_zone.Drop zone {}".format(drop_zone))
+
         if drop_zone != -1:
             self._add_file(full_path_client, self._used_categories[drop_zone].document_category_id)
         else:
@@ -856,7 +859,7 @@ class DocumentCollectionWidget(QWidget):
 
     # WARNING : This is overrided in TemplatesCollectionWidget !!!
     def animated_drop_event_handler(self, e, selected_drop_zone):
-        mainlog.debug("dropEvent : _selected drop zone {}".format(selected_drop_zone))
+        mainlog.debug("DocumentCollectionWidget.animated_drop_event_handler : _selected drop zone {}".format(selected_drop_zone))
 
         # No replace, just add
 

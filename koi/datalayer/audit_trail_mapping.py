@@ -6,7 +6,7 @@ from koi.datalayer.sqla_mapping_base import metadata,Base,DATABASE_SCHEMA
 from koi.datalayer.employee_mapping import Employee
 
 # I make a separate id because it can grow very fast.
-audit_trail_id_generator = Sequence('audit_trail_id_generator',10000,None,None,False,None,metadata)
+audit_trail_id_generator = Sequence('audit_trail_id_generator',start=10000, schema=DATABASE_SCHEMA,metadata=metadata)
 
 class AuditTrail(Base):
     __tablename__ =  'audit_trail'

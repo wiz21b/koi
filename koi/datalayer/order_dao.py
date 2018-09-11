@@ -1080,7 +1080,7 @@ class OrderDAO(object):
 
         if not res:
             return []
-        
+
         order_part_ids = [ p.order_part_id for p in res]
 
         tts = session().query(OrderPart.order_part_id, TimeTrack).select_from(TimeTrack).\
@@ -1774,7 +1774,6 @@ class OrderDAO(object):
             join(Operation).\
             join(OperationDefinition).\
             join(TaskOnOperation).\
-            join(Task).\
             join(TimeTrack).\
             join(Employee).\
             filter(Order.order_id == order_id).\

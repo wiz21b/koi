@@ -29,6 +29,7 @@ class DocumentsService(object):
     def categories(self):
         r = session().query( *all_non_relation_columns(DocumentCategory)).order_by(DocumentCategory.short_name).all()
         session().commit()
+        mainlog.debug("categories() : {}".format(r))
         return r
 
     @JsonCallable([int, int])
