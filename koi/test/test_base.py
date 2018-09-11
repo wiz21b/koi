@@ -68,7 +68,7 @@ class TestBase(unittest.TestCase):
 
         # In process so that the server is bypassed (or else
         # I have to run a server in parallel)
-        cls.remote_documents_service = JsonCallWrapper(documents_service,JsonCallWrapper.IN_PROCESS_MODE)
+        cls.remote_documents_service = JsonCallWrapper(documents_service,JsonCallWrapper.DIRECT_MODE)
         cls.remote_indicators_service = IndicatorsService()
 
         configuration.set('Programs','pdf_viewer',None)
@@ -360,6 +360,9 @@ class TestBase(unittest.TestCase):
         order_part = cls._order_part_dao.make(order)
         order_part.description = u"Part 1" + chr(233)
         order_part.position = 1
+        order_part.sell_price = 17
+        order_part.qty = 2
+
         cls._order_part_dao.save(order_part)
 
         pf = cls._production_file_dao.make()
@@ -654,5 +657,3 @@ class TestBase(unittest.TestCase):
     def _clear_tmp_file(self, tmpfile, tmpfile_path):
         tmpfile.close()
         os.unlink(tmpfile_path)
-
-

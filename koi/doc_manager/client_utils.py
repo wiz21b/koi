@@ -150,8 +150,7 @@ def download_document(doc_id, progress_tracker = None, destination = None):
 from koi.doc_manager.documents_service import documents_service
 from koi.server.json_decorator import JsonCallWrapper
 
-documents_service = JsonCallWrapper(documents_service,JsonCallWrapper.HTTP_MODE)
+documents_service = JsonCallWrapper( documents_service, JsonCallWrapper.DIRECT_MODE)
 
 def update_name_and_description(document_id, name, description):
     documents_service.update_name_and_description(document_id, name, description)
-

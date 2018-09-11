@@ -418,6 +418,7 @@ def super_encoder(*args):
     # possible without patching the C code (and I don't have a C compiler
     # up and running on windows)...
 
+    mainlog.debug("super encoding {} of type {}".format( args, type(args)))
     if len(args) == 0:
         return None
     elif len(args) > 1:
@@ -428,7 +429,9 @@ def super_encoder(*args):
 
         if not obj:
             return obj
-        elif type(obj) == sqlalchemy.util._collections.KeyedTuple:
+        # This is very dirty, but it's because of this : https://bitbucket.org/zzzeek/sqlalchemy/issues/3176
+        elif str(type(obj)) == "<class 'sqlalchemy.util._collections.result'>":
+            #print(obj)
             return KTWrapper(obj)
         elif isinstance(obj,list) or isinstance(obj,tuple):
             return [super_encoder(list_obj) for list_obj in obj]
@@ -1004,8 +1007,9 @@ def jsonFuncWrapper(decorated_func):
             mainlog.exception(ex)
             raise ex
 
-        mainlog.debug("Function returned {}".format(type(r)))
-        mainlog.debug(r)
+        mainlog.debug("Function returned raw data : type = {}, data : {}".format( type(r), r))
+        if type(r) == list and len(r) >= 1:
+            mainlog.debug("   elements are of type {}".format( str(type( r[0]))))
 
         # Allow to server functions to return tuples (for example, "return price1, time1")
         if type(r) == tuple:
@@ -1100,10 +1104,10 @@ class JsonCallWrapper(object):
     when the server is localhost on some simple tests
     """
 
-    HTTP_MODE = 1 # wrap for calling a http server
-    IN_PROCESS_MODE = 2 # wrap for simulating a call to a http server
-    CHERRYPY_MODE = 3 # wrap to expose the object's method in cherrypy server
-    DIRECT_MODE = 4 # Very direct call, no JSON encode/decode whatsoever
+    HTTP_MODE = "HTTP" # wrap for calling a http server
+    IN_PROCESS_MODE = "IN PROCESS" # wrap for simulating a call to a http server
+    CHERRYPY_MODE = "CHERRYPY" # wrap to expose the object's method in cherrypy server
+    DIRECT_MODE = "DIRECT" # Very direct call, no JSON encode/decode whatsoever
 
     def __init__(self, service, mode=None):
         assert service
@@ -1187,7 +1191,7 @@ class JsonCallWrapper(object):
 
 
             raw_data = wrapped_func(the_self, **json_params)
-            mainlog.debug("Function returned {}".format(str(raw_data)))
+            mainlog.debug("AAA Function returned raw data : {}".format( str(raw_data)))
 
             # Then encoding/decoding of response
 
