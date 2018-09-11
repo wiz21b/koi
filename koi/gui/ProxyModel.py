@@ -162,7 +162,11 @@ class Prototype(object):
         """
 
         if not self._widget:
-            self._widget = self._delegate.createEditor(parent,None,None)
+            if hasattr(self._delegate, "editWidgetFactory"):
+                self._widget = self._delegate.editWidgetFactory(parent)
+            else:
+                self._widget = self._delegate.createEditor(parent,None,None)
+
         return self._widget
 
     def enable_edit_widget(self,b):

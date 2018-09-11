@@ -94,8 +94,18 @@ class StandardTableDelegate(QStyledItemDelegate):
 
 
     def createEditor(self,parent,option,index):
+
         # Qt takes ownership of the editor
-        # Therefore I have recreate it each time this method is called
+        # Therefore I have to recreate it each time this method is called
+
+        # In case this is called by Qt, it means we're inside a
+        # table. In that case, wa shortcut the "editor" stuff Qt
+        # provides and implement our stuff. The goal is
+        # to have a checkbox (in a table) that reacts on single click.
+        # (without all this, the user would have to double click on
+        # the checkbox to activate it, then click on the editor to
+        # actually change the value of the checkbox, then enter or something
+        # else to commit the value and close the editor).
 
         editor = QLineEdit(parent)
 
@@ -557,8 +567,14 @@ class DateDelegate(FutureDateDelegate):
 
 class BooleanDelegate(StandardTableDelegate):
 
-    # Here we'll completely shortcut the editor creation and
-    # replace that by a "mouse press" event handler
+    #This has two behaviours.
+
+    # If this is used inside a regular table, then we'll completely
+    # shortcut the editor creation and replace that by a "mouse press"
+    # event handler.
+
+    # However, if this is use by Koi's form's stuff, then we'll create
+    # editor
 
     def __init__(self,items,section_width = None,parent=None, editable=True):
         super(BooleanDelegate,self).__init__(parent)
@@ -586,23 +602,37 @@ class BooleanDelegate(StandardTableDelegate):
     def get_displayed_data(self,index):
         return ""
 
+    def editWidgetFactory( self, parent):
+        return QCheckBox(parent)
+
     def createEditor(self,parent,option,index):
         return None
 
     def setEditorData(self,editor,index):
-        pass
+        # This will be used only by Koi's forms stuff
+
+        ts = index.model().data( index,Qt.UserRole)
+        editor.setChecked( ts == True) # Protects against None
 
     def setModelData(self,editor,model,index):
-        pass
+        # This will be used only by Koi's forms stuff
+        data = editor.isChecked()
+        model.setData(index,data,Qt.UserRole)
 
     def paint(self,painter, option, index ):
         painter.save()
 
+        checked = index.model().data( index, Qt.UserRole)
         checkbox_indicator = QStyleOptionButton()
 
-        checkbox_indicator.state |= QStyle.State_Enabled
+        #checkbox_indicator.state |= QStyle.State_Enabled
 
-        if index.model().data( index, Qt.UserRole):
+        if (index.flags() & Qt.ItemIsEditable) > 0:
+            checkbox_indicator.state |= QStyle.State_Enabled
+        else:
+            checkbox_indicator.state |= QStyle.State_ReadOnly
+
+        if checked:
             checkbox_indicator.state |= QStyle.State_On
         else:
             checkbox_indicator.state |= QStyle.State_Off
