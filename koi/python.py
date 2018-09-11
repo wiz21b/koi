@@ -274,6 +274,7 @@ from koi.session.LoginDialog import LoginDialog
 
 from koi.junkyard.services import services
 from koi.datalayer.sqla_mapping_base import Base
+from koi.config_mgmt.view import EditConfiguration
 
 services.register_for_in_process(session, Base)
 
@@ -408,6 +409,9 @@ class MainWindow (QMainWindow):
 
         self._make_menu( "/main_menu/orders", _("Order"), list_actions, self)
 
+        list_actions = [ (_("Configurations"), self.show_configurations,None,None) ]
+        self._make_menu( "/main_menu/quality", _("Quality"), list_actions, self)
+
         list_actions = [ (_("Show presence overview"),self.show_presence_overview,QKeySequence(Qt.Key_F3),[RoleType.view_timetrack]),
                          (_("Print badges"),self.print_employees_badges,None,None),
                          (_("Print non billable barcodes"),self.nonBillableTasksPrint,None,None),
@@ -533,6 +537,8 @@ class MainWindow (QMainWindow):
         self.supply_order_overview_widget = None
         # self.supply_order_overview_widget = SupplyOrderOverview(None)
         # self.supply_order_overview_widget.supply_order_selected.connect(self._edit_supply_order)
+
+        self.configurations_widget = EditConfiguration(None)
 
         self.order_overview_widget = OrderOverviewWidget(None,self.find_order_slot,
                                                          self.create_delivery_slip_action,
@@ -737,6 +743,11 @@ class MainWindow (QMainWindow):
     @Slot()
     def show_order_overview(self):
         self.stack.add_panel(self.order_overview_widget)
+
+    @Slot()
+    def show_configurations(self):
+        self.stack.add_panel( self.configurations_widget)
+        pass
 
     @Slot()
     def show_presence_overview(self):

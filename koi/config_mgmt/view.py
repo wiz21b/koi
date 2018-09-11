@@ -1,14 +1,12 @@
 from enum import Enum
 from datetime import date
-import os.path
 import sys
-import platform
+from typing import List, Any
 
 from PySide.QtCore import Qt,Slot,QModelIndex,QAbstractTableModel,Signal, QPoint
 from PySide.QtCore import QTimer
 from PySide.QtGui import QHBoxLayout,QVBoxLayout,QLineEdit,QLabel,QGridLayout, QColor, QDialog, QMessageBox,QHeaderView,QAbstractItemView, \
     QKeySequence, QStandardItem,QComboBox, QAction,QMenu,QWidget,QCursor, QSizePolicy, QPushButton, QComboBox, QColor, QBrush, QDialogButtonBox, QLineEdit, QAbstractItemView
-from PySide.QtGui import QDragEnterEvent,QDragMoveEvent, QStandardItem, QStandardItemModel
 
 
 if __name__ == "__main__":
@@ -26,13 +24,17 @@ if __name__ == "__main__":
 
     init_db_session(configuration.database_url, metadata, False or configuration.echo_query)
 
+# from koi.db_mapping import Employee
+# for t in session().query(Employee.employee_id).all():
+#     print("{} {}".format( type(t), t.employee_id))
+
 from koi.gui.ObjectModel import ObjectModel
 from koi.gui.ComboDelegate import PythonEnumComboDelegate
 from koi.gui.ProxyModel import PrototypeController,IntegerNumberPrototype,FloatNumberPrototype, DurationPrototype,TrackingProxyModel,OperationDefinitionPrototype,PrototypedTableView,ProxyTableView,OrderPartDisplayPrototype,TextAreaPrototype, FutureDatePrototype,PrototypeArray,TextLinePrototype, Prototype, DatePrototype, BooleanPrototype
-from koi.gui.dialog_utils import SubFrame
+from koi.gui.dialog_utils import SubFrame, TitleWidget
 
 from koi.gui.PrototypedModelView import PrototypedModelView
-
+from koi.config_mgmt.dragdrop_widget import DragDropWidget
 
 class ImpactApproval(Enum):
     UNDER_CONSTRUCTION = "Under construction"
@@ -42,6 +44,7 @@ class ImpactApproval(Enum):
 class TypeConfigDoc(Enum):
     IMPACT = "Impact document"
     PLAN_2D = "Plan 2D"
+    PLAN_3D = "Plan 3D"
     PROGRAM = "Programme"
 
 class CRL(Enum):
@@ -76,14 +79,26 @@ class Line:
 
 
 class ImpactLine:
-    def __init__( self, description = "", version = "", file_ = ""):
-        self.description = description
-        self.version = version
-        self.file = file_
+    def __init__( self):
+        self.owner = "Chuck Noris"
+        self.description = None
+        self.file = None
         self.date_upload = date.today()
         self.approval = ImpactApproval.UNDER_CONSTRUCTION
+        self.approved_by = None
+        self.active_date = date.today()
+        self.configuration = None
+
+    @property
+    def version(self):
+        if self.configuration:
+            return self.configuration.version
+        else:
+            return None
+
 
 class ImpactLineExtended:
+    """ adds a "selected" field to a regular impact using a Proxy"""
 
     def __init__( self, obj : ImpactLine):
         object.__setattr__( self, "_object", obj)
@@ -101,7 +116,8 @@ class ImpactLineExtended:
         else:
             return object.__setattr__(self, name, value)
 
-il = ImpactLine("test")
+il = ImpactLine()
+il.description = 'test'
 ilo = ImpactLineExtended( il)
 assert ilo.description == "test"
 assert ilo.selected == False
@@ -115,52 +131,152 @@ assert il.description == "new"
 
 
 class Configuration:
+    article_configuration: "ArticleConfiguration"
+
     def __init__(self):
-        self.frozen = date(2018,1,31)
-        self.version = 1
-        self.freezer = "Daniel Dumont"
-        self.lines = [ Line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_2D, "plan3EDER4.3ds"),
-                       Line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
-                       Line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
+        self.frozen = None
+        self.freezer = None
+        self.lines = []
+        self.version = 0
+        self.article_configuration = None
+
+
+        # self.impacts = []
+
+
+class ArticleConfiguration:
+    configurations: List[Configuration]
+
+    def __init__(self):
+        self.description = ""
+        self.file = ""
+        self.file_revision = "E"
+
+        # The different configurations.
+        # In the normal scenario, the first configuration has no impact file
+        # and the following configurations have at least an impact file.
+        # Some impact files may not have a configuration (for example, while
+        # they are written) (this prevents, for example, an impact file that is
+        # rejected has an empty configuiration tied to it).
+        self.configurations = []
+
+        # The story of changes brought to the article configuration.
+        # Each working configuration should be tied to an impact.
+        self.impacts = []
+
+
+    @property
+    def full_version(self):
+        return "{}/{}".format( self.description, self.file_revision)
+
+    def current_configuration(self):
+        i = len(self.configurations) - 1
+
+        if i > 0:
+            while i >= 0:
+                if self.configurations[i].frozen:
+                    return self.configurations[i]
+                i -= 1
+
+            return self.configurations[-1]
+        else:
+            return self.configurations[0]
+
+
 
 def make_configs():
 
-    configurations = []
-    configurations.append( Configuration())
+    ac = ArticleConfiguration()
 
     c = Configuration()
-    c.lines = [ Line( "Fiche d'impact", 1, TypeConfigDoc.IMPACT, "impact_1808RXC.doc"),
+    c.version = 1
+    c.article_configuration = ac
+    c.frozen = date(2018,1,31)
+    c.freezer = "Daniel Dumont"
+    c.lines = [ Line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
+                Line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
+                Line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
+    ac.configurations.append( c)
+
+    c = Configuration()
+    c.article_configuration = ac
+    c.lines = [ Line( "Plan coupe 90°", 1, TypeConfigDoc.PLAN_3D, "impact_1808RXC.doc"),
                 Line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_2D, "plan3EDER4.3ds"),
                 Line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
                 Line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
     c.version = 2
     c.frozen = date(2018,2,5)
+    c.freezer = "Falken"
     c.lines[2].modify_config = False
-    configurations.append( c)
+    ac.configurations.append( c)
 
     c = Configuration()
-    c.lines = [ Line( "Fiche d'impact", 1, TypeConfigDoc.IMPACT, "impact_1808RXC.doc"),
+    c.article_configuration = ac
+    c.lines = [ Line( "Operations", 1, TypeConfigDoc.PLAN_3D, "impact_1808RXC.doc"),
                 Line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_2D, "plan3EDER4.3ds"),
                 Line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
                 Line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
     c.version = 3
     c.frozen = None
     c.lines[2].modify_config = True
-    configurations.append( c)
+    ac.configurations.append( c)
 
-    return configurations
+    impact = ImpactLine()
+    impact.owner = "Chuck Noris"
+    impact.description = "preproduction measurement side XPZ changed"
+    impact.date_upload = date.today()
+    impact.approval = ImpactApproval.APPROVED
+    impact.approved_by = "Deckerd"
+    impact.active_date = date(2013,1,11)
+    impact.configuration = ac.configurations[0]
+    ac.impacts.append( impact)
+
+    impact = ImpactLine()
+    impact.owner = "Chuck Noris"
+    impact.description = "Aluminium weight reduction"
+    impact.date_upload = date.today()
+    impact.approval = ImpactApproval.APPROVED
+    impact.approved_by = "John Wayne"
+    impact.active_date = None
+    impact.configuration = ac.configurations[1]
+    ac.impacts.append( impact)
+
+    impact = ImpactLine()
+    impact.owner = "Chuck Noris"
+    impact.description = "Production settings"
+    impact.date_upload = date.today()
+    impact.approval = ImpactApproval.UNDER_CONSTRUCTION
+    impact.approved_by = None
+    impact.active_date = None
+    impact.configuration = None
+    ac.impacts.append( impact)
+
+    impact = ImpactLine()
+    impact.owner = "Bruce Lee"
+    impact.description = "Production settings v2"
+    impact.date_upload = date.today()
+    impact.approval = ImpactApproval.UNDER_CONSTRUCTION
+    impact.approved_by = None
+    impact.active_date = None
+    impact.configuration = None
+    ac.impacts.append( impact)
+
+    ac.description = "Plan ZERDF354-ZXZ-2001"
+    ac.file = "ZERDF354-ZXZ-2001.3ds"
+    ac.file_revision = "P1"
+
+    ac2 = ArticleConfiguration()
+    ac2.description = "Plan ZERDF354-ZXZ-2001"
+    ac2.file = "ZERDF354-ZXZ-2001.3ds"
+    ac2.file_revision = "P2"
+    c = Configuration()
+    c.article_configuration = ac2
+    ac2.configurations.append( c)
+
+    return [ac, ac2]
 
 
-def make_impacts():
-    impacts = [ ImpactLine("Dilatation issues"),
-                ImpactLine("From mini-series to series") ]
 
-    for i in range( len( impacts)):
-        impacts[i] = ImpactLineExtended( impacts[i] )
-    return impacts
-
-
-from koi.gui.dialog_utils import TitleWidget
 
 
 class ConfigModel(ObjectModel):
@@ -187,11 +303,8 @@ class ImpactsModel(ObjectModel):
 
 
 class FreezeConfiguration(QDialog):
-    def __init__(self, parent, impacts):
-        super( FreezeConfiguration, self).__init__(parent)
 
-        self._impacts = impacts
-
+    def _make_ui(self):
         title = _("Freeze a configuration")
         self.setWindowTitle(title)
 
@@ -200,15 +313,15 @@ class FreezeConfiguration(QDialog):
         config_impact_proto.append( TextLinePrototype('description',_('Description'),editable=True))
         config_impact_proto.append( IntegerNumberPrototype('version',_('Rev.'),editable=False))
         config_impact_proto.append( TextLinePrototype('file',_('File'), editable=False))
-        config_impact_proto.append( DatePrototype('date_upload',_('Date'), editable=False))
         config_impact_proto.append( EnumPrototype('approval',_('Approval'), ImpactApproval, editable=False))
+        config_impact_proto.append( DatePrototype('date_upload',_('Date'), editable=False))
 
 
         top_layout = QVBoxLayout()
 
-        top_layout.addWidget( QLabel("Please select the impact(s) document(s) that triggers the new configuration. You must select at least one of them."))
+        top_layout.addWidget( QLabel("Please select the impact(s) document(s) that correspond to the new frozen configuration."))
 
-        self._model_impact = ImpactsModel( self, config_impact_proto, ImpactLine)
+        self._model_impact = ImpactsModel( self, config_impact_proto, None) # We won't create impact lines here
         self._view_impacts = PrototypedTableView(None, config_impact_proto)
         self._view_impacts.setModel( self._model_impact)
         self._view_impacts.verticalHeader().hide()
@@ -227,7 +340,13 @@ class FreezeConfiguration(QDialog):
         self.buttons.accepted.connect(self.accept)
         self.buttons.rejected.connect(self.reject)
 
-        self._model_impact.reset_objects( self._impacts )
+    def __init__(self, parent, config : Configuration, impacts):
+        super( FreezeConfiguration, self).__init__(parent)
+
+        self._make_ui()
+
+        self.impacts = [ ImpactLineExtended( c ) for c in impacts]
+        self._model_impact.reset_objects( self.impacts )
 
     @Slot()
     def accept(self):
@@ -306,35 +425,131 @@ class AddFileToConfiguration(QDialog):
 
 
 
+from koi.gui.horse_panel import HorsePanel
 
-class EditConfiguration(QWidget):
+
+class EditConfiguration(HorsePanel):
 
     def version_selected( self, ndx):
-        self.set_config( self._configs[ndx] )
+        self.set_config( self._configs.configurations[ndx] )
 
     def set_config( self, config):
 
         self._current_config = config
 
-        msg = "Version <b>{}</b>, ".format( config.version)
+        msg = "Configuration for <b>{}</b>, ".format( config.article_configuration.full_version)
+
+
         if config.frozen:
-            msg += "<b><font color = 'green'>FROZEN on {} by {}</font></b>".format( config.frozen, config.freezer)
+            freeze_msg = "<b><font color = 'green'>FROZEN on {} by {}</font></b>".format( config.frozen, config.freezer)
             self._freeze_button.setText("Unfreeze")
         else:
-            msg += "<b><font color = 'red'>NOT frozen</font></b>"
+            freeze_msg = "<b><font color = 'red'>NOT frozen</font></b>"
             self._freeze_button.setText("Freeze")
 
-        self._info_label.setText( msg)
+
+        self._subframe.set_title( msg)
+
+        self._version_config_label.setText( "Revision {}, {}".format(config.version, freeze_msg))
+
         self._model.reset_objects( config.lines )
+
+    def set_article_configuration( self, aconfig):
+        self._model_impact.reset_objects( aconfig.impacts )
+
+    @Slot()
+    def freeze_configuration(self):
+
+        impacts = filter( lambda imp: imp.approval == ImpactApproval.UNDER_CONSTRUCTION, self._configs.impacts)
+
+        dialog = FreezeConfiguration( self, self._current_config, impacts)
+        dialog.exec_()
+        if dialog.result() == QDialog.Accepted:
+
+            self._current_config.frozen = date.today()
+            self._current_config.freezer = "Daniel Dumont"
+
+            c = Configuration()
+            c.frozen = None
+            c.version = max([c.version for c in self._configs.configurations]) + 1
+            self._configs.configurations.append( c)
+
+            # for c in range( self.version_choice.count()):
+            #     self.version_choice.removeItem(0)
+
+            # for c in self._configs:
+            #     self.version_choice.addItem("Revision {}".format(c.version))
+
+            # self.version_choice.setCurrentIndex( len(self._configs) - 2)
+            #self.version_selected( len(self._configs) - 2)
+
+        dialog.deleteLater()
+
+    @Slot()
+    def configFilesDropped( self,paths):
+        dialog = AddFileToConfiguration( self, paths[0][1], [])
+        dialog.exec_()
+        if dialog.result() == QDialog.Accepted:
+            new_line = Line( dialog.description, dialog.version, dialog.type, dialog.filename)
+            new_line.crl = dialog.crl
+            new_line.modify_config = True
+            self._current_config.lines.append( new_line)
+
+            # FIXME should use a simpmle "datachagned" no ?
+            self._model.reset_objects( self._current_config.lines )
+
+        dialog.deleteLater()
+
+    @Slot()
+    def impactFilesDropped( self,paths):
+        dialog = AddFileToConfiguration( self, paths[0][1], [])
+        dialog.exec_()
+        if dialog.result() == QDialog.Accepted:
+            new_line = ImpactLine( dialog.description, dialog.version, dialog.filename)
+            new_line.crl = dialog.crl
+            new_line.modify_config = True
+            self._current_config.impacts.append( new_line)
+
+            # FIXME should use a simpmle "datachagned" no ?
+            self._model_impact.reset_objects( self._current_config.impacts )
+
+        dialog.deleteLater()
+
+    @Slot()
+    def impact_activated(self,selected,deselected):
+        if selected and selected.indexes() and len(selected.indexes()) > 0:
+            impact = self._model_impact.object_at( selected.indexes()[0])
+
+            if impact.configuration:
+                self.set_config( impact.configuration)
+            else:
+                self.set_config( self._configs.configurations[-1])
+
+    @Slot()
+    def article_activated(self,selected,deselected):
+        if selected and selected.indexes() and len(selected.indexes()) > 0:
+            ac = self._model_articles.object_at( selected.indexes()[0])
+
+            if ac.configurations:
+                self._configs = ac
+                self.set_config( self._configs.configurations[0])
+                self._model_impact.reset_objects( self._configs.impacts)
+
+
+    # @Slot(QModelIndex)
+    # def impact_activated(self, ndx):
+    #     if ndx.isValid():
+    #         print(ndx)
 
     def __init__( self, parent):
         super(EditConfiguration,self).__init__(parent)
 
-        self._configs = make_configs()
-        self._impacts = make_impacts()
+        self._articles = make_configs()
+        self._configs = self._articles[0]
+
         self._title_widget = TitleWidget( "Configuration", self)
 
-        self._title_widget.set_title("Configuration, commande <b>{}</b>, article <b>{}</b>".format("2576B", "XDR-1234-Z"))
+        self._title_widget.set_title("Configuration")
         config_file_proto = []
         config_file_proto.append( TextLinePrototype('description',_('Description'),editable=False))
         config_file_proto.append( IntegerNumberPrototype('version',_('Rev.'),editable=False))
@@ -344,32 +559,50 @@ class EditConfiguration(QWidget):
         config_file_proto.append( EnumPrototype('crl',_('CRL'), CRL, editable=True))
 
         config_impact_proto = []
-        config_impact_proto.append( TextLinePrototype('description',_('Description'),editable=False))
         config_impact_proto.append( IntegerNumberPrototype('version',_('Rev.'),editable=False))
+        config_impact_proto.append( TextLinePrototype('description',_('Description'),editable=False))
+        config_impact_proto.append( TextLinePrototype('owner',_('Owner'),editable=False))
         config_impact_proto.append( TextLinePrototype('file',_('File'), editable=False))
-        config_impact_proto.append( DatePrototype('date_upload',_('Date'), editable=False))
         config_impact_proto.append( EnumPrototype('approval',_('Approval'), ImpactApproval, editable=False))
+        config_impact_proto.append( TextLinePrototype('approved_by',_('Approved by'), editable=False))
+        config_impact_proto.append( DatePrototype('active_date',_('Since'), editable=False))
+
+        config_article_proto = list()
+        config_article_proto.append(TextLinePrototype('description',_('Plan number'),editable=False))
+        config_article_proto.append(TextLinePrototype('file_revision',_('Rev.'), editable=False))
+        config_article_proto.append(TextLinePrototype('file',_('File'), editable=False))
 
 
 
+        # self.version_choice = QComboBox()
+        # for c in self._configs.configurations:
+        #     self.version_choice.addItem("Revision {}".format(c.version))
+        # hlayout2.addWidget( self.version_choice)
+        # self.version_choice.activated.connect( self.version_selected)
 
-        hlayout2 = QHBoxLayout()
-
-        self._info_label = QLabel("msg")
-        hlayout2.addWidget( self._info_label)
-        hlayout2.addStretch()
-        self._freeze_button = QPushButton("Accept && Freeze")
-        hlayout2.addWidget( self._freeze_button)
-        version_choice = QComboBox()
-        for c in self._configs:
-            version_choice.addItem("Revision {}".format(c.version))
-        hlayout2.addWidget( version_choice)
-        self.version_choice = version_choice
-        self.version_choice.activated.connect( self.version_selected)
 
         top_layout = QVBoxLayout()
         top_layout.addWidget( self._title_widget)
-        top_layout.addLayout(hlayout2)
+
+        content_layout = QHBoxLayout()
+        top_layout.addLayout( content_layout)
+
+        self._view_articles = PrototypedTableView(None, config_article_proto)
+        self._model_articles = ObjectModel( self, config_article_proto, lambda : None)
+        self._view_articles.setModel( self._model_articles)
+        self._view_articles.horizontalHeader().setResizeMode( QHeaderView.ResizeToContents)
+        self._view_articles.horizontalHeader().setResizeMode( 0, QHeaderView.Stretch)
+        self._view_articles.verticalHeader().hide()
+        self._view_articles.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self._view_articles.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self._view_articles.selectionModel().selectionChanged.connect(self.article_activated)
+        self._model_articles.reset_objects( self._articles)
+        content_layout.addWidget(SubFrame("Articles", self._view_articles, self))
+
+        config_layout = QVBoxLayout()
+
+        content_layout.addLayout( config_layout)
+        # top_layout.addLayout(hlayout2)
 
         self._view = PrototypedTableView(None, config_file_proto)
 
@@ -383,94 +616,60 @@ class EditConfiguration(QWidget):
         self._view.setModel( self._model)
         self._view.verticalHeader().hide()
         self._view.horizontalHeader().setResizeMode( QHeaderView.ResizeToContents)
-        subframe = SubFrame("<B>Con</b>figuration", self._view, self)
-        top_layout.addWidget( subframe)
+        self._view.horizontalHeader().setResizeMode( 0, QHeaderView.Stretch)
 
+
+        self._version_config_label = QLabel("Version configuration")
+        self._freeze_button = QPushButton("Accept && Freeze")
+
+        hlayout2 = QHBoxLayout()
+        hlayout2.addWidget( self._version_config_label)
+        hlayout2.addStretch()
+        hlayout2.addWidget( self._freeze_button)
+
+        z = DragDropWidget(self, self._view)
+        z.filesDropped.connect( self.configFilesDropped)
+
+        vlayout_cfg = QVBoxLayout()
+        vlayout_cfg.addLayout(hlayout2)
+        vlayout_cfg.addWidget( z)
+
+        self._subframe = SubFrame("Configuration", vlayout_cfg, self)
+        config_layout.addWidget( self._subframe)
 
         self._model_impact = ImpactsModel( self, config_impact_proto, ImpactLine)
-        self._model_impact.insertRows( 0,3)
 
         self._view_impacts = PrototypedTableView(None, config_impact_proto)
         self._view_impacts.setModel( self._model_impact)
         self._view_impacts.verticalHeader().hide()
         self._view_impacts.horizontalHeader().setResizeMode( QHeaderView.ResizeToContents)
-        subframe2 = SubFrame("Changes", self._view_impacts, self)
-        top_layout.addWidget( subframe2)
+        self._view_impacts.horizontalHeader().setResizeMode( 1, QHeaderView.Stretch)
+        self._view_impacts.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self._view_impacts.setSelectionBehavior(QAbstractItemView.SelectRows)
+        #self._view_impacts.activated.connect(self.impact_activated)
+        self._view_impacts.selectionModel().selectionChanged.connect(self.impact_activated)
 
-        self.version_choice.setCurrentIndex(len( self._configs) - 1)
-        self.version_selected( len( self._configs) - 1)
-        self.setLayout(top_layout)
-        self.setAcceptDrops(True)
+        z = DragDropWidget(self, self._view_impacts)
+        z.filesDropped.connect( self.impactFilesDropped)
+        subframe2 = SubFrame("Changes", z, self)
+        config_layout.addWidget( subframe2)
 
-        self._model_impact.reset_objects( self._impacts )
+        #self.version_choice.setCurrentIndex(len( self._configs.configurations) - 1)
+        self.version_selected( len( self._configs.configurations) - 1)
+        self.setLayout( top_layout)
 
         self._freeze_button.clicked.connect( self.freeze_configuration)
 
-    @Slot()
-    def freeze_configuration(self):
-        dialog = FreezeConfiguration( self, self._impacts)
-        dialog.exec_()
-        if dialog.result() == QDialog.Accepted:
-            self._model_impact.reset_objects( self._impacts )
-
-        dialog.deleteLater()
+        self.set_article_configuration( self._configs)
 
 
-    def dragEnterEvent(self, e : QDragEnterEvent):
-        """ Only accept what looks like a file drop action
-        :param e:
-        :return:
-        """
-
-        if e.mimeData() and e.mimeData().hasUrls() and e.mimeData().urls()[0].toString().startswith("file://") and e.proposedAction() == Qt.DropAction.CopyAction:
-
-            mainlog.debug("dragEnterEvent : I accept")
-            # Attention ! The actual drop area is smaller
-            # than the dragEnter area !
-
-            e.acceptProposedAction()
-            e.accept()
-
-    def dragMoveEvent(self, e: QDragMoveEvent):
-        e.accept()
-
-    def dragLeaveEvent(self, e):
-        e.accept()
-
-    def dropEvent(self, e):
-        e.accept()
-
-        paths = []
-        for url in e.mimeData().urls():
-            if platform.system() == "Windows":
-                full_path_client = url.toString().replace('file:///','')
-            else:
-                full_path_client = url.toString().replace('file://','')
-
-            # FIXME prototype !!
-
-            filename = os.path.split( full_path_client)[-1]
-            paths.append( filename)
-
-        dialog = AddFileToConfiguration( self, paths[0], [])
-        dialog.exec_()
-        if dialog.result() == QDialog.Accepted:
-            new_line = Line( dialog.description, dialog.version, dialog.type, dialog.filename)
-            new_line.crl = dialog.crl
-            new_line.modify_config = True
-            self._current_config.lines.append( new_line)
-
-            # FIXME should use a simpmle "datachagned" no ?
-            self._model.reset_objects( self._current_config.lines )
-
-        dialog.deleteLater()
 
 if __name__ == "__main__":
 
     app = QApplication(sys.argv)
 
     mw = QMainWindow()
-    mw.setMinimumSize(768,512)
+    mw.setMinimumSize(1024+256,512)
     widget = EditConfiguration(mw)
     mw.setCentralWidget(widget)
     mw.show()
