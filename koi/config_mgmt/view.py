@@ -1,13 +1,13 @@
-from enum import Enum
+import enum
 from datetime import date
 import sys
-from typing import List, Any
 
-from PySide.QtCore import Qt,Slot,QModelIndex,QAbstractTableModel,Signal, QPoint
+from PySide.QtCore import Qt,Slot,QModelIndex,QAbstractTableModel,Signal, QPoint, QObject, QEvent
 from PySide.QtCore import QTimer
 from PySide.QtGui import QHBoxLayout,QVBoxLayout,QLineEdit,QLabel,QGridLayout, QColor, QDialog, QMessageBox,QHeaderView,QAbstractItemView, \
-    QKeySequence, QStandardItem,QComboBox, QAction,QMenu,QWidget,QCursor, QSizePolicy, QPushButton, QComboBox, QColor, QBrush, QDialogButtonBox, QLineEdit, QAbstractItemView
+    QKeySequence, QStandardItem,QComboBox, QAction,QMenu,QWidget,QCursor, QSizePolicy, QPushButton, QComboBox, QColor, QBrush, QDialogButtonBox, QLineEdit, QAbstractItemView, QMouseEvent, QPalette
 
+from PySide.QtGui import QTableWidget,QScrollArea, QResizeEvent
 
 if __name__ == "__main__":
     from PySide.QtGui import QApplication,QMainWindow
@@ -35,66 +35,14 @@ from koi.gui.dialog_utils import SubFrame, TitleWidget
 
 from koi.gui.PrototypedModelView import PrototypedModelView
 from koi.config_mgmt.dragdrop_widget import DragDropWidget
-
-class ImpactApproval(Enum):
-    UNDER_CONSTRUCTION = "Under construction"
-    APPROVED = "Approved"
-    REJECTED = "Rejected"
-
-class TypeConfigDoc(Enum):
-    IMPACT = "Impact document"
-    PLAN_2D = "Plan 2D"
-    PLAN_3D = "Plan 3D"
-    PROGRAM = "Programme"
-
-class CRL(Enum):
-    C = "À consulter"
-    R = "À remplir"
-    LC = "À livrer au client"
-    RLC = "À remplir et livrer au client"
-    LF = "À livrer au fournisseur"
-    RLF = "À remplir et livrer au fournisseur"
-
-    def __str__( self, e):
-        return e.value[1]
-
-
+from koi.config_mgmt.mapping import *
+from koi.gui.PersistentFilter import PersistentFilter
 
 class EnumPrototype(Prototype):
-    def __init__(self,field,title,enumeration : Enum,editable=True,nullable=False):
+    def __init__(self,field,title,enumeration : enum.Enum,editable=True,nullable=False):
         super(EnumPrototype,self).__init__(field,title,editable,nullable)
         self.set_delegate(
             PythonEnumComboDelegate( enumeration)) # items, sizes
-
-
-class Line:
-    def __init__( self, description, version, type_, file_):
-        self.description = description
-        self.version = version
-        self.type = type_
-        self.file = file_
-        self.modify_config = False
-        self.date_upload = date.today()
-        self.crl = CRL.C
-
-
-class ImpactLine:
-    def __init__( self):
-        self.owner = "Chuck Noris"
-        self.description = None
-        self.file = None
-        self.date_upload = date.today()
-        self.approval = ImpactApproval.UNDER_CONSTRUCTION
-        self.approved_by = None
-        self.active_date = date.today()
-        self.configuration = None
-
-    @property
-    def version(self):
-        if self.configuration:
-            return self.configuration.version
-        else:
-            return None
 
 
 class ImpactLineExtended:
@@ -115,168 +63,6 @@ class ImpactLineExtended:
             return setattr( object.__getattribute__( self, "_object"), name, value)
         else:
             return object.__setattr__(self, name, value)
-
-il = ImpactLine()
-il.description = 'test'
-ilo = ImpactLineExtended( il)
-assert ilo.description == "test"
-assert ilo.selected == False
-
-ilo.description = "new"
-ilo.selected = True
-assert ilo.description == "new"
-assert ilo.selected == True, "{} ?".format(ilo.selected)
-
-assert il.description == "new"
-
-
-class Configuration:
-    article_configuration: "ArticleConfiguration"
-
-    def __init__(self):
-        self.frozen = None
-        self.freezer = None
-        self.lines = []
-        self.version = 0
-        self.article_configuration = None
-
-
-        # self.impacts = []
-
-
-class ArticleConfiguration:
-    configurations: List[Configuration]
-
-    def __init__(self):
-        self.description = ""
-        self.file = ""
-        self.file_revision = "E"
-
-        # The different configurations.
-        # In the normal scenario, the first configuration has no impact file
-        # and the following configurations have at least an impact file.
-        # Some impact files may not have a configuration (for example, while
-        # they are written) (this prevents, for example, an impact file that is
-        # rejected has an empty configuiration tied to it).
-        self.configurations = []
-
-        # The story of changes brought to the article configuration.
-        # Each working configuration should be tied to an impact.
-        self.impacts = []
-
-
-    @property
-    def full_version(self):
-        return "{}/{}".format( self.description, self.file_revision)
-
-    def current_configuration(self):
-        i = len(self.configurations) - 1
-
-        if i > 0:
-            while i >= 0:
-                if self.configurations[i].frozen:
-                    return self.configurations[i]
-                i -= 1
-
-            return self.configurations[-1]
-        else:
-            return self.configurations[0]
-
-
-
-def make_configs():
-
-    ac = ArticleConfiguration()
-
-    c = Configuration()
-    c.version = 1
-    c.article_configuration = ac
-    c.frozen = date(2018,1,31)
-    c.freezer = "Daniel Dumont"
-    c.lines = [ Line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
-                Line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
-                Line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
-    ac.configurations.append( c)
-
-    c = Configuration()
-    c.article_configuration = ac
-    c.lines = [ Line( "Plan coupe 90°", 1, TypeConfigDoc.PLAN_3D, "impact_1808RXC.doc"),
-                Line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_2D, "plan3EDER4.3ds"),
-                Line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
-                Line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
-    c.version = 2
-    c.frozen = date(2018,2,5)
-    c.freezer = "Falken"
-    c.lines[2].modify_config = False
-    ac.configurations.append( c)
-
-    c = Configuration()
-    c.article_configuration = ac
-    c.lines = [ Line( "Operations", 1, TypeConfigDoc.PLAN_3D, "impact_1808RXC.doc"),
-                Line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_2D, "plan3EDER4.3ds"),
-                Line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
-                Line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
-    c.version = 3
-    c.frozen = None
-    c.lines[2].modify_config = True
-    ac.configurations.append( c)
-
-    impact = ImpactLine()
-    impact.owner = "Chuck Noris"
-    impact.description = "preproduction measurement side XPZ changed"
-    impact.date_upload = date.today()
-    impact.approval = ImpactApproval.APPROVED
-    impact.approved_by = "Deckerd"
-    impact.active_date = date(2013,1,11)
-    impact.configuration = ac.configurations[0]
-    ac.impacts.append( impact)
-
-    impact = ImpactLine()
-    impact.owner = "Chuck Noris"
-    impact.description = "Aluminium weight reduction"
-    impact.date_upload = date.today()
-    impact.approval = ImpactApproval.APPROVED
-    impact.approved_by = "John Wayne"
-    impact.active_date = None
-    impact.configuration = ac.configurations[1]
-    ac.impacts.append( impact)
-
-    impact = ImpactLine()
-    impact.owner = "Chuck Noris"
-    impact.description = "Production settings"
-    impact.date_upload = date.today()
-    impact.approval = ImpactApproval.UNDER_CONSTRUCTION
-    impact.approved_by = None
-    impact.active_date = None
-    impact.configuration = None
-    ac.impacts.append( impact)
-
-    impact = ImpactLine()
-    impact.owner = "Bruce Lee"
-    impact.description = "Production settings v2"
-    impact.date_upload = date.today()
-    impact.approval = ImpactApproval.UNDER_CONSTRUCTION
-    impact.approved_by = None
-    impact.active_date = None
-    impact.configuration = None
-    ac.impacts.append( impact)
-
-    ac.description = "Plan ZERDF354-ZXZ-2001"
-    ac.file = "ZERDF354-ZXZ-2001.3ds"
-    ac.file_revision = "P1"
-
-    ac2 = ArticleConfiguration()
-    ac2.description = "Plan ZERDF354-ZXZ-2001"
-    ac2.file = "ZERDF354-ZXZ-2001.3ds"
-    ac2.file_revision = "P2"
-    c = Configuration()
-    c.article_configuration = ac2
-    ac2.configurations.append( c)
-
-    return [ac, ac2]
-
-
-
 
 
 class ConfigModel(ObjectModel):
@@ -301,14 +87,13 @@ class ImpactsModel(ObjectModel):
         super(ImpactsModel, self).__init__( parent, prototypes, blank_object_factory)
 
 
-
 class FreezeConfiguration(QDialog):
 
     def _make_ui(self):
         title = _("Freeze a configuration")
         self.setWindowTitle(title)
 
-        config_impact_proto = []
+        config_impact_proto = list()
         config_impact_proto.append( BooleanPrototype('selected', "", editable=True))
         config_impact_proto.append( TextLinePrototype('description',_('Description'),editable=True))
         config_impact_proto.append( IntegerNumberPrototype('version',_('Rev.'),editable=False))
@@ -316,10 +101,10 @@ class FreezeConfiguration(QDialog):
         config_impact_proto.append( EnumPrototype('approval',_('Approval'), ImpactApproval, editable=False))
         config_impact_proto.append( DatePrototype('date_upload',_('Date'), editable=False))
 
-
         top_layout = QVBoxLayout()
 
-        top_layout.addWidget( QLabel("Please select the impact(s) document(s) that correspond to the new frozen configuration."))
+        top_layout.addWidget( QLabel("Please select the impact(s) document(s) that " +
+                                     "correspond to the new frozen configuration."))
 
         self._model_impact = ImpactsModel( self, config_impact_proto, None) # We won't create impact lines here
         self._view_impacts = PrototypedTableView(None, config_impact_proto)
@@ -362,6 +147,7 @@ class AddFileToConfiguration(QDialog):
     def __init__(self, parent, filename, previous_lines):
         super( AddFileToConfiguration, self).__init__(parent)
 
+        self.crl = None
         self.filename = filename
         self.description = ""
         self.type = TypeConfigDoc.PROGRAM
@@ -382,9 +168,9 @@ class AddFileToConfiguration(QDialog):
         top_layout.addWidget( QLabel("Type :"))
         top_layout.addWidget( type_choice)
 
-        self._decription_widget = QLineEdit()
+        self._description_widget = QLineEdit()
         top_layout.addWidget( QLabel("Description :"))
-        top_layout.addWidget( self._decription_widget)
+        top_layout.addWidget(self._description_widget)
 
         version_choice = QComboBox()
         version_choice.addItem(None)
@@ -402,7 +188,6 @@ class AddFileToConfiguration(QDialog):
         top_layout.addWidget( QLabel("CRL :"))
         top_layout.addWidget( self.crl_choice)
 
-
         self.buttons = QDialogButtonBox()
         self.buttons.addButton( QDialogButtonBox.Cancel)
         self.buttons.addButton( QDialogButtonBox.Ok)
@@ -414,7 +199,7 @@ class AddFileToConfiguration(QDialog):
 
     @Slot()
     def accept(self):
-        self.description = self._decription_widget.text()
+        self.description = self._description_widget.text()
         self.crl = self.crl_choice.itemData( self.crl_choice.currentIndex())
         return super(AddFileToConfiguration,self).accept()
 
@@ -430,15 +215,32 @@ from koi.gui.horse_panel import HorsePanel
 
 class EditConfiguration(HorsePanel):
 
-    def version_selected( self, ndx):
-        self.set_config( self._configs.configurations[ndx] )
+    # def version_selected( self, ndx):
+    #     self.set_config( self._current_article.configurations[ndx] )
+
+    def set_configuration_articles( self, cfg_articles : list):
+        self._articles = cfg_articles
+        self._model_articles.reset_objects( self._articles)
+        self._wl.set_objects( self._articles)
+        self.set_article_configuration( self._articles[0])
+
+    def set_article_configuration( self, ca):
+        self._current_article = ca
+        self._model_impact.reset_objects( ca.impacts )
+
+        impacts = list( filter( lambda imp: imp.approval == ImpactApproval.APPROVED, ca.impacts))
+
+        if impacts:
+            self.set_config(impacts[- 1].configuration)
+        else:
+            self.set_config(ca.configurations[len( ca.configurations) - 1])
+        #self.version_selected( len( ca.configurations) - 1)
 
     def set_config( self, config):
 
         self._current_config = config
 
         msg = "Configuration for <b>{}</b>, ".format( config.article_configuration.full_version)
-
 
         if config.frozen:
             freeze_msg = "<b><font color = 'green'>FROZEN on {} by {}</font></b>".format( config.frozen, config.freezer)
@@ -454,13 +256,10 @@ class EditConfiguration(HorsePanel):
 
         self._model.reset_objects( config.lines )
 
-    def set_article_configuration( self, aconfig):
-        self._model_impact.reset_objects( aconfig.impacts )
-
     @Slot()
     def freeze_configuration(self):
 
-        impacts = filter( lambda imp: imp.approval == ImpactApproval.UNDER_CONSTRUCTION, self._configs.impacts)
+        impacts = filter( lambda imp: imp.approval == ImpactApproval.UNDER_CONSTRUCTION, self._current_article.impacts)
 
         dialog = FreezeConfiguration( self, self._current_config, impacts)
         dialog.exec_()
@@ -471,17 +270,17 @@ class EditConfiguration(HorsePanel):
 
             c = Configuration()
             c.frozen = None
-            c.version = max([c.version for c in self._configs.configurations]) + 1
-            self._configs.configurations.append( c)
+            c.version = max([c.version for c in self._current_article.configurations]) + 1
+            self._current_article.configurations.append( c)
 
             # for c in range( self.version_choice.count()):
             #     self.version_choice.removeItem(0)
 
-            # for c in self._configs:
+            # for c in self._current_article:
             #     self.version_choice.addItem("Revision {}".format(c.version))
 
-            # self.version_choice.setCurrentIndex( len(self._configs) - 2)
-            #self.version_selected( len(self._configs) - 2)
+            # self.version_choice.setCurrentIndex( len(self._current_article) - 2)
+            #self.version_selected( len(self._current_article) - 2)
 
         dialog.deleteLater()
 
@@ -523,66 +322,64 @@ class EditConfiguration(HorsePanel):
             if impact.configuration:
                 self.set_config( impact.configuration)
             else:
-                self.set_config( self._configs.configurations[-1])
+                self.set_config( self._current_article.configurations[-1])
 
     @Slot()
-    def article_activated(self,selected,deselected):
+    def article_selected(self,selected,deselected):
         if selected and selected.indexes() and len(selected.indexes()) > 0:
             ac = self._model_articles.object_at( selected.indexes()[0])
 
             if ac.configurations:
-                self._configs = ac
-                self.set_config( self._configs.configurations[0])
-                self._model_impact.reset_objects( self._configs.impacts)
+                self._current_article = ac
+                self.set_config( self._current_article.configurations[0])
+                self._model_impact.reset_objects( self._current_article.impacts)
 
+    @Slot(int)
+    def article_activated( self, ndx : int):
+        ac = self._model_articles.object_at( ndx)
+        self.set_article_configuration( ac)
 
-    # @Slot(QModelIndex)
-    # def impact_activated(self, ndx):
-    #     if ndx.isValid():
-    #         print(ndx)
 
     def __init__( self, parent):
         super(EditConfiguration,self).__init__(parent)
 
-        self._articles = make_configs()
-        self._configs = self._articles[0]
+        self._articles = []
+        self._current_article = None
 
         self._title_widget = TitleWidget( "Configuration", self)
 
         self._title_widget.set_title("Configuration")
         config_file_proto = []
+        config_file_proto.append( EnumPrototype('type',_('Type'), TypeConfigDoc, editable=False))
         config_file_proto.append( TextLinePrototype('description',_('Description'),editable=False))
         config_file_proto.append( IntegerNumberPrototype('version',_('Rev.'),editable=False))
-        config_file_proto.append( EnumPrototype('type',_('Type'), TypeConfigDoc, editable=False))
         config_file_proto.append( TextLinePrototype('file',_('File'), editable=False))
         config_file_proto.append( DatePrototype('date_upload',_('Date'), editable=False))
         config_file_proto.append( EnumPrototype('crl',_('CRL'), CRL, editable=True))
 
         config_impact_proto = []
         config_impact_proto.append( IntegerNumberPrototype('version',_('Rev.'),editable=False))
-        config_impact_proto.append( TextLinePrototype('description',_('Description'),editable=False))
-        config_impact_proto.append( TextLinePrototype('owner',_('Owner'),editable=False))
+        config_impact_proto.append( TextLinePrototype('description',_('Description de la modification'),editable=False))
+        config_impact_proto.append( TextLinePrototype('owner_short',_('Owner'),editable=False))
         config_impact_proto.append( TextLinePrototype('file',_('File'), editable=False))
         config_impact_proto.append( EnumPrototype('approval',_('Approval'), ImpactApproval, editable=False))
-        config_impact_proto.append( TextLinePrototype('approved_by',_('Approved by'), editable=False))
+        config_impact_proto.append( TextLinePrototype('approver_short',_('By'), editable=False))
         config_impact_proto.append( DatePrototype('active_date',_('Since'), editable=False))
 
         config_article_proto = list()
-        config_article_proto.append(TextLinePrototype('description',_('Plan number'),editable=False))
-        config_article_proto.append(TextLinePrototype('file_revision',_('Rev.'), editable=False))
-        config_article_proto.append(TextLinePrototype('file',_('File'), editable=False))
+        config_article_proto.append(TextLinePrototype('identification_number',_('Part number'),editable=False))
+        config_article_proto.append(TextLinePrototype('revision',_('Rev.'), editable=False))
+        config_article_proto.append(TextLinePrototype('current_configuration_id',_('Configuration\nRevision\nLevel'), editable=False))
+        config_article_proto.append(DatePrototype('valid_since',_('Valid since'), editable=False))
+        config_article_proto.append(TextLinePrototype('current_configuration_status',_('Status'), editable=False))
 
-
-
-        # self.version_choice = QComboBox()
-        # for c in self._configs.configurations:
-        #     self.version_choice.addItem("Revision {}".format(c.version))
-        # hlayout2.addWidget( self.version_choice)
-        # self.version_choice.activated.connect( self.version_selected)
 
 
         top_layout = QVBoxLayout()
         top_layout.addWidget( self._title_widget)
+
+        persistent_filter = PersistentFilter( filter_family="articles_configs")
+        top_layout.addWidget(persistent_filter)
 
         content_layout = QHBoxLayout()
         top_layout.addLayout( content_layout)
@@ -591,15 +388,39 @@ class EditConfiguration(HorsePanel):
         self._model_articles = ObjectModel( self, config_article_proto, lambda : None)
         self._view_articles.setModel( self._model_articles)
         self._view_articles.horizontalHeader().setResizeMode( QHeaderView.ResizeToContents)
-        self._view_articles.horizontalHeader().setResizeMode( 0, QHeaderView.Stretch)
+        self._view_articles.horizontalHeader().setResizeMode( 1, QHeaderView.Stretch)
         self._view_articles.verticalHeader().hide()
         self._view_articles.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self._view_articles.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self._view_articles.selectionModel().selectionChanged.connect(self.article_activated)
+        self._view_articles.selectionModel().selectionChanged.connect(self.article_selected)
         self._model_articles.reset_objects( self._articles)
-        content_layout.addWidget(SubFrame("Articles", self._view_articles, self))
+
+        left_layout = QVBoxLayout()
+
+        wl = SelectableWidgetsList(self)
+        wl.item_selected.connect( self.article_activated)
+        self._wl = wl
+        scroll_area = Scroll()
+        self._gefilter = GEFilter()
+        self._gefilter.widget_list = wl
+        self._gefilter.scroll_area = scroll_area
+        scroll_area.installEventFilter( self._gefilter)
+
+        addw = QWidget(self)
+        addw.setLayout( QVBoxLayout())
+        addw.layout().setContentsMargins(0,0,0,0)
+        addw.layout().addWidget( wl)
+        addw.layout().addStretch()
+
+        scroll_area.setWidget(addw) # wl
+        left_layout.addWidget( scroll_area)
+
+        #left_layout.addWidget(SubFrame("Articles", self._view_articles, self))
+        content_layout.addLayout( left_layout)
+
 
         config_layout = QVBoxLayout()
+
 
         content_layout.addLayout( config_layout)
         # top_layout.addLayout(hlayout2)
@@ -616,7 +437,7 @@ class EditConfiguration(HorsePanel):
         self._view.setModel( self._model)
         self._view.verticalHeader().hide()
         self._view.horizontalHeader().setResizeMode( QHeaderView.ResizeToContents)
-        self._view.horizontalHeader().setResizeMode( 0, QHeaderView.Stretch)
+        self._view.horizontalHeader().setResizeMode( 1, QHeaderView.Stretch)
 
 
         self._version_config_label = QLabel("Version configuration")
@@ -654,14 +475,379 @@ class EditConfiguration(HorsePanel):
         subframe2 = SubFrame("Changes", z, self)
         config_layout.addWidget( subframe2)
 
-        #self.version_choice.setCurrentIndex(len( self._configs.configurations) - 1)
-        self.version_selected( len( self._configs.configurations) - 1)
         self.setLayout( top_layout)
 
         self._freeze_button.clicked.connect( self.freeze_configuration)
 
-        self.set_article_configuration( self._configs)
 
+
+class Scroll(QScrollArea):
+    def __init__( self, parent = None):
+        super( Scroll, self).__init__( parent)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.viewport().setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+        self.setWidgetResizable(True)
+
+    # This is the main reason why we need a specialized scrollarea object
+    # With this, the liste widgets always fit the scroll area perfectly
+    # (on the horizontal direction)
+    def resizeEvent( self, event : QResizeEvent):
+        self.widget().setFixedWidth( self.width())
+
+
+
+class WidgetsList( QWidget):
+    def _show_n_widgets( self, n):
+
+        current_n = len( self._widgets)
+        # All this stuff to avoid to delete QWidgets
+        if n > current_n:
+            for i in range(n - current_n):
+                w = self._make_line_widget()
+                self._widgets.append(w)
+                self.layout().addWidget(w)
+
+        if n < current_n:
+            for i in range( n, current_n):
+                self._widgets[i].hide()
+                self._widgets[i].setEnabled(False)
+
+        for i in range( n):
+            self._widgets[i].show()
+            self._widgets[i].setEnabled(True)
+
+    def _make_line_widget( self):
+        return QLabel( self)
+
+    def object_at(self, ndx : int):
+        return self._widgets[ndx]
+
+    def set_objects( self, obj : []):
+        self._show_n_widgets( len(obj))
+
+        for i in range( len(obj)):
+            self._widgets[i].set_object( obj[i])
+
+    def __init__(self, parent : QWidget):
+        super(WidgetsList, self).__init__( parent)
+        self._widgets = []
+        layout = QVBoxLayout()
+        self.setLayout( layout)
+        self.layout().setContentsMargins(0,0,0,0)
+
+class OrderPartDetail( QLabel):
+    def __init__(self, parent : QWidget):
+        super(OrderPartDetail, self).__init__( parent)
+
+    def set_object( self, p):
+        # p is an order part like object
+        self.setText("<b>{}</b> : {}".format( p.human_identifier, p.description) )
+
+class OrderPartsWidgetList( WidgetsList):
+    def __init__(self, parent : QWidget):
+        super(OrderPartsWidgetList, self).__init__( parent)
+
+    def _make_line_widget( self):
+        return OrderPartDetail( self)
+
+
+class ACWidget(QWidget):
+
+    def set_object( self, obj):
+        for p in self._prototype:
+            p.set_display_widget_data( getattr( obj, p.field))
+
+        self._parts_widget.set_objects( obj.parts)
+
+
+    def __init__(self, parent : QWidget):
+        super(ACWidget, self).__init__( parent)
+
+        self._parts_widget = OrderPartsWidgetList( self)
+
+        self._prototype = PrototypeArray(
+            [ TextLinePrototype('customer_id',_('Customer'),editable=False),
+              TextLinePrototype('identification_number',_('Part number'),editable=False),
+              TextLinePrototype('revision',_('Rev.'), editable=False),
+              TextLinePrototype('current_configuration_id',_('Cfg rev.'), editable=False),
+              DatePrototype('valid_since',_('Valid since'), editable=False),
+              TextLinePrototype('current_configuration_status',_('Status'), editable=False) ])
+
+        vlayout = QVBoxLayout()
+
+        layout = QHBoxLayout()
+        for n in ['customer_id', 'identification_number', 'revision']:
+            layout.addWidget( QLabel(self._prototype[n].title))
+            w = self._prototype[n].display_widget()
+            w.setStyleSheet("font-weight: bold");
+            layout.addWidget( w)
+        layout.addStretch()
+
+        # vlayout.addLayout( layout)
+        # layout = QHBoxLayout()
+        # layout.addStretch()
+
+        for n in ['current_configuration_id', 'valid_since', 'current_configuration_status']:
+            layout.addWidget( QLabel(self._prototype[n].title))
+            w = self._prototype[n].display_widget()
+            w.setStyleSheet("font-weight: bold");
+            layout.addWidget( w)
+
+        vlayout.addLayout( layout)
+
+
+        leftlayout = QVBoxLayout()
+        leftlayout.setAlignment( Qt.AlignTop)
+        leftlayout.addWidget(QLabel("Used in :"))
+        leftlayout.addStretch()
+
+        rightlayout = QVBoxLayout()
+        rightlayout.addWidget(self._parts_widget)
+        self._parts_layout = rightlayout
+
+        layout = QHBoxLayout()
+        layout.addLayout( leftlayout)
+        layout.addLayout( rightlayout)
+        layout.addStretch()
+
+        vlayout.addLayout( layout)
+        self.setLayout( vlayout)
+
+        self.setAutoFillBackground( True)
+        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Maximum)
+        #self.layout().setSizeConstraint( )
+
+class GEFilter(QObject):
+    def __init__(self):
+        super(GEFilter, self).__init__()
+        self.widget_list = None
+        self.scroll_area = None
+
+    def eventFilter(self, target: QObject, event: QEvent) -> bool:
+        if event.type() == QEvent.MouseButtonDblClick:
+            self.widget_list.emit_selected()
+            return False
+
+        elif event.type() == QEvent.MouseButtonPress:
+            # and target in self.widget_list._widgets
+            w = QApplication.widgetAt( event.globalPos())
+
+            # w is the lowest QWidget in the widget hierarchy
+            # I have to climb up to find "my" widget. Note I don't
+            # have to go any more up than the widgets list itself.
+            # FIXME just go up to widget_list and then one down...
+
+            found = False
+            while (w is not None) and (w != self.widget_list):
+                if w in self.widget_list._widgets:
+                    found = True
+                    break
+                else:
+                    w = w.parent()
+
+            if found:
+                self.widget_list.select( w)
+
+            return False
+
+        elif event.type() == QEvent.KeyPress:
+            if event.key() == Qt.Key_Down:
+                self.widget_list.select_next()
+            elif event.key() == Qt.Key_Up:
+                self.widget_list.select_previous()
+            self.scroll_area.ensureWidgetVisible( self.widget_list._current_selection)
+
+            return True
+        else:
+            return False
+
+
+
+
+class SelectableWidgetsList(WidgetsList):
+
+    item_selected = Signal(int)
+
+    def _set_widget_background( self, target, fg_color, bg_color):
+        p = target.palette()
+        p.setColor(target.foregroundRole(), fg_color)
+        p.setColor(target.backgroundRole(), bg_color)
+        target.setPalette(p)
+
+    def emit_selected(self):
+        ndx = self._widgets.index(self._current_selection)
+        self.item_selected.emit( ndx)
+
+
+    @Slot(QWidget)
+    def select( self, target):
+        if target != self._current_selection:
+
+            fg = QApplication.palette().color( QPalette.ColorGroup.Active, QPalette.ColorRole.HighlightedText)
+            bg = QApplication.palette().color( QPalette.ColorGroup.Active, QPalette.ColorRole.Highlight)
+            self._set_widget_background( target, fg, bg)
+
+            if self._current_selection:
+                fg = QApplication.palette().color( QPalette.ColorGroup.Active, QPalette.ColorRole.Text)
+                bg = QApplication.palette().color( QPalette.ColorGroup.Active, QPalette.ColorRole.Base)
+                self._set_widget_background( self._current_selection, fg, bg)
+
+            self._current_selection = target
+            self.emit_selected()
+
+    def select_next(self):
+        if self._current_selection:
+            ndx = min( len(self._widgets) - 1, self._widgets.index(self._current_selection) + 1 )
+        else:
+            ndx = 0
+
+        if self._widgets:
+            self.select( self._widgets[ ndx] )
+
+    def select_previous(self):
+        if self._current_selection:
+            ndx = max( 0, self._widgets.index(self._current_selection) - 1 )
+        else:
+            ndx = 0
+
+        if self._widgets:
+            self.select( self._widgets[ ndx] )
+
+    def _make_line_widget( self):
+        # w.setDisabled(True) # No more events, but widget grayed out :-(
+        # w.setAttribute(Qt.WA_TransparentForMouseEvents)
+
+        w = ACWidget( self)
+        p = w.palette()
+        p.setColor(w.backgroundRole(), Qt.white)
+        w.setPalette(p)
+
+        return w
+
+    def __init__(self, parent : QWidget):
+        super(SelectableWidgetsList, self).__init__( parent)
+
+        self.layout().setContentsMargins(0,0,0,0)
+        self._current_selection = None
+        #self.layout().addStretch() # Helps the scroll area to resize the list properly (ie only resize horizontally)
+
+
+
+def make_configs():
+
+    ac = ArticleConfiguration()
+    ac.customer = session().query(Customer).filter( Customer.customer_id == 18429).one()
+    ac.identification_number = "4500250418"
+    ac.file = "ZERDF354-ZXZ-2001.3ds"
+    ac.revision = "C"
+
+    op = session().query(OrderPart).filter( OrderPart.order_part_id == 151547).one()
+    op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 151548).one()
+    ac.parts = [op, op2]
+
+    c = Configuration()
+    c.version = 1
+    c.article_configuration = ac
+    c.frozen = date(2018,1,31)
+    c.freezer = "Daniel Dumont"
+    c.lines = [ Line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
+                Line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
+                Line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
+    ac.configurations.append( c)
+
+    c = Configuration()
+    c.article_configuration = ac
+    c.lines = [ Line( "Plan coupe 90°", 1, TypeConfigDoc.PLAN_3D, "impact_1808RXC.doc"),
+                Line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_2D, "plan3EDER4.3ds"),
+                Line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
+                Line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
+    c.version = 2
+    c.frozen = date(2018,2,5)
+    c.freezer = "Falken"
+    c.lines[2].modify_config = False
+    ac.configurations.append( c)
+
+    c = Configuration()
+    c.article_configuration = ac
+    c.lines = [ Line( "Operations", 1, TypeConfigDoc.PLAN_3D, "impact_1808RXC.doc"),
+                Line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_2D, "plan3EDER4.3ds"),
+                Line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
+                Line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
+    c.version = 3
+    c.frozen = None
+    c.lines[2].modify_config = True
+    ac.configurations.append( c)
+
+    impact = ImpactLine()
+    impact.owner = session().query(Employee).filter( Employee.employee_id == 118).one()
+    impact.description = "preproduction measurement side XPZ changed"
+    impact.date_upload = date.today()
+    impact.approval = ImpactApproval.APPROVED
+    impact.approved_by = session().query(Employee).filter( Employee.employee_id == 112).one()
+    impact.active_date = date(2013,1,11)
+    impact.configuration = ac.configurations[0]
+    ac.impacts.append( impact)
+
+    impact = ImpactLine()
+    impact.owner = session().query(Employee).filter( Employee.employee_id == 112).one()
+    impact.description = "Aluminium weight reduction"
+    impact.date_upload = date.today()
+    impact.approval = ImpactApproval.APPROVED
+    impact.approved_by = session().query(Employee).filter( Employee.employee_id == 8).one()
+    impact.active_date = None
+    impact.configuration = ac.configurations[1]
+    ac.impacts.append( impact)
+
+    impact = ImpactLine()
+    impact.owner = session().query(Employee).filter( Employee.employee_id == 8).one()
+    impact.description = "Production settings"
+    impact.date_upload = date.today()
+    impact.approval = ImpactApproval.UNDER_CONSTRUCTION
+    impact.approved_by = None
+    impact.active_date = None
+    impact.configuration = None
+    ac.impacts.append( impact)
+
+    impact = ImpactLine()
+    impact.owner = session().query(Employee).filter( Employee.employee_id == 20).one()
+    impact.description = "Production settings v2"
+    impact.date_upload = date.today()
+    impact.approval = ImpactApproval.UNDER_CONSTRUCTION
+    impact.approved_by = None
+    impact.active_date = None
+    impact.configuration = None
+    ac.impacts.append( impact)
+
+
+    ac2 = ArticleConfiguration()
+    ac2.customer = session().query(Customer).filter( Customer.customer_id == 2145).one()
+    op = session().query(OrderPart).filter( OrderPart.order_part_id == 95642).one()
+    op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 128457).one()
+    op3 = session().query(OrderPart).filter( OrderPart.order_part_id == 96799).one()
+    ac2.parts = [op, op2, op3]
+    ac2.identification_number = "Plan ZERDF354-ZXZ-2001"
+    ac2.file = "ZERDF354-ZXZ-2001.3ds"
+    ac2.revision = "D"
+    c = Configuration()
+    c.article_configuration = ac2
+    ac2.configurations.append( c)
+
+    return [ac, ac2]
+
+
+def test_extended_dto():
+    il = ImpactLine()
+    il.description = 'test'
+    ilo = ImpactLineExtended(il)
+    assert ilo.description == "test"
+    assert ilo.selected == False
+
+    ilo.description = "new"
+    ilo.selected = True
+    assert ilo.description == "new"
+    assert ilo.selected == True, "{} ?".format(ilo.selected)
+
+    assert il.description == "new"
 
 
 if __name__ == "__main__":
@@ -669,8 +855,9 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     mw = QMainWindow()
-    mw.setMinimumSize(1024+256,512)
+    mw.setMinimumSize(1024+768,512+256)
     widget = EditConfiguration(mw)
+    widget.set_configuration_articles( make_configs())
     mw.setCentralWidget(widget)
     mw.show()
 

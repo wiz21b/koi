@@ -30,7 +30,7 @@ from inspect import isfunction
 
 from PySide.QtCore import Qt, QAbstractTableModel, QModelIndex, Slot, Signal, QObject, QEvent, QRect
 from PySide.QtGui import QStandardItemModel, QHeaderView, QAbstractItemDelegate, QColor, QLineEdit, QValidator, QAction, QKeySequence,QBrush, \
-    QFrame, QLayout
+    QFrame, QLayout, QLabel
 from PySide.QtGui import QWidget,QPushButton,QHBoxLayout,QPixmap,QIcon
 from sqlalchemy import event
 
@@ -48,10 +48,10 @@ from koi.gui.dialog_utils import showWarningBox
 from koi.datalayer.database_session import session
 from koi.datalayer.quality import QualityEventType
 from koi.db_mapping import OperationDefinition
-
+from koi.translators import date_to_dm
 
 class PrototypeArray:
-    """ Use this too store prototypes instance
+    """ Use this to store prototypes instance
     """
 
     def __init__(self, prototypes : list):
@@ -75,6 +75,9 @@ class PrototypeArray:
                 return i
 
         raise Exception("Field '{}' not found".format(field))
+
+    def append( self, item):
+        self._prototypes.append( item)
 
     def __len__(self):
         return len(self._prototypes)
@@ -860,6 +863,14 @@ class DatePrototype(Prototype):
 
         self.set_delegate(DateDelegate())
 
+    def display_widget(self):
+        if not hasattr( self, '_display_widget'):
+            self._display_widget = QLabel()
+        return self._display_widget
+
+    def set_display_widget_data(self, data):
+        self._display_widget.setText( date_to_dm(data))
+
 
 class FilenamePrototype(Prototype):
     """ Standard filename prototype.
@@ -924,6 +935,14 @@ class TextLinePrototype(Prototype):
             return None
         else:
             return data
+
+    def display_widget(self):
+        if not hasattr( self, '_display_widget'):
+            self._display_widget = QLabel()
+        return self._display_widget
+
+    def set_display_widget_data(self, data):
+        self._display_widget.setText( str( data))
 
 class PasswordPrototype(Prototype,QObject):
     def __init__(self,field,title,editable=True):
