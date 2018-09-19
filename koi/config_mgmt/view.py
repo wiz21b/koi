@@ -7,10 +7,12 @@ from PySide.QtCore import QTimer
 from PySide.QtGui import QHBoxLayout,QVBoxLayout,QLineEdit,QLabel,QGridLayout, QColor, QDialog, QMessageBox,QHeaderView,QAbstractItemView, \
     QKeySequence, QStandardItem,QComboBox, QAction,QMenu,QWidget,QCursor, QSizePolicy, QPushButton, QComboBox, QColor, QBrush, QDialogButtonBox, QLineEdit, QAbstractItemView, QMouseEvent, QPalette
 
-from PySide.QtGui import QTableWidget,QScrollArea, QResizeEvent
+from PySide.QtGui import QTableWidget,QScrollArea, QResizeEvent, QFrame, QApplication
+
+DEMO_MODE = 0
 
 if __name__ == "__main__":
-    from PySide.QtGui import QApplication,QMainWindow
+    from PySide.QtGui import QMainWindow
 
     from koi.base_logging import mainlog,init_logging
     from koi.Configurator import init_i18n,load_configuration,configuration
@@ -37,6 +39,7 @@ from koi.gui.PrototypedModelView import PrototypedModelView
 from koi.config_mgmt.dragdrop_widget import DragDropWidget
 from koi.config_mgmt.mapping import *
 from koi.gui.PersistentFilter import PersistentFilter
+from koi.gui.horse_panel import HorsePanel
 
 class EnumPrototype(Prototype):
     def __init__(self,field,title,enumeration : enum.Enum,editable=True,nullable=False):
@@ -210,7 +213,6 @@ class AddFileToConfiguration(QDialog):
 
 
 
-from koi.gui.horse_panel import HorsePanel
 
 
 class EditConfiguration(HorsePanel):
@@ -240,7 +242,7 @@ class EditConfiguration(HorsePanel):
 
         self._current_config = config
 
-        msg = "Configuration for <b>{}</b>, ".format( config.article_configuration.full_version)
+        msg = "Configuration for part <b>{}</b>, client : <b>{}</b>".format( config.article_configuration.full_version, config.article_configuration.customer_id)
 
         if config.frozen:
             freeze_msg = "<b><font color = 'green'>FROZEN on {} by {}</font></b>".format( config.frozen, config.freezer)
@@ -255,6 +257,10 @@ class EditConfiguration(HorsePanel):
         self._version_config_label.setText( "Revision {}, {}".format(config.version, freeze_msg))
 
         self._model.reset_objects( config.lines )
+
+        part_revs = [PartRev( config, part) for part in config.parts]
+        self._parts_widget.set_objects( part_revs)
+
 
     @Slot()
     def freeze_configuration(self):
@@ -346,9 +352,14 @@ class EditConfiguration(HorsePanel):
         self._articles = []
         self._current_article = None
 
-        self._title_widget = TitleWidget( "Configuration", self)
+        config_article_proto = list()
+        config_article_proto.append(TextLinePrototype('customer_id',_('Customer'),editable=False))
+        config_article_proto.append(TextLinePrototype('identification_number',_('Part number'),editable=False))
+        config_article_proto.append(TextLinePrototype('revision',_('Part.\nRev.'), editable=False))
+        config_article_proto.append(TextLinePrototype('current_configuration_id',_('Cfg.\nLvl'), editable=False))
+        config_article_proto.append(DatePrototype('valid_since',_('Valid since'), editable=False))
+        config_article_proto.append(TextLinePrototype('current_configuration_status',_('Status'), editable=False))
 
-        self._title_widget.set_title("Configuration")
         config_file_proto = []
         config_file_proto.append( EnumPrototype('type',_('Type'), TypeConfigDoc, editable=False))
         config_file_proto.append( TextLinePrototype('description',_('Description'),editable=False))
@@ -366,12 +377,11 @@ class EditConfiguration(HorsePanel):
         config_impact_proto.append( TextLinePrototype('approver_short',_('By'), editable=False))
         config_impact_proto.append( DatePrototype('active_date',_('Since'), editable=False))
 
-        config_article_proto = list()
-        config_article_proto.append(TextLinePrototype('identification_number',_('Part number'),editable=False))
-        config_article_proto.append(TextLinePrototype('revision',_('Rev.'), editable=False))
-        config_article_proto.append(TextLinePrototype('current_configuration_id',_('Configuration\nRevision\nLevel'), editable=False))
-        config_article_proto.append(DatePrototype('valid_since',_('Valid since'), editable=False))
-        config_article_proto.append(TextLinePrototype('current_configuration_status',_('Status'), editable=False))
+
+
+        self._title_widget = TitleWidget( "Configurations", self)
+        self._title_widget.set_title("Configuration")
+
 
 
 
@@ -384,8 +394,8 @@ class EditConfiguration(HorsePanel):
         content_layout = QHBoxLayout()
         top_layout.addLayout( content_layout)
 
-        self._view_articles = PrototypedTableView(None, config_article_proto)
         self._model_articles = ObjectModel( self, config_article_proto, lambda : None)
+        self._view_articles = PrototypedTableView(None, config_article_proto)
         self._view_articles.setModel( self._model_articles)
         self._view_articles.horizontalHeader().setResizeMode( QHeaderView.ResizeToContents)
         self._view_articles.horizontalHeader().setResizeMode( 1, QHeaderView.Stretch)
@@ -393,7 +403,6 @@ class EditConfiguration(HorsePanel):
         self._view_articles.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self._view_articles.setSelectionBehavior(QAbstractItemView.SelectRows)
         self._view_articles.selectionModel().selectionChanged.connect(self.article_selected)
-        self._model_articles.reset_objects( self._articles)
 
         left_layout = QVBoxLayout()
 
@@ -410,12 +419,15 @@ class EditConfiguration(HorsePanel):
         addw.setLayout( QVBoxLayout())
         addw.layout().setContentsMargins(0,0,0,0)
         addw.layout().addWidget( wl)
-        addw.layout().addStretch()
-
+        addw.layout().addStretch() # that's the importnat bit
         scroll_area.setWidget(addw) # wl
-        left_layout.addWidget( scroll_area)
 
-        #left_layout.addWidget(SubFrame("Articles", self._view_articles, self))
+
+        if DEMO_MODE == 0:
+            left_layout.addWidget( SubFrame("Articles", scroll_area, self))
+        else:
+            left_layout.addWidget(SubFrame("Articles", self._view_articles, self))
+
         content_layout.addLayout( left_layout)
 
 
@@ -423,6 +435,8 @@ class EditConfiguration(HorsePanel):
 
 
         content_layout.addLayout( config_layout)
+        content_layout.setStretch(0,4)
+        content_layout.setStretch(1,6)
         # top_layout.addLayout(hlayout2)
 
         self._view = PrototypedTableView(None, config_file_proto)
@@ -454,6 +468,10 @@ class EditConfiguration(HorsePanel):
         vlayout_cfg = QVBoxLayout()
         vlayout_cfg.addLayout(hlayout2)
         vlayout_cfg.addWidget( z)
+        self._parts_widget = OrderPartsWidgetList2( self)
+        vlayout_cfg.addWidget( self._parts_widget)
+
+        self._parts_widget.setVisible( DEMO_MODE == 1)
 
         self._subframe = SubFrame("Configuration", vlayout_cfg, self)
         config_layout.addWidget( self._subframe)
@@ -488,11 +506,11 @@ class Scroll(QScrollArea):
         self.viewport().setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         self.setWidgetResizable(True)
 
-    # This is the main reason why we need a specialized scrollarea object
-    # With this, the liste widgets always fit the scroll area perfectly
+    # This is the main reason why we need a specialized QScrollArea object
+    # With this, the list's widgets always fit the scroll area perfectly
     # (on the horizontal direction)
     def resizeEvent( self, event : QResizeEvent):
-        self.widget().setFixedWidth( self.width())
+        self.widget().setFixedWidth( self.width() - 2)
 
 
 
@@ -533,7 +551,7 @@ class WidgetsList( QWidget):
         self._widgets = []
         layout = QVBoxLayout()
         self.setLayout( layout)
-        self.layout().setContentsMargins(0,0,0,0)
+        self.layout().setContentsMargins(5,5,5,5)
 
 class OrderPartDetail( QLabel):
     def __init__(self, parent : QWidget):
@@ -541,7 +559,7 @@ class OrderPartDetail( QLabel):
 
     def set_object( self, p):
         # p is an order part like object
-        self.setText("<b>{}</b> : {}".format( p.human_identifier, p.description) )
+        self.setText("Rev. <b>{}</b> in <b>{}</b> : {}".format( p.config_level, p.human_identifier, p.description) )
 
 class OrderPartsWidgetList( WidgetsList):
     def __init__(self, parent : QWidget):
@@ -551,17 +569,70 @@ class OrderPartsWidgetList( WidgetsList):
         return OrderPartDetail( self)
 
 
-class ACWidget(QWidget):
+class OrderPartDetail2( QLabel):
+    def __init__(self, parent : QWidget):
+        super(OrderPartDetail2, self).__init__( parent)
+
+    def set_object( self, p):
+        # p is an order part like object
+        self.setText("Used in <b>{}</b> : {}".format( p.human_identifier, p.description) )
+
+class OrderPartsWidgetList2( WidgetsList):
+    def __init__(self, parent : QWidget):
+        super(OrderPartsWidgetList2, self).__init__( parent)
+
+    def _make_line_widget( self):
+        return OrderPartDetail2( self)
+
+
+class PartRev:
+    def __init__(self, configuration, part):
+        self._configuration = configuration
+        self._part = part
+
+    @property
+    def human_identifier(self):
+        return self._part.human_identifier
+
+    @property
+    def description(self):
+        return self._part.description
+
+    @property
+    def config_level(self):
+        return self._configuration.version
+
+
+class ACWidget(QFrame):
 
     def set_object( self, obj):
         for p in self._prototype:
             p.set_display_widget_data( getattr( obj, p.field))
 
-        self._parts_widget.set_objects( obj.parts)
+        part_revs = []
+        for config in obj.configurations:
+            for part in config.parts:
+                part_revs.append( PartRev( config, part))
 
+        self._parts_widget.set_objects( part_revs)
+
+        if not part_revs:
+            self._parts_layout.itemAt(0).widget().setVisible(False)
+            self._separator.setVisible(False)
+
+    def _verti_widget(self, field : str):
+        layout = QVBoxLayout()
+        layout.addWidget( QLabel(self._prototype[field].title))
+        w = self._prototype[field].display_widget()
+        w.setStyleSheet("font-weight: bold")
+        w.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.MinimumExpanding)
+        layout.addWidget( w)
+
+        return layout
 
     def __init__(self, parent : QWidget):
         super(ACWidget, self).__init__( parent)
+        self.setFrameStyle( QFrame.Box)
 
         self._parts_widget = OrderPartsWidgetList( self)
 
@@ -575,30 +646,35 @@ class ACWidget(QWidget):
 
         vlayout = QVBoxLayout()
 
+
         layout = QHBoxLayout()
-        for n in ['customer_id', 'identification_number', 'revision']:
-            layout.addWidget( QLabel(self._prototype[n].title))
-            w = self._prototype[n].display_widget()
-            w.setStyleSheet("font-weight: bold");
-            layout.addWidget( w)
-        layout.addStretch()
 
-        # vlayout.addLayout( layout)
-        # layout = QHBoxLayout()
-        # layout.addStretch()
+        fm = QLabel().fontMetrics()
 
-        for n in ['current_configuration_id', 'valid_since', 'current_configuration_status']:
-            layout.addWidget( QLabel(self._prototype[n].title))
-            w = self._prototype[n].display_widget()
-            w.setStyleSheet("font-weight: bold");
-            layout.addWidget( w)
+        max_widths = { 'customer_id' : '9999', 'identification_number' : '', 'revision' : 'MM','current_configuration_id' : '00', 'valid_since' : '29/12/99', 'current_configuration_status' :"NOT FROZEN"}
+        for n in ['customer_id', 'identification_number', 'revision','current_configuration_id', 'valid_since', 'current_configuration_status']:
+            w = self._verti_widget(n)
+
+            if max_widths[n]:
+                mw = max( fm.width( max_widths[n]), fm.width( self._prototype[n].title))
+                w.itemAt(0).widget().setFixedWidth( mw)
+                #w.itemAt(1).widget().setFixedWidth( mw)
+
+            layout.addLayout( w)
+
+        layout.insertStretch(2) # right after identification number, which is the lengthiest
 
         vlayout.addLayout( layout)
 
+        frame = QFrame()
+        self._separator = frame
+        frame.setFrameStyle( QFrame.Box)
+        frame.setFixedHeight(1)
+        vlayout.addWidget( frame)
 
         leftlayout = QVBoxLayout()
         leftlayout.setAlignment( Qt.AlignTop)
-        leftlayout.addWidget(QLabel("Used in :"))
+        leftlayout.addWidget(QLabel("→")) # adding horizontal line doesn't work, long arrow don't work neither.
         leftlayout.addStretch()
 
         rightlayout = QVBoxLayout()
@@ -609,6 +685,8 @@ class ACWidget(QWidget):
         layout.addLayout( leftlayout)
         layout.addLayout( rightlayout)
         layout.addStretch()
+
+        self._parts_layout = leftlayout
 
         vlayout.addLayout( layout)
         self.setLayout( vlayout)
@@ -733,7 +811,7 @@ class SelectableWidgetsList(WidgetsList):
 
 
 
-def make_configs():
+def make_configs( session):
 
     ac = ArticleConfiguration()
     ac.customer = session().query(Customer).filter( Customer.customer_id == 18429).one()
@@ -741,11 +819,11 @@ def make_configs():
     ac.file = "ZERDF354-ZXZ-2001.3ds"
     ac.revision = "C"
 
-    op = session().query(OrderPart).filter( OrderPart.order_part_id == 151547).one()
-    op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 151548).one()
-    ac.parts = [op, op2]
 
     c = Configuration()
+    op = session().query(OrderPart).filter( OrderPart.order_part_id == 151547).one()
+    op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 151548).one()
+    c.parts = [op]
     c.version = 1
     c.article_configuration = ac
     c.frozen = date(2018,1,31)
@@ -756,9 +834,11 @@ def make_configs():
     ac.configurations.append( c)
 
     c = Configuration()
+    op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 151548).one()
+    c.parts = [op2]
     c.article_configuration = ac
-    c.lines = [ Line( "Plan coupe 90°", 1, TypeConfigDoc.PLAN_3D, "impact_1808RXC.doc"),
-                Line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_2D, "plan3EDER4.3ds"),
+    c.lines = [ Line( "Plan coupe 90°", 1, TypeConfigDoc.PLAN_2D, "90cut-RXC.doc"),
+                Line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
                 Line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
                 Line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
     c.version = 2
@@ -770,7 +850,7 @@ def make_configs():
     c = Configuration()
     c.article_configuration = ac
     c.lines = [ Line( "Operations", 1, TypeConfigDoc.PLAN_3D, "impact_1808RXC.doc"),
-                Line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_2D, "plan3EDER4.3ds"),
+                Line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
                 Line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
                 Line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
     c.version = 3
@@ -796,6 +876,7 @@ def make_configs():
     impact.approved_by = session().query(Employee).filter( Employee.employee_id == 8).one()
     impact.active_date = None
     impact.configuration = ac.configurations[1]
+    impact.file = "impactmr_genry.doc"
     ac.impacts.append( impact)
 
     impact = ImpactLine()
@@ -806,6 +887,7 @@ def make_configs():
     impact.approved_by = None
     impact.active_date = None
     impact.configuration = None
+    impact.file = "impact_v3.doc"
     ac.impacts.append( impact)
 
     impact = ImpactLine()
@@ -816,19 +898,20 @@ def make_configs():
     impact.approved_by = None
     impact.active_date = None
     impact.configuration = None
+    impact.file = "impact_v3bis.doc"
     ac.impacts.append( impact)
 
 
     ac2 = ArticleConfiguration()
     ac2.customer = session().query(Customer).filter( Customer.customer_id == 2145).one()
-    op = session().query(OrderPart).filter( OrderPart.order_part_id == 95642).one()
-    op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 128457).one()
-    op3 = session().query(OrderPart).filter( OrderPart.order_part_id == 96799).one()
-    ac2.parts = [op, op2, op3]
-    ac2.identification_number = "Plan ZERDF354-ZXZ-2001"
+    ac2.identification_number = "ZERDF354-ZXZ-2001"
     ac2.file = "ZERDF354-ZXZ-2001.3ds"
     ac2.revision = "D"
     c = Configuration()
+    # op = session().query(OrderPart).filter( OrderPart.order_part_id == 95642).one()
+    # op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 128457).one()
+    # op3 = session().query(OrderPart).filter( OrderPart.order_part_id == 96799).one()
+    # c.parts = [op, op2, op3]
     c.article_configuration = ac2
     ac2.configurations.append( c)
 
@@ -857,7 +940,7 @@ if __name__ == "__main__":
     mw = QMainWindow()
     mw.setMinimumSize(1024+768,512+256)
     widget = EditConfiguration(mw)
-    widget.set_configuration_articles( make_configs())
+    widget.set_configuration_articles( make_configs( session))
     mw.setCentralWidget(widget)
     mw.show()
 

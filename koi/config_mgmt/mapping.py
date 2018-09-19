@@ -72,10 +72,12 @@ class ImpactLine:
 
 class Configuration:
     article_configuration: "ArticleConfiguration"
+    parts : List[OrderPart]
 
     def __init__(self):
         self.frozen = None
         self.freezer = None
+        self.parts =  []
         self.lines = []
         self.version = 0
         self.article_configuration = None
@@ -84,7 +86,6 @@ class Configuration:
 class ArticleConfiguration:
 
     configurations: List[Configuration]
-    parts : List[OrderPart]
     customer : Customer
     impacts : List[ImpactLine]
 
@@ -95,7 +96,6 @@ class ArticleConfiguration:
         self.revision = "E"
         self.creation_date =  date.today()
 
-        self.parts =  []
 
         # The different configurations.
         # In the normal scenario, the first configuration has no impact file

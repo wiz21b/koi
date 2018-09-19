@@ -274,7 +274,7 @@ from koi.session.LoginDialog import LoginDialog
 
 from koi.junkyard.services import services
 from koi.datalayer.sqla_mapping_base import Base
-from koi.config_mgmt.view import EditConfiguration
+from koi.config_mgmt.view import EditConfiguration, make_configs
 
 services.register_for_in_process(session, Base)
 
@@ -539,6 +539,7 @@ class MainWindow (QMainWindow):
         # self.supply_order_overview_widget.supply_order_selected.connect(self._edit_supply_order)
 
         self.configurations_widget = EditConfiguration(None)
+        self.configurations_widget.set_configuration_articles( make_configs( session))
 
         self.order_overview_widget = OrderOverviewWidget(None,self.find_order_slot,
                                                          self.create_delivery_slip_action,
