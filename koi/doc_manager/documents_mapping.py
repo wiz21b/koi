@@ -117,6 +117,8 @@ class Document(Base):
         'polymorphic_on':is_template
     }
 
+    def __str__(self):
+        return self.filename
 
 from sqlalchemy.orm import column_property
 from sqlalchemy.sql import select
@@ -196,4 +198,3 @@ prototype = [HDocument.name, HDocument.description]
 
 
 '''
-
