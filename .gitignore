@@ -1,5 +1,9 @@
 koi/test/.cache/**/*
+koi/test/.pytest_cache/**/*
+koi/test/test.bat
 .viminfo
 .idea
 *~
 **/__pycache__
+*.bak
+koi/resources/sumatrapdfcache/*
