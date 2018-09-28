@@ -120,6 +120,7 @@ class PersistentFilter(QWidget):
     def _emit_apply_filter(self):
         self.apply_filter.emit( self.super_filter_entry.text())
 
+
     def current_filter(self):
         return self.super_filter_entry.text()
 
@@ -132,7 +133,7 @@ class PersistentFilter(QWidget):
         """ Loads last save filter (save inf configuration). If
         no filter found in configuration then we shall take a default
         one (arbitrarily) """
-        
+
         if config.is_set( self.CONFIG_SECTION, self._filter_family):
             filter_query_id = int(config.get( self.CONFIG_SECTION, self._filter_family))
             mainlog.debug("load_last_filter : there is a saved filter id={}".format(filter_query_id))

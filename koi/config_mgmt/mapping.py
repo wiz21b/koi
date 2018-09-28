@@ -90,7 +90,7 @@ class ArticleConfiguration(Base):
 
     impacts = relationship('ImpactLine', backref='article_configuration')
     customer = relationship(Customer, uselist=False)
-    configurations = relationship( Configuration, backref='article_configuration')
+    configurations = relationship( Configuration, order_by=Configuration.version, backref='article_configuration')
 
     @property
     def valid_since(self):
