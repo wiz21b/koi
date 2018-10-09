@@ -103,7 +103,7 @@ class Employee(Base):
         self._image_as_pixmap = None
 
     def __repr__(self):
-        return u"<{}>".format(self.fullname)
+        return "<{}>".format(self.fullname)
 
     @property
     def image(self):
