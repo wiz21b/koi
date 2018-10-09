@@ -48,6 +48,35 @@ class EnumPrototype(Prototype):
         self.set_delegate(
             PythonEnumComboDelegate( enumeration)) # items, sizes
 
+
+class InstrumentedObject:
+    def __init__(self):
+        self.clear_changes()
+
+    def has_changed(self):
+        return len(self._changed) > 0
+
+    def clear_changes(self):
+        object.__setattr__(self, "_changed", set())
+
+    def __setattr__(self, name, value):
+        if name != '_changed':
+
+            if getattr(self, name) != value:
+                # Checking if value is actually different is really important
+                # for some behaviours. In particular the
+                # 'position' tracking. But it's not 100% correct.
+                # Indeed if attribute X with initial value 9 becomes 1 then 3 then 9
+                # then we should note it didn't change...
+
+                self._changed.add(name)
+
+            object.__setattr__(self, name, value)
+        else:
+            raise Exception("Forbidden access to _change ! This field is reserved for change tracking")
+
+
+
 def configuration_version_status( self : Configuration):
     if self.frozen:
         return "Rev. {}, frozen".format( self.version)
@@ -236,7 +265,7 @@ class EditConfiguration(HorsePanel):
         self.set_article_configuration( self._articles[0])
 
     def set_article_configuration( self, ca):
-        self._current_article = ca
+        self._current_article = self._change_tracker.wrap_in_change_detector(ca)
         self._model_impact.reset_objects( ca.impacts )
 
         self._version_combo_model.setObjects( ca.configurations)
@@ -258,10 +287,12 @@ class EditConfiguration(HorsePanel):
 
         self._current_config = config
 
-        msg = "Configuration for part <b>{}</b>, client : <b>{}</b>".format( config.article_configuration.full_version, config.article_configuration.customer_id)
+        ac = config.article_configuration
+        full_version = "{}/{}".format( ac.identification_number, ac.revision)
+        msg = "Configuration for part <b>{}</b>, client : <b>{}</b>".format( full_version, ac.customer_id)
 
         if config.frozen:
-            freeze_msg = "<b><font color = 'green'>FROZEN on {} by {}</font></b>".format( config.frozen, config.freezer)
+            freeze_msg = "<b><font color = 'green'>FROZEN on {} by {}</font></b>".format( config.frozen, config.freezer.fullname)
             self._freeze_button.setText("Unfreeze")
         else:
             freeze_msg = "<b><font color = 'red'>NOT frozen</font></b>"
@@ -366,13 +397,35 @@ class EditConfiguration(HorsePanel):
         dialog = AddFileToConfiguration( self, paths[0][1], [])
         dialog.exec_()
         if dialog.result() == QDialog.Accepted:
-            new_line = ImpactLineDto( dialog.description, dialog.version, dialog.filename)
+
+            e = session().query(Employee).filter( Employee.employee_id == 118).one()
+
+            new_line = ImpactLine()
+            session().add(new_line)
+
+            new_line.configuration = self._current_config
+            new_line.configuration_id = self._current_config.configuration_id
+
+            new_line.article_configuration = self._current_article
+            new_line.article_configuration_id = self._current_article.article_configuration_id
+
+            new_line.owner = e
+
+            new_line.description = dialog.description
+            new_line.document = _make_quick_doc(dialog.filename)
             new_line.crl = dialog.crl
             new_line.modify_config = True
-            self._current_config.impacts.append( new_line)
+            session().flush()
+
+
+            self._current_config.origins.append( new_line)
+            self._current_article.impacts.append( new_line)
+
+            session().commit()
+
 
             # FIXME should use a simpmle "datachagned" no ?
-            self._model_impact.reset_objects( self._current_config.impacts )
+            self._model_impact.reset_objects( self._current_article.impacts )
 
         dialog.deleteLater()
 
@@ -427,6 +480,7 @@ class EditConfiguration(HorsePanel):
 
     def __init__( self, parent):
         super(EditConfiguration,self).__init__(parent)
+        self._change_tracker = ChangeTracker()
 
         self._articles = []
         self._current_article = None
@@ -434,9 +488,9 @@ class EditConfiguration(HorsePanel):
         config_article_proto = list()
         config_article_proto.append(TextLinePrototype('customer_id',_('Customer'),editable=False))
         config_article_proto.append(TextLinePrototype('identification_number',_('Part number'),editable=False))
-        config_article_proto.append(TextLinePrototype('revision',_('Part.\nRev.'), editable=False))
-        config_article_proto.append(TextLinePrototype('current_configuration_version',_('Cfg\nRev'), editable=False))
-        config_article_proto.append(DatePrototype('valid_since',_('Valid since'), editable=False))
+        config_article_proto.append(TextLinePrototype('revision',_('Part\nRev.'), editable=False))
+        config_article_proto.append(TextLinePrototype('current_configuration_version',_('Cfg\nRev.'), editable=False))
+        config_article_proto.append(DatePrototype('date_creation',_('Valid\nSince'), editable=False))
         config_article_proto.append(TextLinePrototype('current_configuration_status',_('Status'), editable=False))
 
         config_file_proto = []
@@ -448,7 +502,7 @@ class EditConfiguration(HorsePanel):
         config_file_proto.append( EnumPrototype('crl',_('CRL'), CRL, editable=True))
 
         config_impact_proto = []
-        config_impact_proto.append( IntegerNumberPrototype('version',_('Cfg.\nRev.'),editable=False))
+        config_impact_proto.append( IntegerNumberPrototype('version',_('Cfg\nRev.'),editable=False))
         config_impact_proto.append( TextLinePrototype('description',_('Description de la modification'),editable=False))
         config_impact_proto.append( TextLinePrototype('owner_short',_('Owner'),editable=False))
         config_impact_proto.append( TextLinePrototype('document',_('File'), editable=False))
@@ -739,7 +793,7 @@ class ACWidget(QFrame):
               TextLinePrototype('identification_number',_('Part number'),editable=False),
               TextLinePrototype('revision',_('Rev.'), editable=False),
               TextLinePrototype('current_configuration_version',_("Cfg\nrev."), editable=False),
-              DatePrototype('valid_since',_('Valid since'), editable=False),
+              DatePrototype('date_creation',_('Valid since'), editable=False),
               TextLinePrototype('current_configuration_status',_('Status'), editable=False) ])
 
         vlayout = QVBoxLayout()
@@ -749,8 +803,8 @@ class ACWidget(QFrame):
 
         fm = QLabel().fontMetrics()
 
-        max_widths = { 'customer_id' : '9999', 'identification_number' : '', 'revision' : 'MM','current_configuration_version' : '00', 'valid_since' : '29/12/99', 'current_configuration_status' :"NOT FROZEN"}
-        for n in ['customer_id', 'identification_number', 'revision','current_configuration_version', 'valid_since', 'current_configuration_status']:
+        max_widths = { 'customer_id' : '9999', 'identification_number' : '', 'revision' : 'MM','current_configuration_version' : '00', 'date_creation' : '29/12/99', 'current_configuration_status' :"NOT FROZEN"}
+        for n in ['customer_id', 'identification_number', 'revision','current_configuration_version', 'date_creation', 'current_configuration_status']:
             w = self._verti_widget(n)
 
             if max_widths[n]:
@@ -918,6 +972,13 @@ def _make_quick_doc( name : str):
 
     return document
 
+def _make_quick_employee( name : str, login : str):
+    employee = CopyEmployee()
+    employee.fullname = name
+    employee.login = login
+    return employee
+
+
 def _make_config_line( description, version, type_, file_):
     line = ConfigurationLine()
     session().add(line)
@@ -997,15 +1058,14 @@ def make_configs( session):
 
     impact.owner = session().query(Employee).filter( Employee.employee_id == 118).one()
     impact.description = "one preproduction measurement side XPZ changed"
-    impact.date_upload = date.today()
     impact.approval = ImpactApproval.APPROVED
     impact.approved_by = session().query(Employee).filter( Employee.employee_id == 112).one()
     impact.active_date = date(2013,1,11)
     impact.document = _make_quick_doc("bliblo.doc")
-    ac.configurations[0].origin = impact
     session().add(impact)
+    impact.article_configuration = ac
+    impact.configuration =  ac.configurations[0]
     session().flush()
-    ac.impacts.append( impact)
 
     ac.configurations[0].origin_id = impact.impact_line_id
     assert i1.configuration is not None
@@ -1018,38 +1078,36 @@ def make_configs( session):
     impact.owner = session().query(Employee).filter( Employee.employee_id == 112).one()
     assert i1.configuration is not None, i1.configuration
     impact.description = "two Aluminium weight reduction"
-    impact.date_upload = date.today()
     impact.approval = ImpactApproval.APPROVED
     impact.approved_by = session().query(Employee).filter( Employee.employee_id == 8).one()
     impact.active_date = None
-    ac.configurations[1].origin = impact
     impact.document = _make_quick_doc("impactmr_genry.doc")
     session().add(impact)
-    ac.impacts.append( impact)
+    impact.article_configuration = ac
+    impact.configuration =  ac.configurations[1]
+    session().flush()
 
     impact = ImpactLine()
     impact.owner = session().query(Employee).filter( Employee.employee_id == 8).one()
     impact.description = "three Production settings"
-    impact.date_upload = date.today()
     impact.approval = ImpactApproval.UNDER_CONSTRUCTION
     impact.approved_by = None
     impact.active_date = None
     impact.configuration = None
     impact.document = _make_quick_doc("impact_v3.doc")
     session().add(impact)
-    ac.impacts.append( impact)
+    impact.article_configuration = ac
 
     impact = ImpactLine()
     impact.owner = session().query(Employee).filter( Employee.employee_id == 20).one()
     impact.description = "four Production settings v2"
-    impact.date_upload = date.today()
     impact.approval = ImpactApproval.UNDER_CONSTRUCTION
     impact.approved_by = None
     impact.active_date = None
     impact.configuration = None
     impact.document = _make_quick_doc("impact_v3bis.doc")
     session().add(impact)
-    ac.impacts.append( impact)
+    impact.article_configuration = ac
 
 
     ac2 = ArticleConfiguration()
@@ -1070,8 +1128,143 @@ def make_configs( session):
     session().commit()
 
     assert i1.configuration is not None
+    assert ac.article_configuration_id
 
     return [ac]
+
+
+def make_configs_dto( session):
+
+    ac = CopyArticleConfiguration()
+
+    ### ac.customer = session().query(Customer).filter( Customer.customer_id == 18429).one()
+    ac.identification_number = "4500250418"
+    ac.revision = "C"
+
+
+    c = CopyConfiguration()
+
+    #op = session().query(OrderPart).filter( OrderPart.order_part_id == 151547).one()
+    #op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 246051).one()
+    #op3 = session().query(OrderPart).filter( OrderPart.order_part_id == 230512).one()
+
+    op = CopyOrderPart()
+    op2 = CopyOrderPart()
+    op3 = CopyOrderPart()
+
+    c.parts = [op,op3]
+    c.version = 1
+    c.article_configuration = ac
+    ac.configurations.append(c)
+    c.frozen = date(2018,1,31)
+    c.freezer = session().query(Employee).filter(Employee.employee_id == 100).one()
+    c.lines = [ _make_config_line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
+                _make_config_line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
+                _make_config_line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
+    #ac.configurations.append( c)
+
+    c = CopyConfiguration()
+
+    c.parts = [op2]
+    c.article_configuration = ac
+    ac.configurations.append(c)
+    c.lines = [ _make_config_line( "Plan coupe 90°", 1, TypeConfigDoc.PLAN_2D, "90cut-RXC.doc"),
+                _make_config_line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
+                _make_config_line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
+                _make_config_line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
+    c.version = 2
+    c.frozen = date(2018,2,5)
+    c.freezer = session().query(Employee).filter(Employee.employee_id == 118).one()
+    c.lines[2].modify_config = False
+    #ac.configurations.append( c)
+
+    c = CopyConfiguration()
+
+    c.article_configuration = ac
+    ac.configurations.append(c)
+    c.lines = [ _make_config_line( "Operations", 1, TypeConfigDoc.PLAN_3D, "impact_1808RXC.doc"),
+                _make_config_line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
+                _make_config_line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
+                _make_config_line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
+    c.version = 3
+    c.frozen = None
+    c.lines[2].modify_config = True
+    #ac.configurations.append( c)
+
+
+    impact = CopyImpactLine()
+    i1 = impact
+
+    impact.owner = _make_quick_employee("Barabase","BRB")
+    impact.description = "one preproduction measurement side XPZ changed"
+    impact.approval = ImpactApproval.APPROVED
+    impact.approved_by = session().query(Employee).filter( Employee.employee_id == 112).one()
+    impact.active_date = date(2013,1,11)
+    impact.document = _make_quick_doc("bliblo.doc")
+    impact.article_configuration = ac
+    ac.impacts.append(impact)
+    impact.configuration =  ac.configurations[0]
+
+    ac.configurations[0].origin_id = impact.impact_line_id
+    assert i1.configuration is not None
+    assert i1.configuration is not None
+
+    #print( ac.configurations)
+
+    impact = CopyImpactLine()
+    impact.owner = _make_quick_employee("Julian Rignall","JR")
+    assert i1.configuration is not None, i1.configuration
+    impact.description = "two Aluminium weight reduction"
+    impact.approval = ImpactApproval.APPROVED
+    impact.approved_by = session().query(Employee).filter( Employee.employee_id == 8).one()
+    impact.active_date = None
+    impact.document = _make_quick_doc("impactmr_genry.doc")
+    impact.article_configuration = ac
+    ac.impacts.append(impact)
+    impact.configuration =  ac.configurations[1]
+
+    impact = CopyImpactLine()
+    impact.owner = _make_quick_employee("Rocky Balboa","RB")
+    # impact.owner = session().query(Employee).filter( Employee.employee_id == 8).one()
+    impact.description = "three Production settings"
+    impact.approval = ImpactApproval.UNDER_CONSTRUCTION
+    impact.approved_by = None
+    impact.active_date = None
+    impact.configuration = None
+    impact.document = _make_quick_doc("impact_v3.doc")
+    impact.article_configuration = ac
+    ac.impacts.append(impact)
+
+    impact = CopyImpactLine()
+    impact.owner = _make_quick_employee("Alan Tyrell","ATYR")
+    #impact.owner = session().query(Employee).filter( Employee.employee_id == 20).one()
+    impact.description = "four Production settings v2"
+    impact.approval = ImpactApproval.UNDER_CONSTRUCTION
+    impact.approved_by = None
+    impact.active_date = None
+    impact.configuration = None
+    impact.document = _make_quick_doc("impact_v3bis.doc")
+    impact.article_configuration = ac
+    ac.impacts.append(impact)
+
+
+    ac2 = CopyArticleConfiguration()
+    # ac2.customer = session().query(Customer).filter( Customer.customer_id == 2145).one()
+    ac2.identification_number = "ZERDF354-ZXZ-2001"
+    ac2.revision = "D"
+
+    c = CopyConfiguration()
+    # op = session().query(OrderPart).filter( OrderPart.order_part_id == 95642).one()
+    # op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 128457).one()
+    # op3 = session().query(OrderPart).filter( OrderPart.order_part_id == 96799).one()
+    # c.parts = [op, op2, op3]
+    c.article_configuration = ac2
+    #ac2.configurations.append( c)
+
+    assert i1.configuration is not None
+
+    return [ac]
+
 
 
 def test_extended_dto():
@@ -1155,6 +1348,73 @@ class ObjectComboModel(QAbstractTableModel):
             self.endInsertRows()
 
 
+
+from pyxfer.type_support import DictTypeSupport, ObjectTypeSupport
+from pyxfer.pyxfer import SQLAAutoGen, find_sqla_mappers, generated_code, USE, CodeWriter, SKIP
+import logging
+logging.getLogger("pyxfer").setLevel(logging.DEBUG)
+
+
+autogen = SQLAAutoGen( DictTypeSupport, ObjectTypeSupport)
+from pprint import pprint
+
+model_and_field_controls = find_sqla_mappers( Base)
+pprint(model_and_field_controls)
+
+
+global_cw = CodeWriter()
+global_cw.append_code("from koi.config_mgmt.mapping import ArticleConfiguration, ImpactLine")
+
+autogen.dest_factory.get_type_support(ArticleConfiguration).additional_global_code.append_code("""@property
+def current_configuration_status(self):
+   if ArticleConfiguration._current_configuration(self).frozen:
+      return "Frozen"
+   else:
+      return "not frozen"
+
+@property
+def current_configuration_version(self):
+   return ArticleConfiguration._current_configuration(self).version
+""")
+
+autogen.dest_factory.get_type_support(ImpactLine).additional_global_code.append_code("""
+@property
+def approver_short(self):
+    if self.approved_by:
+        return self.approved_by.login.upper()
+    else:
+        return ""
+
+@property
+def owner_short(self):
+    return self.owner.login.upper()
+
+@property
+def version(self):
+    return ImpactLine._version(self)
+
+@property
+def date_upload(self):
+    return ImpactLine._date_upload(self)
+""")
+serializers = autogen.make_serializers( model_and_field_controls)
+gencode = generated_code( serializers, global_cw)
+
+with open("t.py","w") as fo:
+    fo.write( gencode)
+
+from koi.config_mgmt.t import *
+
+executed_code = dict()
+#print_code(gencode)
+exec( compile( gencode, "<string>", "exec"), executed_code)
+
+
+
+
+from koi.config_mgmt.observer import ChangeTracker
+
+
 if __name__ == "__main__":
 
     app = QApplication(sys.argv)
@@ -1165,7 +1425,14 @@ if __name__ == "__main__":
     mw.setCentralWidget(widget)
     mw.show()
 
-    widget.set_configuration_articles( make_configs( session))
+    org_configs = make_configs_dto( session)
+
+    configs = [widget._change_tracker.wrap_in_change_detector(c)
+               for c in org_configs]
+
+    # print( type( org_configs[0].configurations))
+    # print( type( configs[0].configurations))
+    widget.set_configuration_articles( configs)
     widget.persistent_filter.super_filter_entry.setText("5544A")
     widget.persistent_filter._emit_apply_filter()
 
