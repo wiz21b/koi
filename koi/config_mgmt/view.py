@@ -5,7 +5,7 @@ import sys
 from PySide.QtCore import Qt,Slot,QModelIndex,QAbstractTableModel,Signal, QPoint, QObject, QEvent
 from PySide.QtCore import QTimer
 from PySide.QtGui import QHBoxLayout,QVBoxLayout,QLineEdit,QLabel,QGridLayout, QColor, QDialog, QMessageBox,QHeaderView,QAbstractItemView, \
-    QKeySequence, QStandardItem,QComboBox, QAction,QMenu,QWidget,QCursor, QSizePolicy, QPushButton, QComboBox, QColor, QBrush, QDialogButtonBox, QLineEdit, QAbstractItemView, QMouseEvent, QPalette
+    QKeySequence, QStandardItem,QComboBox, QAction,QMenu,QWidget,QCursor, QSizePolicy, QPushButton, QComboBox, QColor, QBrush, QDialogButtonBox, QLineEdit, QAbstractItemView, QMouseEvent, QPalette, QFormLayout
 
 from PySide.QtGui import QTableWidget,QScrollArea, QResizeEvent, QFrame, QApplication
 
@@ -126,6 +126,31 @@ class ImpactsModel(ObjectModel):
     def __init__(self, parent, prototypes, blank_object_factory):
         super(ImpactsModel, self).__init__( parent, prototypes, blank_object_factory)
 
+
+class EditArticleConfiguration(QDialog)
+    def _make_ui(self):
+        title = _("Add article in configuration")
+        self.setWindowTitle(title)
+        config_impact_proto = list()
+        config_impact_proto.append( TextLinePrototype('customer', _("Customer"), editable=True))
+        config_impact_proto.append( TextLinePrototype('identification_number', _("Identification"), editable=True))
+
+        form_layout = QFormLayout()
+        for p in self.form_prototype:
+            w = p.edit_widget(self)
+            w.setEnabled(p.is_editable)
+            w.setObjectName("form_" + p.field)
+            form_layout.addRow( p.title, w)
+
+        top_layout = QVBoxLayout()
+        self.title_widget = TitleWidget(title,self)
+        top_layout.addWidget(self.title_widget)
+        top_layout.addLayout( form_layout)
+
+    def __init__(self, parent, config : ConfigurationDto, impacts):
+        super( EditArticleConfiguration, self).__init__(parent)
+
+        self._make_ui()
 
 class FreezeConfiguration(QDialog):
 
@@ -962,308 +987,6 @@ class SelectableWidgetsList(WidgetsList):
         #self.layout().addStretch() # Helps the scroll area to resize the list properly (ie only resize horizontally)
 
 
-def _make_quick_doc( name : str):
-    document = Document()
-    session().add(document)
-    document.filename = name
-    document.server_location = "dummy"
-    document.file_size = 9999
-    document.upload_date = date.today()
-
-    return document
-
-def _make_quick_employee( name : str, login : str):
-    employee = CopyEmployee()
-    employee.fullname = name
-    employee.login = login
-    return employee
-
-
-def _make_config_line( description, version, type_, file_):
-    line = ConfigurationLine()
-    session().add(line)
-    line.description = description
-    line.version = version
-    line.document_type = type_
-
-    d = Document()
-    session().add(d)
-
-    line.document = d
-    line.document.filename = file_
-    line.document.server_location = "dummy"
-    line.document.file_size = 9999
-    line.document.upload_date = date.today()
-
-    return line
-
-def make_configs( session):
-
-    ac = ArticleConfiguration()
-    session().add(ac)
-
-    ac.customer = session().query(Customer).filter( Customer.customer_id == 18429).one()
-    ac.identification_number = "4500250418"
-    ac.revision = "C"
-
-
-    c = Configuration()
-    session().add(c)
-
-    op = session().query(OrderPart).filter( OrderPart.order_part_id == 151547).one()
-    op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 246051).one()
-    op3 = session().query(OrderPart).filter( OrderPart.order_part_id == 230512).one()
-
-    c.parts = [op,op3]
-    c.version = 1
-    c.article_configuration = ac
-    c.frozen = date(2018,1,31)
-    c.freezer = session().query(Employee).filter(Employee.employee_id == 100).one()
-    c.lines = [ _make_config_line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
-                _make_config_line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
-                _make_config_line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
-    #ac.configurations.append( c)
-
-    c = Configuration()
-    session().add(c)
-
-    c.parts = [op2]
-    c.article_configuration = ac
-    c.lines = [ _make_config_line( "Plan coupe 90°", 1, TypeConfigDoc.PLAN_2D, "90cut-RXC.doc"),
-                _make_config_line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
-                _make_config_line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
-                _make_config_line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
-    c.version = 2
-    c.frozen = date(2018,2,5)
-    c.freezer = session().query(Employee).filter(Employee.employee_id == 118).one()
-    c.lines[2].modify_config = False
-    #ac.configurations.append( c)
-
-    c = Configuration()
-    session().add(c)
-
-    c.article_configuration = ac
-    c.lines = [ _make_config_line( "Operations", 1, TypeConfigDoc.PLAN_3D, "impact_1808RXC.doc"),
-                _make_config_line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
-                _make_config_line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
-                _make_config_line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
-    c.version = 3
-    c.frozen = None
-    c.lines[2].modify_config = True
-    #ac.configurations.append( c)
-
-
-    impact = ImpactLine()
-    i1 = impact
-
-    impact.owner = session().query(Employee).filter( Employee.employee_id == 118).one()
-    impact.description = "one preproduction measurement side XPZ changed"
-    impact.approval = ImpactApproval.APPROVED
-    impact.approved_by = session().query(Employee).filter( Employee.employee_id == 112).one()
-    impact.active_date = date(2013,1,11)
-    impact.document = _make_quick_doc("bliblo.doc")
-    session().add(impact)
-    impact.article_configuration = ac
-    impact.configuration =  ac.configurations[0]
-    session().flush()
-
-    ac.configurations[0].origin_id = impact.impact_line_id
-    assert i1.configuration is not None
-    session().flush()
-    assert i1.configuration is not None
-
-    #print( ac.configurations)
-
-    impact = ImpactLine()
-    impact.owner = session().query(Employee).filter( Employee.employee_id == 112).one()
-    assert i1.configuration is not None, i1.configuration
-    impact.description = "two Aluminium weight reduction"
-    impact.approval = ImpactApproval.APPROVED
-    impact.approved_by = session().query(Employee).filter( Employee.employee_id == 8).one()
-    impact.active_date = None
-    impact.document = _make_quick_doc("impactmr_genry.doc")
-    session().add(impact)
-    impact.article_configuration = ac
-    impact.configuration =  ac.configurations[1]
-    session().flush()
-
-    impact = ImpactLine()
-    impact.owner = session().query(Employee).filter( Employee.employee_id == 8).one()
-    impact.description = "three Production settings"
-    impact.approval = ImpactApproval.UNDER_CONSTRUCTION
-    impact.approved_by = None
-    impact.active_date = None
-    impact.configuration = None
-    impact.document = _make_quick_doc("impact_v3.doc")
-    session().add(impact)
-    impact.article_configuration = ac
-
-    impact = ImpactLine()
-    impact.owner = session().query(Employee).filter( Employee.employee_id == 20).one()
-    impact.description = "four Production settings v2"
-    impact.approval = ImpactApproval.UNDER_CONSTRUCTION
-    impact.approved_by = None
-    impact.active_date = None
-    impact.configuration = None
-    impact.document = _make_quick_doc("impact_v3bis.doc")
-    session().add(impact)
-    impact.article_configuration = ac
-
-
-    ac2 = ArticleConfiguration()
-    session().add(ac2)
-    ac2.customer = session().query(Customer).filter( Customer.customer_id == 2145).one()
-    ac2.identification_number = "ZERDF354-ZXZ-2001"
-    ac2.revision = "D"
-
-    c = Configuration()
-    session().add(c)
-    # op = session().query(OrderPart).filter( OrderPart.order_part_id == 95642).one()
-    # op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 128457).one()
-    # op3 = session().query(OrderPart).filter( OrderPart.order_part_id == 96799).one()
-    # c.parts = [op, op2, op3]
-    c.article_configuration = ac2
-    #ac2.configurations.append( c)
-
-    session().commit()
-
-    assert i1.configuration is not None
-    assert ac.article_configuration_id
-
-    return [ac]
-
-
-def make_configs_dto( session):
-
-    ac = CopyArticleConfiguration()
-
-    ### ac.customer = session().query(Customer).filter( Customer.customer_id == 18429).one()
-    ac.identification_number = "4500250418"
-    ac.revision = "C"
-
-
-    c = CopyConfiguration()
-
-    #op = session().query(OrderPart).filter( OrderPart.order_part_id == 151547).one()
-    #op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 246051).one()
-    #op3 = session().query(OrderPart).filter( OrderPart.order_part_id == 230512).one()
-
-    op = CopyOrderPart()
-    op2 = CopyOrderPart()
-    op3 = CopyOrderPart()
-
-    c.parts = [op,op3]
-    c.version = 1
-    c.article_configuration = ac
-    ac.configurations.append(c)
-    c.frozen = date(2018,1,31)
-    c.freezer = session().query(Employee).filter(Employee.employee_id == 100).one()
-    c.lines = [ _make_config_line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
-                _make_config_line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
-                _make_config_line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
-    #ac.configurations.append( c)
-
-    c = CopyConfiguration()
-
-    c.parts = [op2]
-    c.article_configuration = ac
-    ac.configurations.append(c)
-    c.lines = [ _make_config_line( "Plan coupe 90°", 1, TypeConfigDoc.PLAN_2D, "90cut-RXC.doc"),
-                _make_config_line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
-                _make_config_line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
-                _make_config_line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
-    c.version = 2
-    c.frozen = date(2018,2,5)
-    c.freezer = session().query(Employee).filter(Employee.employee_id == 118).one()
-    c.lines[2].modify_config = False
-    #ac.configurations.append( c)
-
-    c = CopyConfiguration()
-
-    c.article_configuration = ac
-    ac.configurations.append(c)
-    c.lines = [ _make_config_line( "Operations", 1, TypeConfigDoc.PLAN_3D, "impact_1808RXC.doc"),
-                _make_config_line( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
-                _make_config_line( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
-                _make_config_line( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
-    c.version = 3
-    c.frozen = None
-    c.lines[2].modify_config = True
-    #ac.configurations.append( c)
-
-
-    impact = CopyImpactLine()
-    i1 = impact
-
-    impact.owner = _make_quick_employee("Barabase","BRB")
-    impact.description = "one preproduction measurement side XPZ changed"
-    impact.approval = ImpactApproval.APPROVED
-    impact.approved_by = session().query(Employee).filter( Employee.employee_id == 112).one()
-    impact.active_date = date(2013,1,11)
-    impact.document = _make_quick_doc("bliblo.doc")
-    impact.article_configuration = ac
-    ac.impacts.append(impact)
-    impact.configuration =  ac.configurations[0]
-
-    ac.configurations[0].origin_id = impact.impact_line_id
-    assert i1.configuration is not None
-    assert i1.configuration is not None
-
-    #print( ac.configurations)
-
-    impact = CopyImpactLine()
-    impact.owner = _make_quick_employee("Julian Rignall","JR")
-    assert i1.configuration is not None, i1.configuration
-    impact.description = "two Aluminium weight reduction"
-    impact.approval = ImpactApproval.APPROVED
-    impact.approved_by = session().query(Employee).filter( Employee.employee_id == 8).one()
-    impact.active_date = None
-    impact.document = _make_quick_doc("impactmr_genry.doc")
-    impact.article_configuration = ac
-    ac.impacts.append(impact)
-    impact.configuration =  ac.configurations[1]
-
-    impact = CopyImpactLine()
-    impact.owner = _make_quick_employee("Rocky Balboa","RB")
-    # impact.owner = session().query(Employee).filter( Employee.employee_id == 8).one()
-    impact.description = "three Production settings"
-    impact.approval = ImpactApproval.UNDER_CONSTRUCTION
-    impact.approved_by = None
-    impact.active_date = None
-    impact.configuration = None
-    impact.document = _make_quick_doc("impact_v3.doc")
-    impact.article_configuration = ac
-    ac.impacts.append(impact)
-
-    impact = CopyImpactLine()
-    impact.owner = _make_quick_employee("Alan Tyrell","ATYR")
-    #impact.owner = session().query(Employee).filter( Employee.employee_id == 20).one()
-    impact.description = "four Production settings v2"
-    impact.approval = ImpactApproval.UNDER_CONSTRUCTION
-    impact.approved_by = None
-    impact.active_date = None
-    impact.configuration = None
-    impact.document = _make_quick_doc("impact_v3bis.doc")
-    impact.article_configuration = ac
-    ac.impacts.append(impact)
-
-
-    ac2 = CopyArticleConfiguration()
-    # ac2.customer = session().query(Customer).filter( Customer.customer_id == 2145).one()
-    ac2.identification_number = "ZERDF354-ZXZ-2001"
-    ac2.revision = "D"
-
-    c = CopyConfiguration()
-    # op = session().query(OrderPart).filter( OrderPart.order_part_id == 95642).one()
-    # op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 128457).one()
-    # op3 = session().query(OrderPart).filter( OrderPart.order_part_id == 96799).one()
-    # c.parts = [op, op2, op3]
-    c.article_configuration = ac2
-    #ac2.configurations.append( c)
-
-    assert i1.configuration is not None
-
-    return [ac]
 
 
 
@@ -1349,23 +1072,24 @@ class ObjectComboModel(QAbstractTableModel):
 
 
 
-from pyxfer.type_support import DictTypeSupport, ObjectTypeSupport
+from pyxfer.type_support import SQLADictTypeSupport, ObjectTypeSupport
 from pyxfer.pyxfer import SQLAAutoGen, find_sqla_mappers, generated_code, USE, CodeWriter, SKIP
 import logging
+from pprint import pprint
 logging.getLogger("pyxfer").setLevel(logging.DEBUG)
 
 
-autogen = SQLAAutoGen( DictTypeSupport, ObjectTypeSupport)
-from pprint import pprint
 
 model_and_field_controls = find_sqla_mappers( Base)
+model_and_field_controls[Employee]['picture_data'] = SKIP
 pprint(model_and_field_controls)
 
+additioanl_code_for_document_dto = """
+def __str__(self):
+   return self.filename
+"""
 
-global_cw = CodeWriter()
-global_cw.append_code("from koi.config_mgmt.mapping import ArticleConfiguration, ImpactLine")
-
-autogen.dest_factory.get_type_support(ArticleConfiguration).additional_global_code.append_code("""@property
+additioanl_code_for_article_configuration_dto = """@property
 def current_configuration_status(self):
    if ArticleConfiguration._current_configuration(self).frozen:
       return "Frozen"
@@ -1375,9 +1099,10 @@ def current_configuration_status(self):
 @property
 def current_configuration_version(self):
    return ArticleConfiguration._current_configuration(self).version
-""")
+"""
 
-autogen.dest_factory.get_type_support(ImpactLine).additional_global_code.append_code("""
+
+additioanl_code_for_impact_line_dto ="""
 @property
 def approver_short(self):
     if self.approved_by:
@@ -1396,18 +1121,35 @@ def version(self):
 @property
 def date_upload(self):
     return ImpactLine._date_upload(self)
-""")
+"""
+
+
+
+global_cw = CodeWriter()
+global_cw.append_code("from koi.config_mgmt.mapping import ArticleConfiguration, ImpactLine")
+
+autogen = SQLAAutoGen( SQLADictTypeSupport, ObjectTypeSupport)
+
+autogen.type_support(ArticleConfiguration).additional_global_code.append_code(additioanl_code_for_article_configuration_dto)
+autogen.type_support(ImpactLine).additional_global_code.append_code(additioanl_code_for_impact_line_dto)
+autogen.type_support(Document).additional_global_code.append_code(additioanl_code_for_document_dto)
+
 serializers = autogen.make_serializers( model_and_field_controls)
-gencode = generated_code( serializers, global_cw)
+
+autogen.reverse()
+serializers2 = autogen.make_serializers( model_and_field_controls)
+
+
+gencode = generated_code( serializers + serializers2, global_cw)
 
 with open("t.py","w") as fo:
     fo.write( gencode)
 
 from koi.config_mgmt.t import *
 
-executed_code = dict()
+#executed_code = dict()
 #print_code(gencode)
-exec( compile( gencode, "<string>", "exec"), executed_code)
+#exec( compile( gencode, "<string>", "exec"), executed_code)
 
 
 
@@ -1416,6 +1158,9 @@ from koi.config_mgmt.observer import ChangeTracker
 
 
 if __name__ == "__main__":
+
+    from koi.tools.chrono import *
+    from koi.config_mgmt.dummy_data import make_configs_dto
 
     app = QApplication(sys.argv)
 
@@ -1426,6 +1171,12 @@ if __name__ == "__main__":
     mw.show()
 
     org_configs = make_configs_dto( session)
+
+    mainlog.setLevel(logging.DEBUG)
+    chrono_start()
+    d = serialize_ArticleConfiguration_CopyArticleConfiguration_to_dict( org_configs[0], dict(), dict())
+    chrono_click()
+    #pprint( d)
 
     configs = [widget._change_tracker.wrap_in_change_detector(c)
                for c in org_configs]
