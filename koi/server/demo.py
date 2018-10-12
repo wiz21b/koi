@@ -43,14 +43,22 @@ customers_texts = ["Tessier-Ashpool", "Tyrell Corporation", "Cybertech", "CHOAM"
                    "US Robotics",
                    "Adipose Industries", "Cybus Industries", "Ood Operations"]
 
-operations_texts = [("Round turning", "RT"), ("Form turning", "FT"), ("Cutting-off", "CO"), ("Grinding", "GR"),
-                    ("Round turning", "ERT"), ("Form turning", "EFT"), ("Cutting-off", "ECO"), ("Grinding", "EGR"),
-                    ("Electro Roll forming", "ERF"), ("Electro Stretch forming", "ESF"),
+operations_texts = [("Round turning", "RT"),
+                    ("Form turning", "FT"),
+                    ("Cutting-off", "CO"),
+                    ("Grinding", "GR"),
+                    ("Round turning", "ERT"),
+                    ("Schaublin 135", "EFT"),
+                    ("Machining", "MA"),
+                    ("Grinding", "EGR"),
+                    ("Electro Roll forming", "ERF"),
+                    ("Fanuc RoboCut", "ESF"),
                     ("Electro Rubber-pad", "ERP"),
                     ("Peen forming", "EPF"),
-                    ("Electro Roll forming", "RF"), ("Electro Stretch forming", "SF"), ("Electro Rubber-pad", "RP"),
-                    ("Peen forming", "PF"),
-                    ]
+                    ("MAZAK1", "RF"),
+                    ("Daewoo Mynx 540-2", "SF"),
+                    ("Electro Rubber-pad", "RP"),
+                    ("Peen forming", "PF") ]
 
 lorem = """ Roll forming Long parts with constant complex cross-sections; good surface finish; high
 production rates; high XMK tooling.
@@ -117,7 +125,8 @@ def _make_timetrack(task_id, employee_id, start_time, duration):
 def create_demo_database( nb_orders=50):
     mainlog.setLevel(logging.DEBUG)
 
-    create_blank_database(configuration.get("Database", "admin_url"), configuration.get("Database", "url"))
+    create_blank_database(configuration.get("Database", "admin_url"),
+                          configuration.get("Database", "url"))
     dao = DAO()
     dao.set_session(session())
 
