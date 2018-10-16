@@ -20,6 +20,7 @@ def _make_quick_doc_dto( name : str):
     document.server_location = "dummy"
     document.file_size = 9999
     document.upload_date = date.today()
+    document.is_template = False
 
     return document
 
@@ -213,13 +214,19 @@ def make_configs_dto( session):
 
     c = CopyConfiguration()
 
+    oparts = session().query(OrderPart).all()
+
+    op = serialize_OrderPart_OrderPart_to_CopyOrderPart( oparts[0], None, {})
+    op2 = serialize_OrderPart_OrderPart_to_CopyOrderPart( oparts[1], None, {})
+    op3 = serialize_OrderPart_OrderPart_to_CopyOrderPart( oparts[2], None, {})
+
     #op = session().query(OrderPart).filter( OrderPart.order_part_id == 151547).one()
     #op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 246051).one()
     #op3 = session().query(OrderPart).filter( OrderPart.order_part_id == 230512).one()
 
-    op = CopyOrderPart()
-    op2 = CopyOrderPart()
-    op3 = CopyOrderPart()
+    # op = CopyOrderPart()
+    # op2 = CopyOrderPart()
+    # op3 = CopyOrderPart()
 
     c.parts = [op,op3]
     c.version = 1

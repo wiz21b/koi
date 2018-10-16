@@ -29,7 +29,11 @@ class UserSession:
     def login(self):
         return self._login
 
+    def employee(self):
+        return self._employee
+
     def open(self,employee):
+        self._employee = employee
         self._name = employee.fullname
         self._user_id = employee.employee_id
         self._roles = set(employee.roles)

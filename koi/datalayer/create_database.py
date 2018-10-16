@@ -19,6 +19,7 @@ from koi.datalayer.supplier_mapping import *
 from koi.datalayer.quality import *
 from koi.machine.machine_mapping import *
 from koi.people_admin.people_admin_mapping import DayEvent
+from koi.config_mgmt.mapping import *
 # from koi.stock.stock_mapping import StockItem
 from koi.user_mgmt.user_role_mapping import UserClass
 from koi.doc_manager.documents_service import documents_service
@@ -552,7 +553,7 @@ def set_up_database(url_admin, url_client):
 
 
 
-    mainlog.info("creating database")
+    mainlog.info("creating database adm:{}, user:{}".format(login_adm, login))
 
     conn = db_engine().connect()
     conn.execute("commit")
@@ -577,7 +578,7 @@ def set_up_database(url_admin, url_client):
     session().connection().execute("create schema {}".format(DATABASE_SCHEMA))
 
     if login_adm != login:
-        mainlog.info("Granting privileges to {}".format(login))
+        mainlog.info("Granting privileges to {} on {}".format(login,DATABASE_SCHEMA))
         session().connection().execute("grant usage on schema {} to {}".format(DATABASE_SCHEMA, login))
 
 

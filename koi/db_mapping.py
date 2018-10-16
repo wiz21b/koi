@@ -741,8 +741,8 @@ class OrderPart(Base):
 
     order_id = Column('order_id',Integer,ForeignKey('orders.order_id'),nullable=False)
 
-    configuration_id = Column('configuration_id',Integer,ForeignKey('configurations.configuration_id'),nullable=False)
-    configuration = relationship('Configuration', backref='parts')
+    configuration_id = Column('configuration_id',Integer,ForeignKey('configurations.configuration_id'),nullable=True)
+    #configuration = relationship('Configuration', backref='parts')
 
     # order = relationship('Order')
     # order = relationship('Order',backref=backref('parts',order_by='OrderPart.position',lazy="joined"))

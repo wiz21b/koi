@@ -41,6 +41,9 @@ from koi.gui.PrototypedModelView import PrototypedModelView
 from koi.config_mgmt.dragdrop_widget import DragDropWidget
 from koi.gui.PersistentFilter import PersistentFilter
 from koi.gui.horse_panel import HorsePanel
+from koi.session.UserSession import user_session
+
+
 
 class EnumPrototype(Prototype):
     def __init__(self,field,title,enumeration : enum.Enum,editable=True,nullable=False):
@@ -77,18 +80,18 @@ class InstrumentedObject:
 
 
 
-def configuration_version_status( self : Configuration):
-    if self.frozen:
-        return "Rev. {}, frozen".format( self.version)
-    else:
-        return "Rev. {}".format( self.version)
+# def configuration_version_status( self : Configuration):
+#     if self.frozen:
+#         return "Rev. {}, frozen".format( self.version)
+#     else:
+#         return "Rev. {}".format( self.version)
 
-setattr( Configuration, "version_status", property(configuration_version_status))
+# setattr( Configuration, "version_status", property(configuration_version_status))
 
 class ImpactLineExtended:
     """ adds a "selected" field to a regular impact using a Proxy"""
 
-    def __init__( self, obj : ImpactLineDto):
+    def __init__( self, obj : ImpactLine):
         object.__setattr__( self, "_object", obj)
         object.__setattr__( self, "selected", False)
 
@@ -127,7 +130,7 @@ class ImpactsModel(ObjectModel):
         super(ImpactsModel, self).__init__( parent, prototypes, blank_object_factory)
 
 
-class EditArticleConfiguration(QDialog)
+class EditArticleConfiguration(QDialog):
     def _make_ui(self):
         title = _("Add article in configuration")
         self.setWindowTitle(title)
@@ -147,7 +150,7 @@ class EditArticleConfiguration(QDialog)
         top_layout.addWidget(self.title_widget)
         top_layout.addLayout( form_layout)
 
-    def __init__(self, parent, config : ConfigurationDto, impacts):
+    def __init__(self, parent, config : Configuration, impacts):
         super( EditArticleConfiguration, self).__init__(parent)
 
         self._make_ui()
@@ -190,7 +193,7 @@ class FreezeConfiguration(QDialog):
         self.buttons.accepted.connect(self.accept)
         self.buttons.rejected.connect(self.reject)
 
-    def __init__(self, parent, config : ConfigurationDto, impacts):
+    def __init__(self, parent, config : Configuration, impacts):
         super( FreezeConfiguration, self).__init__(parent)
 
         self._make_ui()
@@ -406,7 +409,7 @@ class EditConfiguration(HorsePanel):
             new_line.description = dialog.description
             new_line.version = dialog.version
             new_line.document_type = dialog.type_
-            new_line.document = _make_quick_doc(dialog.filename)
+            new_line.document = _make_quick_doc_dto(dialog.filename)
             new_line.crl = dialog.crl
             new_line.modify_config = True
             self._current_config.lines.append( new_line)
@@ -423,30 +426,22 @@ class EditConfiguration(HorsePanel):
         dialog.exec_()
         if dialog.result() == QDialog.Accepted:
 
-            e = session().query(Employee).filter( Employee.employee_id == 118).one()
-
-            new_line = ImpactLine()
-            session().add(new_line)
+            new_line = CopyImpactLine()
 
             new_line.configuration = self._current_config
             new_line.configuration_id = self._current_config.configuration_id
-
             new_line.article_configuration = self._current_article
             new_line.article_configuration_id = self._current_article.article_configuration_id
-
-            new_line.owner = e
-
+            new_line.owner = user_session.employee()
             new_line.description = dialog.description
-            new_line.document = _make_quick_doc(dialog.filename)
+            new_line.document = _make_quick_doc_dto(dialog.filename)
             new_line.crl = dialog.crl
             new_line.modify_config = True
-            session().flush()
-
 
             self._current_config.origins.append( new_line)
             self._current_article.impacts.append( new_line)
 
-            session().commit()
+            d = serialize_ImpactLine_CopyImpactLine_to_dict( new_line, dict(), dict())
 
 
             # FIXME should use a simpmle "datachagned" no ?
@@ -652,7 +647,7 @@ class EditConfiguration(HorsePanel):
         self._subframe = SubFrame("Configuration", vlayout_cfg, self)
         config_layout.addWidget( self._subframe)
 
-        self._model_impact = ImpactsModel( self, config_impact_proto, ImpactLineDto)
+        self._model_impact = ImpactsModel( self, config_impact_proto, CopyImpactLine)
 
         self._view_impacts = PrototypedTableView(None, config_impact_proto)
         self._view_impacts.setModel( self._model_impact)
@@ -1072,7 +1067,7 @@ class ObjectComboModel(QAbstractTableModel):
 
 
 
-from pyxfer.type_support import SQLADictTypeSupport, ObjectTypeSupport
+from pyxfer.type_support import SQLADictTypeSupport, ObjectTypeSupport, SQLATypeSupport
 from pyxfer.pyxfer import SQLAAutoGen, find_sqla_mappers, generated_code, USE, CodeWriter, SKIP
 import logging
 from pprint import pprint
@@ -1080,9 +1075,6 @@ logging.getLogger("pyxfer").setLevel(logging.DEBUG)
 
 
 
-model_and_field_controls = find_sqla_mappers( Base)
-model_and_field_controls[Employee]['picture_data'] = SKIP
-pprint(model_and_field_controls)
 
 additioanl_code_for_document_dto = """
 def __str__(self):
@@ -1101,6 +1093,15 @@ def current_configuration_version(self):
    return ArticleConfiguration._current_configuration(self).version
 """
 
+
+additional_code_for_version_status_dto ="""
+@property
+def version_status(self):
+    if self.frozen:
+        return "Rev. {}, frozen".format( self.version)
+    else:
+        return "Rev. {}".format( self.version)
+"""
 
 additioanl_code_for_impact_line_dto ="""
 @property
@@ -1124,23 +1125,73 @@ def date_upload(self):
 """
 
 
+model_and_field_controls = find_sqla_mappers( Base)
+model_and_field_controls[Employee]['picture_data'] = SKIP
+model_and_field_controls[OrderPart] = {
+        'human_position' : SKIP,
+        'production_file' : SKIP,
+        'operations' : SKIP,
+        'delivery_slip_parts' : SKIP,
+        'documents' : SKIP,
+        'quality_events' : SKIP,
+        'configuration' : SKIP,
+        'order' : SKIP
+    }
+
+pprint(model_and_field_controls)
 
 global_cw = CodeWriter()
 global_cw.append_code("from koi.config_mgmt.mapping import ArticleConfiguration, ImpactLine")
 
 autogen = SQLAAutoGen( SQLADictTypeSupport, ObjectTypeSupport)
 
-autogen.type_support(ArticleConfiguration).additional_global_code.append_code(additioanl_code_for_article_configuration_dto)
-autogen.type_support(ImpactLine).additional_global_code.append_code(additioanl_code_for_impact_line_dto)
-autogen.type_support(Document).additional_global_code.append_code(additioanl_code_for_document_dto)
+autogen.type_support(ObjectTypeSupport, ArticleConfiguration).additional_global_code.append_code(additioanl_code_for_article_configuration_dto)
+autogen.type_support(ObjectTypeSupport, ImpactLine).additional_global_code.append_code(additioanl_code_for_impact_line_dto)
+autogen.type_support(ObjectTypeSupport, Document).additional_global_code.append_code(additioanl_code_for_document_dto)
+autogen.type_support(ObjectTypeSupport, Configuration).additional_global_code.append_code(additional_code_for_version_status_dto)
 
 serializers = autogen.make_serializers( model_and_field_controls)
-
 autogen.reverse()
 serializers2 = autogen.make_serializers( model_and_field_controls)
 
 
-gencode = generated_code( serializers + serializers2, global_cw)
+#autogen = SQLAAutoGen( SQLATypeSupport, SQLADictTypeSupport)
+autogen.set_type_supports( SQLATypeSupport, SQLADictTypeSupport)
+serializers5 = autogen.make_serializers( model_and_field_controls)
+autogen.reverse()
+serializers6 = autogen.make_serializers( model_and_field_controls)
+
+
+
+# Just for testing
+
+model_and_field_controls2 = {
+    Employee : {
+        'picture_data' : SKIP,
+        'filter_queries' : SKIP },
+    OrderPart : {
+        'human_position' : SKIP,
+        'production_file' : SKIP,
+        'operations' : SKIP,
+        'delivery_slip_parts' : SKIP,
+        'documents' : SKIP,
+        'quality_events' : SKIP,
+        'configuration' : SKIP,
+        'order' : SKIP
+    }
+}
+
+pprint(model_and_field_controls2)
+autogen.set_type_supports(SQLATypeSupport, ObjectTypeSupport)
+serializers3 = autogen.make_serializers( model_and_field_controls2)
+autogen.reverse()
+serializers4 = autogen.make_serializers( model_and_field_controls2)
+
+
+
+
+# + serializers5 + serializers6
+gencode = generated_code( serializers + serializers2 + serializers3 + serializers4+ serializers5 + serializers6, global_cw)
 
 with open("t.py","w") as fo:
     fo.write( gencode)
@@ -1160,7 +1211,13 @@ from koi.config_mgmt.observer import ChangeTracker
 if __name__ == "__main__":
 
     from koi.tools.chrono import *
-    from koi.config_mgmt.dummy_data import make_configs_dto
+    from koi.config_mgmt.dummy_data import make_configs_dto, _make_quick_doc_dto
+
+    e = serialize_Employee_Employee_to_CopyEmployee( session().query(Employee).first(), None, {})
+    user_session.open(e)
+
+    op = session().query(OrderPart).all()[0]
+    serialize_OrderPart_OrderPart_to_CopyOrderPart( op, None, {})
 
     app = QApplication(sys.argv)
 
@@ -1172,11 +1229,25 @@ if __name__ == "__main__":
 
     org_configs = make_configs_dto( session)
 
+    from koi.config_mgmt.json_tools import encode, decode, register_enumerations
+    from koi.db_mapping import OrderStatusType, TaskActionReportType, OrderPartStateType
+    from koi.people_admin.people_admin_mapping import DayEventType
+    from koi.datalayer.quality import QualityEventType
+
+    register_enumerations( [TypeConfigDoc, ImpactApproval, DayEventType, OrderStatusType, TaskActionReportType, QualityEventType, OrderPartStateType])
+
     mainlog.setLevel(logging.DEBUG)
     chrono_start()
     d = serialize_ArticleConfiguration_CopyArticleConfiguration_to_dict( org_configs[0], dict(), dict())
+    encoded = encode(d)
+    d = decode(encoded)
+
+    with session().no_autoflush:
+        serialize_ArticleConfiguration_dict_to_ArticleConfiguration( d, None, session(), dict())
+        session().flush()
+
     chrono_click()
-    #pprint( d)
+    #pprint(d)
 
     configs = [widget._change_tracker.wrap_in_change_detector(c)
                for c in org_configs]
