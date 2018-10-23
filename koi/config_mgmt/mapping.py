@@ -98,6 +98,7 @@ class ArticleConfiguration(Base):
 
     customer = relationship(Customer, uselist=False)
     configurations = relationship( Configuration, order_by=Configuration.version, backref=backref('article_configuration', enable_typechecks=False), enable_typechecks=False)
+    part_plan = relationship(Document, uselist=False)
 
 
     # Methods defined as static to be reused in DTO objects !
@@ -112,15 +113,22 @@ class ArticleConfiguration(Base):
     def _current_configuration(self):
         i = len(self.configurations) - 1
 
-        if i > 0:
+        if i < 0:
+            # 0 element
+            return None
+
+        elif i == 0:
+            # one element
+            self.configurations[0]
+
+        elif i >= 0:
+            # At least two elements
             while i >= 0:
                 if self.configurations[i].frozen:
                     return self.configurations[i]
                 i -= 1
 
             return self.configurations[-1]
-        else:
-            return self.configurations[0]
 
 
 class ImpactLine(Base):

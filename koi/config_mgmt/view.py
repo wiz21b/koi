@@ -114,7 +114,6 @@ class ConfigModel(ObjectModel):
         super(ConfigModel, self).__init__( parent, prototypes, blank_object_factory)
 
     def background_color_eval(self,index):
-
         l = self.object_at( index)
         if l.modify_config:
             return QBrush(Qt.GlobalColor.yellow)
@@ -287,36 +286,54 @@ class EditConfiguration(HorsePanel):
     #     self.set_config( self._current_article.configurations[ndx] )
 
     def set_configuration_articles( self, cfg_articles : list):
+        print("set_configuration_articles : {}".format(cfg_articles))
+        print("set_configuration_articles : {}".format(type(cfg_articles)))
         self._articles = cfg_articles
         self._model_articles.reset_objects( self._articles)
         self._wl.set_objects( self._articles)
         self.set_article_configuration( self._articles[0])
 
-    def set_article_configuration( self, ca):
-        self._current_article = self._change_tracker.wrap_in_change_detector(ca)
-        self._model_impact.reset_objects( ca.impacts )
+    def set_article_configuration( self, ca : ArticleConfiguration):
 
-        self._version_combo_model.setObjects( ca.configurations)
+        wrapped = self._change_tracker.wrap_in_change_detector(ca)
+
+        if wrapped == self._current_article:
+            return
+
+        self._current_article = wrapped
+        #print("--- version combo setModel : {}".format( type( self._current_article.configurations)))
+        self._version_combo_model.setObjects( self._current_article.configurations)
+        #print("-o- "*10)
+        self._model_impact.reset_objects( self._current_article.impacts )
+
 
         # By default, we display the last frozen config.
 
         config_set = False
-        for c in reversed( ca.configurations):
+        for c in reversed( self._current_article.configurations):
             if c.frozen:
                 self.set_config(c)
                 config_set = True
                 break
 
         if not config_set:
-            self.set_config(ca.configurations[len( ca.configurations) - 1])
+            if len( self._current_article.configurations) > 0:
+                self.set_config(ca.configurations[len( self._current_article.configurations) - 1])
+            else:
+                self.set_config( None)
 
 
     def set_config( self, config : Configuration):
 
         self._current_config = config
 
+        if config == None:
+            self._model.reset_objects( None )
+            return
+
+
         ac = config.article_configuration
-        full_version = "{}/{}".format( ac.identification_number, ac.revision)
+        full_version = "{}/{}".format( ac.identification_number, ac.revision_number)
         msg = "Configuration for part <b>{}</b>, client : <b>{}</b>".format( full_version, ac.customer_id)
 
         if config.frozen:
@@ -433,6 +450,7 @@ class EditConfiguration(HorsePanel):
             new_line.article_configuration = self._current_article
             new_line.article_configuration_id = self._current_article.article_configuration_id
             new_line.owner = user_session.employee()
+            new_line.owner_id = user_session.employee().employee_id
             new_line.description = dialog.description
             new_line.document = _make_quick_doc_dto(dialog.filename)
             new_line.crl = dialog.crl
@@ -441,8 +459,7 @@ class EditConfiguration(HorsePanel):
             self._current_config.origins.append( new_line)
             self._current_article.impacts.append( new_line)
 
-            d = serialize_ImpactLine_CopyImpactLine_to_dict( new_line, dict(), dict())
-
+            store_impact_line( new_line)
 
             # FIXME should use a simpmle "datachagned" no ?
             self._model_impact.reset_objects( self._current_article.impacts )
@@ -466,12 +483,10 @@ class EditConfiguration(HorsePanel):
     @Slot()
     def article_selected(self,selected,deselected):
         if selected and selected.indexes() and len(selected.indexes()) > 0:
-            ac = self._model_articles.object_at( selected.indexes()[0])
+            first_selected_index = selected.indexes()[0]
+            ac = self._model_articles.object_at( first_selected_index)
+            self.set_article_configuration( ac)
 
-            if ac.configurations:
-                self._current_article = ac
-                self.set_config( self._current_article.configurations[0])
-                self._model_impact.reset_objects( self._current_article.impacts)
 
     @Slot(int)
     def article_activated( self, ndx : int):
@@ -484,7 +499,7 @@ class EditConfiguration(HorsePanel):
 
     @Slot(str)
     def apply_filter( self, f : str):
-        self.set_configuration_articles( self._articles)
+        # self.set_configuration_articles( self._articles)
         self.set_article_configuration( self._articles[0])
 
         for c in self._articles[0].configurations:
@@ -508,7 +523,7 @@ class EditConfiguration(HorsePanel):
         config_article_proto = list()
         config_article_proto.append(TextLinePrototype('customer_id',_('Customer'),editable=False))
         config_article_proto.append(TextLinePrototype('identification_number',_('Part number'),editable=False))
-        config_article_proto.append(TextLinePrototype('revision',_('Part\nRev.'), editable=False))
+        config_article_proto.append(TextLinePrototype('revision_number',_('Part\nRev.'), editable=False))
         config_article_proto.append(TextLinePrototype('current_configuration_version',_('Cfg\nRev.'), editable=False))
         config_article_proto.append(DatePrototype('date_creation',_('Valid\nSince'), editable=False))
         config_article_proto.append(TextLinePrototype('current_configuration_status',_('Status'), editable=False))
@@ -811,7 +826,7 @@ class ACWidget(QFrame):
         self._prototype = PrototypeArray(
             [ TextLinePrototype('customer_id',_('Customer'),editable=False),
               TextLinePrototype('identification_number',_('Part number'),editable=False),
-              TextLinePrototype('revision',_('Rev.'), editable=False),
+              TextLinePrototype('revision_number',_('Rev.'), editable=False),
               TextLinePrototype('current_configuration_version',_("Cfg\nrev."), editable=False),
               DatePrototype('date_creation',_('Valid since'), editable=False),
               TextLinePrototype('current_configuration_status',_('Status'), editable=False) ])
@@ -823,8 +838,8 @@ class ACWidget(QFrame):
 
         fm = QLabel().fontMetrics()
 
-        max_widths = { 'customer_id' : '9999', 'identification_number' : '', 'revision' : 'MM','current_configuration_version' : '00', 'date_creation' : '29/12/99', 'current_configuration_status' :"NOT FROZEN"}
-        for n in ['customer_id', 'identification_number', 'revision','current_configuration_version', 'date_creation', 'current_configuration_status']:
+        max_widths = { 'customer_id' : '9999', 'identification_number' : '', 'revision_number' : 'MM','current_configuration_version' : '00', 'date_creation' : '29/12/99', 'current_configuration_status' :"NOT FROZEN"}
+        for n in ['customer_id', 'identification_number', 'revision_number','current_configuration_version', 'date_creation', 'current_configuration_status']:
             w = self._verti_widget(n)
 
             if max_widths[n]:
@@ -1066,7 +1081,7 @@ class ObjectComboModel(QAbstractTableModel):
             self.endInsertRows()
 
 
-
+from sqlalchemy.orm import joinedload
 from pyxfer.type_support import SQLADictTypeSupport, ObjectTypeSupport, SQLATypeSupport
 from pyxfer.pyxfer import SQLAAutoGen, find_sqla_mappers, generated_code, USE, CodeWriter, SKIP
 import logging
@@ -1083,14 +1098,20 @@ def __str__(self):
 
 additioanl_code_for_article_configuration_dto = """@property
 def current_configuration_status(self):
-   if ArticleConfiguration._current_configuration(self).frozen:
+   c = ArticleConfiguration._current_configuration(self)
+
+   if c and c.frozen:
       return "Frozen"
    else:
-      return "not frozen"
+      return "Not frozen"
 
 @property
 def current_configuration_version(self):
-   return ArticleConfiguration._current_configuration(self).version
+   c = ArticleConfiguration._current_configuration(self)
+   if c and c.version:
+      return c.version
+   else:
+      return "-"
 """
 
 
@@ -1126,17 +1147,28 @@ def date_upload(self):
 
 
 model_and_field_controls = find_sqla_mappers( Base)
-model_and_field_controls[Employee]['picture_data'] = SKIP
+model_and_field_controls[Document] = {
+    'order' : SKIP,
+    'order_part' : SKIP,
+    'quality_event' : SKIP }
+model_and_field_controls[Employee] = {
+    'picture_data' : SKIP,
+    'filter_queries' : SKIP }
 model_and_field_controls[OrderPart] = {
-        'human_position' : SKIP,
-        'production_file' : SKIP,
-        'operations' : SKIP,
-        'delivery_slip_parts' : SKIP,
-        'documents' : SKIP,
-        'quality_events' : SKIP,
-        'configuration' : SKIP,
-        'order' : SKIP
-    }
+    'human_position' : SKIP,
+    'production_file' : SKIP,
+    'operations' : SKIP,
+    'delivery_slip_parts' : SKIP,
+    'documents' : SKIP,
+    'quality_events' : SKIP,
+    'configuration' : SKIP,
+    'order' : SKIP }
+model_and_field_controls[ImpactLine] = {
+    'article_configuration' : SKIP } #,
+# model_and_field_controls[ArticleConfiguration] = {
+#     '_current_configuration' : SKIP }
+
+# 'configuration' : SKIP }
 
 pprint(model_and_field_controls)
 
@@ -1166,26 +1198,16 @@ serializers6 = autogen.make_serializers( model_and_field_controls)
 # Just for testing
 
 model_and_field_controls2 = {
-    Employee : {
-        'picture_data' : SKIP,
-        'filter_queries' : SKIP },
-    OrderPart : {
-        'human_position' : SKIP,
-        'production_file' : SKIP,
-        'operations' : SKIP,
-        'delivery_slip_parts' : SKIP,
-        'documents' : SKIP,
-        'quality_events' : SKIP,
-        'configuration' : SKIP,
-        'order' : SKIP
+    Employee : model_and_field_controls[Employee],
+    OrderPart : model_and_field_controls[OrderPart],
+    Document : model_and_field_controls[Document]
     }
-}
 
 pprint(model_and_field_controls2)
 autogen.set_type_supports(SQLATypeSupport, ObjectTypeSupport)
-serializers3 = autogen.make_serializers( model_and_field_controls2)
+serializers3 = autogen.make_serializers( model_and_field_controls)
 autogen.reverse()
-serializers4 = autogen.make_serializers( model_and_field_controls2)
+serializers4 = autogen.make_serializers( model_and_field_controls)
 
 
 
@@ -1208,10 +1230,153 @@ from koi.config_mgmt.t import *
 from koi.config_mgmt.observer import ChangeTracker
 
 
+def store_impact_line( impact_line):
+    d = serialize_ImpactLine_CopyImpactLine_to_dict( impact_line, dict(), dict())
+    encoded = encode(d)
+    d = decode(encoded)
+
+    with session().no_autoflush:
+        serialize_ImpactLine_dict_to_ImpactLine( d, None, session(), dict())
+        session().flush()
+    session().commit()
+
+
+
+
+def store_article_configuration( article_configuration):
+    pyxfer_cache = dict()
+    d = serialize_ArticleConfiguration_CopyArticleConfiguration_to_dict( org_configs[0], dict(), pyxfer_cache)
+
+    mainlog.debug(d)
+
+    encoded = encode(d)
+    chrono_click("DTO to dict")
+    d = decode(encoded)
+
+    acid = -1
+    with session().no_autoflush:
+        sqla_article_configuration = serialize_ArticleConfiguration_dict_to_ArticleConfiguration( d, None, session(), dict())
+        acid = sqla_article_configuration.article_configuration_id
+    session().flush() # Don't commit as it empties the session (reloading entities afterwards takes tenth of seconds!)
+
+    chrono_click( "from dict to SQLA - and flush")
+
+    pyxfer_cache = dict()
+    d = serialize_ArticleConfiguration_ArticleConfiguration_to_dict( sqla_article_configuration, None, pyxfer_cache)
+    pprint( pyxfer_cache)
+    chrono_click("read from SQLA to dict")
+
+    encoded = encode(d)
+    d = decode(encoded)
+    ac = serialize_ArticleConfiguration_dict_to_CopyArticleConfiguration( d, None, dict())
+    chrono_click("dict to DTO")
+
+    return ac
+
+
+def call( func_name, *func_params):
+    return globals()[func_name](*func_params)
+
+
+def store_object( klass, obj):
+
+    chrono_start()
+
+    kn = klass.__name__
+    pyxfer_cache = dict()
+    d = call( "serialize_{0}_Copy{0}_to_dict".format(kn,kn), obj, dict(), pyxfer_cache)
+    #d = serialize_ArticleConfiguration_CopyArticleConfiguration_to_dict( org_configs[0], dict(), pyxfer_cache)
+
+    mainlog.debug(d)
+
+    encoded = encode(d)
+    chrono_click("DTO to dict")
+    d = decode(encoded)
+
+    acid = -1
+    with session().no_autoflush:
+        sqla_article_configuration = call("serialize_{0}_dict_to_{0}".format(kn), d, None, session(), dict())
+        # sqla_article_configuration = serialize_ArticleConfiguration_dict_to_ArticleConfiguration( d, None, session(), dict())
+        acid = sqla_article_configuration.article_configuration_id
+    session().flush() # Don't commit as it empties the session (reloading entities afterwards takes tenth of seconds!)
+
+    chrono_click( "from dict to SQLA - and flush")
+
+    pyxfer_cache = dict()
+
+    d = call("serialize_{0}_{0}_to_dict".format(kn), sqla_article_configuration, None, pyxfer_cache)
+    #d = serialize_ArticleConfiguration_ArticleConfiguration_to_dict( sqla_article_configuration, None, pyxfer_cache)
+    mainlog.debug( pyxfer_cache)
+    chrono_click("read from SQLA to dict")
+
+    encoded = encode(d)
+    d = decode(encoded)
+    ac = call("serialize_{0}_dict_to_Copy{0}".format(kn), d, None, dict())
+    #ac = serialize_ArticleConfiguration_dict_to_CopyArticleConfiguration( d, None, dict())
+    chrono_click("dict to DTO")
+
+    return ac
+
+
+def load_article_configurations():
+
+    chrono_start()
+    res= []
+    acs = session().query(ArticleConfiguration).\
+        options(
+            joinedload(ArticleConfiguration.part_plan),
+            joinedload(ArticleConfiguration.customer),
+            joinedload(ArticleConfiguration.impacts),
+            joinedload(ArticleConfiguration.impacts).joinedload(ImpactLine.document),
+            joinedload(ArticleConfiguration.impacts).joinedload(ImpactLine.owner),
+            joinedload(ArticleConfiguration.impacts).joinedload(ImpactLine.approved_by),
+            joinedload(ArticleConfiguration.configurations),
+            joinedload(ArticleConfiguration.configurations).joinedload(Configuration.parts),
+            joinedload(ArticleConfiguration.configurations).joinedload(Configuration.freezer),
+            joinedload(ArticleConfiguration.configurations).joinedload(Configuration.lines),
+            joinedload(ArticleConfiguration.configurations).joinedload(Configuration.lines).joinedload(ConfigurationLine.document),
+            joinedload(ArticleConfiguration.configurations).joinedload(Configuration.origins),
+            joinedload(ArticleConfiguration.configurations).joinedload(Configuration.origins).joinedload(ImpactLine.document),
+            joinedload(ArticleConfiguration.configurations).joinedload(Configuration.origins).joinedload(ImpactLine.owner),
+            joinedload(ArticleConfiguration.configurations).joinedload(Configuration.origins).joinedload(ImpactLine.approved_by)).\
+        order_by(ArticleConfiguration.article_configuration_id)
+
+    chrono_click("prepared query")
+    acs = acs.all()
+
+
+    #print("---"*100)
+    #zz = acs[0].impacts
+    #print("---"*100)
+
+    chrono_click("Loaded all articles configurations")
+
+    for ac in acs: #[:1]:
+        #print("---"*100)
+        d = serialize_ArticleConfiguration_ArticleConfiguration_to_dict( ac, None, dict())
+        d = decode( encode( d))
+        ac1 = serialize_ArticleConfiguration_dict_to_CopyArticleConfiguration( d, None, dict())
+        res.append( ac1)
+        #session().commit()
+        chrono_click("Loaded {}/{} article configuration".format(len(res),len(acs)))
+    #print("---"*100)
+
+    return res
+
+
+
 if __name__ == "__main__":
+    from koi.config_mgmt.json_tools import encode, decode, register_enumerations
+    from koi.db_mapping import OrderStatusType, TaskActionReportType, OrderPartStateType
+    from koi.people_admin.people_admin_mapping import DayEventType
+    from koi.datalayer.quality import QualityEventType
+    from koi.datalayer.employee_mapping import RoleType
+
+    register_enumerations( [TypeConfigDoc, ImpactApproval, DayEventType, OrderStatusType, TaskActionReportType, QualityEventType, OrderPartStateType, RoleType])
 
     from koi.tools.chrono import *
     from koi.config_mgmt.dummy_data import make_configs_dto, _make_quick_doc_dto
+    mainlog.setLevel(logging.DEBUG)
 
     e = serialize_Employee_Employee_to_CopyEmployee( session().query(Employee).first(), None, {})
     user_session.open(e)
@@ -1228,29 +1393,26 @@ if __name__ == "__main__":
     mw.show()
 
     org_configs = make_configs_dto( session)
+    # store_object( ArticleConfiguration, org_configs[0])
 
-    from koi.config_mgmt.json_tools import encode, decode, register_enumerations
-    from koi.db_mapping import OrderStatusType, TaskActionReportType, OrderPartStateType
-    from koi.people_admin.people_admin_mapping import DayEventType
-    from koi.datalayer.quality import QualityEventType
+    # org_configs = load_article_configurations()
 
-    register_enumerations( [TypeConfigDoc, ImpactApproval, DayEventType, OrderStatusType, TaskActionReportType, QualityEventType, OrderPartStateType])
+    #exit()
 
-    mainlog.setLevel(logging.DEBUG)
-    chrono_start()
-    d = serialize_ArticleConfiguration_CopyArticleConfiguration_to_dict( org_configs[0], dict(), dict())
-    encoded = encode(d)
-    d = decode(encoded)
 
-    with session().no_autoflush:
-        serialize_ArticleConfiguration_dict_to_ArticleConfiguration( d, None, session(), dict())
-        session().flush()
-
-    chrono_click()
     #pprint(d)
 
-    configs = [widget._change_tracker.wrap_in_change_detector(c)
-               for c in org_configs]
+    # Change tracker for GUI
+    # configs = [widget._change_tracker.wrap_in_change_detector(c)
+    #            for c in org_configs][0:2]
+
+    for ac in org_configs:
+        if not ac.configurations:
+            c = CopyConfiguration()
+            c.article_configuration = ac
+            ac.configurations.append( c )
+
+    configs = widget._change_tracker.wrap_in_change_detector(org_configs)
 
     # print( type( org_configs[0].configurations))
     # print( type( configs[0].configurations))

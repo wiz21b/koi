@@ -1,6 +1,9 @@
+import enum
 from datetime import date, datetime
 
 # Based on code from https://stackoverflow.com/questions/22878220/looking-for-a-solution-to-detect-value-change-in-class-attribute-with-a-list-and
+
+dbg_document = 0
 
 class ChangeTracker:
     def __init__(self):
@@ -14,6 +17,8 @@ class ChangeTracker:
         return self._dirty
 
     def wrap_in_change_detector( self, obj : object):
+        if obj is None or type(obj) in (str, int, float, date, datetime) or isinstance(obj,enum.Enum):
+            return obj
 
         # so we can cache list and objects WARNING Only works because
         # the cache keeps the objects alive (read CPYthon
@@ -24,17 +29,37 @@ class ChangeTracker:
         key_in_cache = key in self._cache
 
         if key_in_cache:
+            # print("using cache for {}".format(key))
             return self._cache[key]
-        elif isinstance( obj, ChangeDetector):
+
+        # print("making change detector for {}".format(type(obj)))
+
+        if isinstance( obj, ChangeDetector):
             assert obj._internals['change_tracker'] == self, "we have two concurrent change trackers !"
-            self._cache[key] = obj
             return obj
+
+            # key = id(obj._internals['observed'])
+
+            # if key not in self._cache:
+            #     self._cache[key] = obj._internals['observed']
+            # return obj
         elif isinstance( obj, list):
+
+            #print("wrapping list")
             c = list_observer( obj, self)
             self._cache[key] = c
             return c
+
         elif obj and isinstance( obj, object) and type(obj) not in (str, int, float, date, datetime):
-            # str is not wrapped  because if it is, then as achangedetector instance,
+            #print("Wrapping {} in a change detector".format(obj))
+
+            # if key == 'document':
+            #     dbg_document += 1
+            #     print(dbg_document)
+            #     if dbg_document == 30:
+            #         import pdb; pdb.set_trace()
+
+            # str is not wrapped  because if it is, then as a ChangeDetector instance,
             # it's not recognized anymore by PySide (which expects 'str' and not a
             # derivative of it). Remeber str, int and float are immutable in python.
 
@@ -76,8 +101,18 @@ class ChangeDetector:
             value = self._internals['observed'].__getattribute__( key)
             #return value
 
-            return self._internals['change_tracker'].wrap_in_change_detector(value)
+            # if isinstance( value, list):
+            #     print( "Wrapping a list {}.{} in a change detector : {}".format( self, key,
+            #         value ) )
 
+            r = self._internals['change_tracker'].wrap_in_change_detector(value)
+
+            # if r != value:
+            #     print("wrapped field {}".format(key))
+            #     if key == 'document':
+            #         print("{} <> {}".format( type(r), type(value)))
+
+            return r
 
     def __setattr__(self, key, value):
         if key != '_internals':
@@ -147,26 +182,30 @@ class list_observer(list):
 
     def index( self, obj):
         # This handles a tricky issue. That is :
-        # 1. one picks an object out of the list
+        # 1. one picks an object o out of the list
         # 2. The list_observer sees that and
         # returns that object wrapped in a ChangeDetector : o'.
         # 3. one asks if o' is in the list, and it isn't because the
         # observer inherits from the original list.  So we check the
         # index with the origianl object instead of o'.
         if isinstance( obj, ChangeDetector):
+            assert obj._internals['observed'] in self, "Missing {} (type: {}) \n in {}, \n types={}".format(obj._internals['observed'], type(obj._internals['observed']), self, [type(t) for t in self])
             return super().index( obj._internals['observed'])
         else:
             return super().index( obj)
 
     def __getitem__( self, key):
+        #print("__getitem__ {}".format(key))
         return self.observer.wrap_in_change_detector( super().__getitem__(key))
 
     def __setitem__(self, key, value):
+        #raise Exception("Set item unexpected")
         r = super().__setitem__( key, value)
         self.observer.set_dirty(True)
         return r
 
     def __delitem__(self, key):
+        #raise Exception("delitem item unexpected")
         r = super().__delitem__( key, value)
         self.observer.set_dirty(True)
         return r
@@ -182,6 +221,7 @@ class list_observer(list):
         return r
 
     def append(self, value):
+        #raise Exception("append item unexpected")
         r = super().append( value)
         self.observer.set_dirty(True)
         return r
@@ -192,11 +232,13 @@ class list_observer(list):
         return r
 
     def extend(self, value):
+        #raise Exception("extend item unexpected")
         r = super().extend( value)
         self.observer.set_dirty(True)
         return r
 
     def insert(self, i, value):
+        #raise Exception("insert item unexpected")
         r = super().insert( i, value)
         self.observer.set_dirty(True)
         return r

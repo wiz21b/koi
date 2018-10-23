@@ -28,6 +28,8 @@ class HorseJsonEncoder(JSONEncoder):
             return { '__enum__' : ( str(obj.name), obj.__class__.__name__ ) }
         elif isinstance(obj,bytes): # Python 3
             return { '__bytes__' : base64.b64encode(obj).decode('ascii')}
+        elif isinstance(obj,set):
+            return list(obj)
         else:
             return super(HorseJsonEncoder, self).default(obj)
 

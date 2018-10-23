@@ -220,6 +220,12 @@ def make_configs_dto( session):
     op2 = serialize_OrderPart_OrderPart_to_CopyOrderPart( oparts[1], None, {})
     op3 = serialize_OrderPart_OrderPart_to_CopyOrderPart( oparts[2], None, {})
 
+    employees = session().query(Employee).all()
+
+    employee1 = serialize_Employee_Employee_to_CopyEmployee( employees[0], None, {})
+    employee2 = serialize_Employee_Employee_to_CopyEmployee( employees[1], None, {})
+    employee3 = serialize_Employee_Employee_to_CopyEmployee( employees[2], None, {})
+
     #op = session().query(OrderPart).filter( OrderPart.order_part_id == 151547).one()
     #op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 246051).one()
     #op3 = session().query(OrderPart).filter( OrderPart.order_part_id == 230512).one()
@@ -233,7 +239,7 @@ def make_configs_dto( session):
     c.article_configuration = ac
     ac.configurations.append(c)
     c.frozen = date(2018,1,31)
-    c.freezer = _make_quick_employee("Alan Parker","APK")
+    c.freezer = employee1
     c.lines = [ _make_config_line_dto( "Plan ZZ1D", 2, TypeConfigDoc.PLAN_3D, "plan3EDER4.3ds"),
                 _make_config_line_dto( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
                 _make_config_line_dto( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
@@ -250,7 +256,7 @@ def make_configs_dto( session):
                 _make_config_line_dto( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
     c.version = 2
     c.frozen = date(2018,2,5)
-    c.freezer = _make_quick_employee("Alan Parker","APK")
+    c.freezer = employee1
     c.lines[2].modify_config = False
     #ac.configurations.append( c)
 
@@ -271,10 +277,10 @@ def make_configs_dto( session):
     impact = CopyImpactLine()
     i1 = impact
 
-    impact.owner = _make_quick_employee("Barabase","BRB")
+    impact.owner = employee2
     impact.description = "one preproduction measurement side XPZ changed"
     impact.approval = ImpactApproval.APPROVED
-    impact.approved_by = _make_quick_employee("Alan Parker","APK")
+    impact.approved_by = employee3
     impact.active_date = date(2013,1,11)
     impact.document = _make_quick_doc_dto("bliblo.doc")
     impact.article_configuration = ac
@@ -288,11 +294,11 @@ def make_configs_dto( session):
     #print( ac.configurations)
 
     impact = CopyImpactLine()
-    impact.owner = _make_quick_employee("Julian Rignall","JR")
+    impact.owner = employee2
     assert i1.configuration is not None, i1.configuration
     impact.description = "two Aluminium weight reduction"
     impact.approval = ImpactApproval.APPROVED
-    impact.approved_by = _make_quick_employee("Julian Rignall","JR")
+    impact.approved_by = employee1
     impact.active_date = None
     impact.document = _make_quick_doc_dto("impactmr_genry.doc")
     impact.article_configuration = ac
@@ -300,7 +306,7 @@ def make_configs_dto( session):
     impact.configuration =  ac.configurations[1]
 
     impact = CopyImpactLine()
-    impact.owner = _make_quick_employee("Julian Rignall","JR")
+    impact.owner = employee3
     # impact.owner = session().query(Employee).filter( Employee.employee_id == 8).one()
     impact.description = "three Production settings"
     impact.approval = ImpactApproval.UNDER_CONSTRUCTION
@@ -312,7 +318,7 @@ def make_configs_dto( session):
     ac.impacts.append(impact)
 
     impact = CopyImpactLine()
-    impact.owner = _make_quick_employee("Julian Rignall","JR")
+    impact.owner = employee1
     #impact.owner = session().query(Employee).filter( Employee.employee_id == 20).one()
     impact.description = "four Production settings v2"
     impact.approval = ImpactApproval.UNDER_CONSTRUCTION
@@ -323,6 +329,8 @@ def make_configs_dto( session):
     impact.article_configuration = ac
     ac.impacts.append(impact)
 
+
+    # -------------------------------------------------------------------------
 
     ac2 = CopyArticleConfiguration()
     # ac2.customer = session().query(Customer).filter( Customer.customer_id == 2145).one()
@@ -339,4 +347,4 @@ def make_configs_dto( session):
 
     assert i1.configuration is not None
 
-    return [ac]
+    return [ac, ac2]
