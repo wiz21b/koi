@@ -11,6 +11,7 @@ import traceback
 import logging
 import logging.handlers
 import io
+import pprint
 from urllib.request import URLError
 # import colorlog # Not Windows service friendly apparently
 
@@ -36,7 +37,10 @@ class EncodingFormatter(logging.Formatter):
         '''
         msg = None
 
-        if type(record.msg) == URLError:
+        if type( record.msg) == dict:
+            msg = pprint.pformat(record.msg)
+
+        elif type(record.msg) == URLError:
             if type(record.msg.reason) == str:
                 msg = str(record.msg.reason)
             else:
@@ -53,9 +57,9 @@ class EncodingFormatter(logging.Formatter):
             except Exception as ex:
                 msg = "Can't log {} because {}".format(type(record.msg), str(ex))
 
-        line = u"{} {} {}".format( time.strftime( '%Y/%m/%d %H:%M:%S', time.localtime(record.created) ),
-                                   "[{}]".format(record.levelname).ljust(9),
-                                   msg)
+        line = "{} {} {}".format( time.strftime( '%Y/%m/%d %H:%M:%S', time.localtime(record.created) ),
+                                  "[{}]".format(record.levelname).ljust(9),
+                                  msg)
 
         return line
 
