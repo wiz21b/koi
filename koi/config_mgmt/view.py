@@ -365,6 +365,25 @@ class EditConfiguration(HorsePanel):
                 self._parts_widget.setText( _("Not used"))
 
 
+    def _create_configuration( self, impact_documents):
+        assert impact_documents, "Configuration *must* be wired to impact document"
+
+        c = CopyConfiguration()
+
+        existing_versions = [c.version for c in self._current_article.configurations]
+        if existing_versions:
+            c.version = max( existing_versions) + 1
+        else:
+            c.version = 1
+
+        c.article_configuration = self._current_article
+        self._current_article.configurations.append(c)
+
+        for impact in impact_documents:
+            #impact.configuration_id = c.configuration_id
+            impact.configuration = c
+
+        return c
 
     @Slot()
     def add_configuration(self):
@@ -374,11 +393,17 @@ class EditConfiguration(HorsePanel):
                 showWarningBox(_("There's already a not frozen revision. Edit that one first."))
                 return
 
-        c = Configuration()
-        session().add( c)
+        selected_indices = self._view_impacts.selectedIndexes()
+        if selected_indices and len(selected_indices) >= 1:
+            impact_documents = [self._model_impact.object_at(ndx.row()) for ndx in selected_indices]
+        else:
+            # no selected impact !
+            showWarningBox( _("No impact selected document, so no active configuration"),
+                            _("Please select an impact document to show which configuration to add a document to."))
+            return
 
-        c.version = max( [c.version for c in self._current_article.configurations]) + 1
-        self._current_article.configurations.append(c)
+
+        c = self._create_configuration( impact_documents)
         self.set_config( c)
 
 
@@ -412,8 +437,24 @@ class EditConfiguration(HorsePanel):
 
     @Slot()
     def configFilesDropped( self,paths):
+        if self._model_impact.rowCount() == 0:
+            showWarningBox( _("Trying to create a configuration without impact document"),
+                            _('It is not allowed to add files to a configuration while there are no impact file that "frame" it. Please create an impact document first.'))
+            return
 
-        if self._current_config.frozen:
+        if self._current_config is None:
+
+            ndx = self._view_impacts.selectedIndexes()
+            if ndx and len(ndx) >= 1:
+                impact = self._model_impact.object_at(ndx[0].row())
+                self._current_config = self._create_configuration( [impact])
+            else:
+                # no selected impact !
+                showWarningBox( _("No impact selected document, so no active configuration"),
+                                _("Please select an impact document to show which configuration to add a document to."))
+                return
+
+        elif self._current_config.frozen:
             showWarningBox( _("Trying to modify a frozen configuration"),
                             _("It is not allowed to modify a frozen configuration."))
             return
@@ -421,8 +462,7 @@ class EditConfiguration(HorsePanel):
         dialog = AddFileToConfiguration( self, paths[0][1], [])
         dialog.exec_()
         if dialog.result() == QDialog.Accepted:
-            new_line = ConfigurationLine()
-            session().add( new_line)
+            new_line = CopyConfigurationLine()
             new_line.description = dialog.description
             new_line.version = dialog.version
             new_line.document_type = dialog.type_
@@ -430,7 +470,6 @@ class EditConfiguration(HorsePanel):
             new_line.crl = dialog.crl
             new_line.modify_config = True
             self._current_config.lines.append( new_line)
-            session().commit()
 
             # FIXME should use a simpmle "datachagned" no ?
             self._model.reset_objects( self._current_config.lines )
@@ -445,8 +484,6 @@ class EditConfiguration(HorsePanel):
 
             new_line = CopyImpactLine()
 
-            new_line.configuration = self._current_config
-            new_line.configuration_id = self._current_config.configuration_id
             new_line.article_configuration = self._current_article
             new_line.article_configuration_id = self._current_article.article_configuration_id
             new_line.owner = user_session.employee()
@@ -456,12 +493,11 @@ class EditConfiguration(HorsePanel):
             new_line.crl = dialog.crl
             new_line.modify_config = True
 
-            self._current_config.origins.append( new_line)
+
+            # saved_line = store_impact_line( new_line)
             self._current_article.impacts.append( new_line)
 
-            store_impact_line( new_line)
-
-            # FIXME should use a simpmle "datachagned" no ?
+            # FIXME should use a simpmle "datachanged" no ?
             self._model_impact.reset_objects( self._current_article.impacts )
 
         dialog.deleteLater()
@@ -478,7 +514,7 @@ class EditConfiguration(HorsePanel):
             if impact.configuration:
                 self.set_config( impact.configuration)
             else:
-                self.set_config( self._current_article.configurations[-1])
+                self.set_config( None)
 
     @Slot()
     def article_selected(self,selected,deselected):
@@ -1406,11 +1442,12 @@ if __name__ == "__main__":
     # configs = [widget._change_tracker.wrap_in_change_detector(c)
     #            for c in org_configs][0:2]
 
-    for ac in org_configs:
-        if not ac.configurations:
-            c = CopyConfiguration()
-            c.article_configuration = ac
-            ac.configurations.append( c )
+    # Avoid edge cases of null cofniguration
+    # for ac in org_configs:
+    #     if not ac.configurations:
+    #         c = CopyConfiguration()
+    #         c.article_configuration = ac
+    #         ac.configurations.append( c )
 
     configs = widget._change_tracker.wrap_in_change_detector(org_configs)
 

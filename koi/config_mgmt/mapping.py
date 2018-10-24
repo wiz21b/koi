@@ -86,6 +86,23 @@ class ConfigurationLine(Base):
 
 
 class ArticleConfiguration(Base):
+    """An Article Configuration is mainly made of two things.
+
+    First, a list of impact documents (represented by ImpactLines
+    entities).  Each of those describe the context of a confiugration.
+
+    Second, a list of Configuration (represented by Configuration
+    entities). Each configuration descibes how to configure the
+    factory. This is done with a set of documents (represented by
+    ConfigurationLines entities).
+
+    Impact documents always precede configuration. So the user first
+    creates an impact and then fills in its configuration. Therefore
+    an ImpactLine can exist without a Configuration, but the opposite
+    is not possible.
+
+    """
+
     __tablename__ = 'article_configurations'
     article_configuration_id = Column(Integer,id_generator,nullable=False,primary_key=True)
 
@@ -145,8 +162,8 @@ class ImpactLine(Base):
     active_date = Column(Date)
 
     # An impact line may not be wired to a configuration.
-    # Utlimately, it should end up wired to one, but
-    # it may not be the case from its creation on. That's
+    # Ultimately, it should end up wired to one, but
+    # it may not be the case at time of its creation. That's
     # because one may want to track an impact file before
     # it actually results in a new version of a configuration.
 
