@@ -74,7 +74,7 @@ def make_configs( session):
 
     ac.customer = session().query(Customer).filter( Customer.customer_id == 18429).one()
     ac.identification_number = "4500250418"
-    ac.revision = "C"
+    ac.revision_number = "C"
 
 
     c = Configuration()
@@ -184,7 +184,7 @@ def make_configs( session):
     session().add(ac2)
     ac2.customer = session().query(Customer).filter( Customer.customer_id == 2145).one()
     ac2.identification_number = "ZERDF354-ZXZ-2001"
-    ac2.revision = "D"
+    ac2.revision_number = "D"
 
     c = Configuration()
     session().add(c)
@@ -205,14 +205,23 @@ def make_configs( session):
 
 def make_configs_dto( session):
 
+    cust1 = CopyCustomer()
+    cust1.fullname = "Cockerill"
+    cust1.customer_id = 1232
+
+    cust2 = CopyCustomer()
+    cust2.fullname = "Laminer"
+    cust2.customer_id = 5589
+
     ac = CopyArticleConfiguration()
+
+    ac.customer = cust1
+    ac.customer_id = cust1.customer_id
 
     ### ac.customer = session().query(Customer).filter( Customer.customer_id == 18429).one()
     ac.identification_number = "4500250418"
-    ac.revision = "C"
-
-
-    c = CopyConfiguration()
+    ac.revision_number = "C"
+    ac.date_creation = date(2016,11,19)
 
     oparts = session().query(OrderPart).all()
 
@@ -234,6 +243,7 @@ def make_configs_dto( session):
     # op2 = CopyOrderPart()
     # op3 = CopyOrderPart()
 
+    c = CopyConfiguration()
     c.parts = [op,op3]
     c.version = 1
     c.article_configuration = ac
@@ -335,7 +345,10 @@ def make_configs_dto( session):
     ac2 = CopyArticleConfiguration()
     # ac2.customer = session().query(Customer).filter( Customer.customer_id == 2145).one()
     ac2.identification_number = "ZERDF354-ZXZ-2001"
-    ac2.revision = "D"
+    ac2.revision_number = "D"
+    ac2.date_creation = date(2016,11,12)
+    ac2.customer = cust2
+    ac2.customer_id = cust2.customer_id
 
     c = CopyConfiguration()
     # op = session().query(OrderPart).filter( OrderPart.order_part_id == 95642).one()

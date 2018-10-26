@@ -312,23 +312,35 @@ class EditConfiguration(HorsePanel):
         config_set = False
         for c in reversed( self._current_article.configurations):
             if c.frozen:
-                self.set_config(c)
+                self.set_configuration(c)
                 config_set = True
                 break
 
         if not config_set:
             if len( self._current_article.configurations) > 0:
-                self.set_config(ca.configurations[len( self._current_article.configurations) - 1])
+                self.set_configuration(ca.configurations[len( self._current_article.configurations) - 1])
             else:
-                self.set_config( None)
+                self.set_configuration( None)
 
 
-    def set_config( self, config : Configuration):
+    def set_configuration( self, config : Configuration):
 
         self._current_config = config
 
         if config == None:
             self._model.reset_objects( None )
+            self._subframe.set_title( "No configuration")
+            self._version_config_label.setText( "No configuration")
+            self._freeze_button.setEnabled(False)
+            self._versions_combo.setEnabled(False)
+            self._version_config_label.setText( "No Revision")
+
+            if DEMO_MODE == 0:
+                self._parts_widget.set_objects( [])
+            elif DEMO_MODE == 1:
+                self._parts_widget.setText( _("Not used"))
+
+            #self._parts_widget.hide()
             return
 
 
@@ -336,6 +348,7 @@ class EditConfiguration(HorsePanel):
         full_version = "{}/{}".format( ac.identification_number, ac.revision_number)
         msg = "Configuration for part <b>{}</b>, client : <b>{}</b>".format( full_version, ac.customer_id)
 
+        self._freeze_button.setEnabled(True)
         if config.frozen:
             freeze_msg = "<b><font color = 'green'>FROZEN on {} by {}</font></b>".format( config.frozen, config.freezer.fullname)
             self._freeze_button.setText("Unfreeze")
@@ -345,11 +358,10 @@ class EditConfiguration(HorsePanel):
 
 
         self._subframe.set_title( msg)
-
         self._version_config_label.setText( "Revision {}, {}".format(config.version, freeze_msg))
-
         self._model.reset_objects( config.lines )
 
+        self._versions_combo.setEnabled(True)
         self._versions_combo.setCurrentIndex(
             self._version_combo_model.objectIndex( config).row())
 
@@ -404,7 +416,7 @@ class EditConfiguration(HorsePanel):
 
 
         c = self._create_configuration( impact_documents)
-        self.set_config( c)
+        self.set_configuration( c)
 
 
     @Slot()
@@ -442,13 +454,15 @@ class EditConfiguration(HorsePanel):
                             _('It is not allowed to add files to a configuration while there are no impact file that "frame" it. Please create an impact document first.'))
             return
 
+        selected_indices = self._view_impacts.selectedIndexes()
+        if selected_indices and len(selected_indices) >= 1:
+            impact_documents = [self._model_impact.object_at(ndx.row()) for ndx in selected_indices]
+        else:
+            impact_documents = None
+
         if self._current_config is None:
 
-            ndx = self._view_impacts.selectedIndexes()
-            if ndx and len(ndx) >= 1:
-                impact = self._model_impact.object_at(ndx[0].row())
-                self._current_config = self._create_configuration( [impact])
-            else:
+            if not impact_documents:
                 # no selected impact !
                 showWarningBox( _("No impact selected document, so no active configuration"),
                                 _("Please select an impact document to show which configuration to add a document to."))
@@ -462,6 +476,10 @@ class EditConfiguration(HorsePanel):
         dialog = AddFileToConfiguration( self, paths[0][1], [])
         dialog.exec_()
         if dialog.result() == QDialog.Accepted:
+
+            if not self._current_config:
+                self._current_config = self._create_configuration( impact_documents)
+
             new_line = CopyConfigurationLine()
             new_line.description = dialog.description
             new_line.version = dialog.version
@@ -472,7 +490,9 @@ class EditConfiguration(HorsePanel):
             self._current_config.lines.append( new_line)
 
             # FIXME should use a simpmle "datachagned" no ?
-            self._model.reset_objects( self._current_config.lines )
+            # self._model.reset_objects( self._current_config.lines )
+
+            self.set_configuration( self._current_config)
 
         dialog.deleteLater()
 
@@ -497,6 +517,11 @@ class EditConfiguration(HorsePanel):
             # saved_line = store_impact_line( new_line)
             self._current_article.impacts.append( new_line)
 
+            if len(self._current_article.impacts) == 1:
+                # First impact
+
+                pass
+
             # FIXME should use a simpmle "datachanged" no ?
             self._model_impact.reset_objects( self._current_article.impacts )
 
@@ -512,9 +537,9 @@ class EditConfiguration(HorsePanel):
             # print(impact.document)
 
             if impact.configuration:
-                self.set_config( impact.configuration)
+                self.set_configuration( impact.configuration)
             else:
-                self.set_config( None)
+                self.set_configuration( None)
 
     @Slot()
     def article_selected(self,selected,deselected):
@@ -531,7 +556,7 @@ class EditConfiguration(HorsePanel):
 
     @Slot(int)
     def _version_selected_slot(self, ndx : int):
-        self.set_config( self._version_combo_model.objectAt(ndx))
+        self.set_configuration( self._version_combo_model.objectAt(ndx))
 
     @Slot(str)
     def apply_filter( self, f : str):
@@ -541,7 +566,7 @@ class EditConfiguration(HorsePanel):
         for c in self._articles[0].configurations:
             for op in c.parts:
                 if op.human_identifier == f:
-                    self.set_config( c)
+                    self.set_configuration( c)
                     return
 
     @Slot(str)
@@ -631,9 +656,9 @@ class EditConfiguration(HorsePanel):
 
 
         if DEMO_MODE == 0:
-            left_layout.addWidget(SubFrame(_("Parts"), scroll_area, self))
+            left_layout.addWidget(SubFrame(_("Configuration Articles"), scroll_area, self))
         else:
-            left_layout.addWidget(SubFrame( _("Parts"), self._view_articles, self))
+            left_layout.addWidget(SubFrame( _("Configuration Articles"), self._view_articles, self))
 
         content_layout.addLayout( left_layout)
 

@@ -166,7 +166,7 @@ class ImpactLine(Base):
     # it may not be the case at time of its creation. That's
     # because one may want to track an impact file before
     # it actually results in a new version of a configuration.
-
+    # Conversely, a configuration may have several impact documents.
     configuration_id = Column(Integer, ForeignKey( Configuration.configuration_id))
 
     # Even if impact line defines confiugration versions, they
