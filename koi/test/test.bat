@@ -1,2 +1,2 @@
-set PYTHONPATH=c:\PORT-STC\PRIVATE\pyxfer-prj;C:\PORT-STC\PRIVATE\koi
-py.test
+set PYTHONPATH=C:\PORT-STC\PRIVATE\PL\horse
+py.test --result-log=results.log

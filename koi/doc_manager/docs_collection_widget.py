@@ -628,16 +628,11 @@ class DocumentCollectionWidget(QWidget):
 
         # [] == we don't want to use categories at all (so no drop zones)
         if used_category_short_name != None and used_category_short_name != [] :
-            mainlog.debug("__init__ 1")
             categories = [ self.documents_service.find_category_by_short_name(used_category_short_name) ]
         elif used_category_short_name == [] : # Use all categories
-            mainlog.debug("__init__ doc collection widget 2")
             categories = self.documents_service.categories()
         else: # None => use no categories at all
-            mainlog.debug("__init__ 3")
             categories = None
-
-        mainlog.debug(categories)
         self.set_used_categories(categories)
 
 

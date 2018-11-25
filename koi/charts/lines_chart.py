@@ -61,7 +61,6 @@ class LinesChart(QFrame):
         """
 
         mainlog.debug("({}) line_chart : set_data".format(self.title))
-        mainlog.debug(data)
         if len(legends) != len(data):
             raise Exception("The number of legends for data series ({}) is different than the number of series ({})".format(len(legends),len(data)))
 

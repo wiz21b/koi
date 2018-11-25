@@ -32,7 +32,7 @@ class RoleType(DeclEnum):
     view_audit = 'view_audit',_('View audit trail')
     modify_document_templates = 'modify_document_templates', _('Modify the documents templates')
 
-employee_id_generator = Sequence('employee_id_generator', start=100, metadata=metadata)
+employee_id_generator = Sequence('employee_id_generator',start=100, schema=DATABASE_SCHEMA,metadata=metadata)
 
 
 class Employee(Base):
@@ -84,6 +84,8 @@ class Employee(Base):
 
     @roles.setter
     def roles(self,new_roles):
+        # Accepts set and list
+
         # mainlog.debug("set_roles {}".format(new_roles))
 
         if new_roles is None or len(new_roles) == 0:
@@ -107,6 +109,9 @@ class Employee(Base):
 
     @property
     def image(self):
+        # Please note that this code is only used on client's side
+        # See imports manipulation at the top of this file.
+
         if self._image_as_pixmap is None and self.picture_data:
             # Caution ! QImage and stuff work only if QApplication has been initialized !
             image = QImage.fromData(QByteArray(self.picture_data))
@@ -116,6 +121,9 @@ class Employee(Base):
 
     @image.setter
     def image(self,pixmap):
+        # Please note that this code is only used on client's side
+        # See imports manipulation at the top of this file.
+
         if pixmap == None:
             self._image_as_pixmap = None
             self.picture_data = None

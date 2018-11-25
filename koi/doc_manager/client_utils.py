@@ -11,6 +11,164 @@ from pymediafire import MultiRead
 from koi.base_logging import mainlog
 from koi.Configurator import configuration
 from koi.utils import download_file
+import io
+
+class FilePath:
+    def __init__(self,path):
+        self.path = path
+
+class MultiRead:
+    """ This class will present a read()able object to
+    the httplib send() method. This object represents
+    an HTTP multiple part/form data collection. Each item
+    in the collection is either :
+
+    * key value parts
+    * files
+
+    This object has the property of allowing httplib to
+    work with a read block size. That in turns allows
+    us to send files over http wich are bigger than
+    the RAM.
+    """
+
+    BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$' # BUG That's a hack, I can't send myself to mediafire :-)
+    CRLF = '\r\n'
+
+    def __init__(self,logger=None):
+        if logger:
+            self.logger = logger
+        else:
+            self.logger = DevNullLogger()
+        self.to_read = []
+        self.current_file_dnx = 0
+        self.current_file = None
+        self._size = 0
+
+    def add_field(self, key, value):
+
+        L = []
+        # L.append('--' + self.BOUNDARY)
+        # L.append('Content-Disposition: form-data; name="{}"'.format(key))
+        # L.append('')
+        # L.append("{}".format(value))
+
+        L.append(u'--' + self.BOUNDARY)
+        L.append(u'Content-Disposition: form-data; name="{}"'.format(key))
+        L.append(u'')
+        L.append(u"{}".format(value))
+        data = self.CRLF.join(L) + self.CRLF
+        data = bytearray(data, 'utf-8')
+        self.to_read.append(data)
+        self._size += len(data)
+
+
+    def add_file_part(self,filepath):
+
+        # Extract the filename... FIXME May have encoding issues
+        filename = os.path.split(filepath)[-1]
+
+        # CRLF must be set very accurately to respect http://tools.ietf.org/html/rfc1867
+        s = '--' + self.BOUNDARY + self.CRLF
+        s += 'Content-Disposition: form-data; name="%s"; filename="%s"' % ('uploaded_file', filename) + self.CRLF
+        s += ('Content-Type: %s' % mimetypes.guess_type(filepath)[0] or 'application/octet-stream') + self.CRLF
+        s += self.CRLF
+
+        s = bytearray(s, 'utf-8')
+        self.to_read.append(s)
+        self._size += len(s)
+
+        self.to_read.append(FilePath(filepath))
+        s = os.path.getsize(filepath)
+        self._size += s
+
+        self.logger.debug(u"Appended {} with {} bytes".format(filepath,s))
+
+
+    def close_parts(self):
+        data = self.CRLF + '--' + self.BOUNDARY + '--' + self.CRLF
+        data += self.CRLF
+        data = bytearray(data, 'utf-8')
+        self.to_read.append(data)
+        self._size += len(data)
+
+    def content_type(self):
+        return 'multipart/form-data; boundary={}'.format(self.BOUNDARY)
+
+    def total_size(self):
+        return self._size
+
+    def open(self):
+        self.current_file_ndx = 0
+        self.current_file = None
+        self._pick_next_file()
+
+    def close(self):
+        if self.current_file:
+            self.current_file.close()
+            self.current_file = None
+
+        self.current_file_ndx = len(self.to_read)
+
+    def _pick_next_file(self):
+
+
+        if self.current_file_ndx >= len(self.to_read):
+            self.current_file = None
+            self.logger.debug("Picking next item to upload : reached the end")
+
+        else:
+            self.logger.debug("Picking next item to upload : opening one more")
+            to_send = self.to_read[self.current_file_ndx]
+
+            if type(to_send) == str or type(to_send) == unicode:
+                if sys.version[0] == "2":
+                    self.current_file = io.BytesIO(bytearray(to_send.encode('utf-8')))
+                else:
+                    self.current_file = io.BytesIO(bytes(to_send,'utf-8'))
+
+            # elif type(to_send) == unicode:
+            #     self.current_file = StringIO(to_send.encode('utf-8'))
+            elif type(to_send) == FilePath:
+                self.current_file = open( to_send.path, "rb")
+            elif type(to_send) == bytearray:
+                self.current_file = io.BytesIO(to_send)
+            else:
+                raise Exception("Internal error type={}".format(type(to_send)))
+
+            self.current_file_ndx += 1
+
+        return self.current_file
+
+
+    def read(self,size=None):
+        if not size:
+            return self._read(size=self.total_size())
+        else:
+            return self._read(size)
+
+    def _read(self,size=8192):
+
+        if not self.current_file or size == 0:
+            return []
+
+        else:
+            r = self.current_file.read(size)
+            self.logger.debug("Read {}/{} bytes".format(len(r),self.total_size()))
+
+            if not r: # EOF
+                self.current_file.close()
+                if self._pick_next_file():
+                    return self._read(size)
+                else:
+                    return ''
+
+            elif 0 < len(r) <= size:
+                return r
+
+            else:
+                raise Exception("Something unbelievable occured : len(r)={}, size={}".format(len(r),size))
+
 
 
 class Wrap(MultiRead):
@@ -98,7 +256,7 @@ def upload_document(path, progress_tracker=None, file_id = 0, post_url = '/uploa
 
 
 def upload_template(path, progress_tracker, doc_id):
-    mainlog.debug("Uploading template (delivery_slips utils)")
+    mainlog.debug("Uploading template (client utils)")
     return upload_document(path, progress_tracker=progress_tracker, file_id = doc_id, post_url = '/upload_template_document4')
 
 def instanciate_template(tpl_id):
@@ -131,8 +289,6 @@ def remove_documents(doc_ids):
         url = configuration.get("DownloadSite","base_url") + "/remove_file?file_id={}".format(doc_id)
         urlopener.open(url)
 
-
-
 def download_document(doc_id, progress_tracker = None, destination = None):
     """ Download document to a given or temporary file. The temporary file
     name reflects the original name and extension.
@@ -144,7 +300,7 @@ def download_document(doc_id, progress_tracker = None, destination = None):
     """
 
     url = configuration.get("DownloadSite","base_url") + "/download_file?file_id={}".format(doc_id)
-    return download_file( url, progress_tracker, destination)
+    return download_file( url, destination, progress_tracker)
 
 
 from koi.doc_manager.documents_service import documents_service

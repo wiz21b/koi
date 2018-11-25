@@ -7,7 +7,7 @@ sys.path.append('..')
 import random
 
 import logging
-from Logging import init_logging
+from koi.base_logging import init_logging
 # init_logging(r"servertest.log") # Turn off logging to improve performance a bit (around 5%)
 from Configurator import init_i18n,mainlog,load_configuration
 load_configuration("server.cfg","server_config_check.cfg")

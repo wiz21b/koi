@@ -139,4 +139,10 @@ class DeclEnumType(SchemaType, TypeDecorator):
 
     def process_result_value(self, value, dialect):
         if value is not None:
-            return getattr(self.enum, value.strip())
+            try:
+                return getattr(self.enum, value.strip())
+            except:
+                if hasattr(self.enum, 'unknown'):
+                    return self.enum.unknown
+                else:
+                    return None

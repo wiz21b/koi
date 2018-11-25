@@ -1343,9 +1343,9 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
 
-    print("1. ---///--- {}".format(JSonServer_wrapping_active))
+    #print("1. ---///--- {}".format(JSonServer_wrapping_active))
     JSonServer_wrapping_active[0] = False
-    print("2. ---///--- {}".format(JSonServer_wrapping_active))
+    #print("2. ---///--- {}".format(JSonServer_wrapping_active))
 
 
     # from koi.clock_service import ClockService

@@ -466,6 +466,7 @@ def backup_procedure( configuration):
         mainlog.exception(ex)
         send_mail("Backup FAILURE", "The backup of was *not* done correctly.", configuration)
 
+from koi.backup.bitrot_shield import checksum_directory
 
 if __name__ == "__main__":
     from koi.base_logging import init_logging, mainlog
@@ -478,11 +479,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Here are the command line arguments you can use :')
     parser.add_argument('--backup',  action='store_true', default=False, help='Backup database and documents')
     parser.add_argument('--restore', action='store_true', default=False, help='Restore database and documents')
+    parser.add_argument('--bitrot-shield', action='store_true', default=False, help='Check files in the backup directory against some checksums')
 
     args = parser.parse_args()
 
     if args.restore:
         restore_procedure()
+    elif args.bitrot_shield:
+        if not configuration.get('Backup', 'backup_directory'):
+            raise Exception("Missing Backup/backup_directory in configuration file")
+        checksum_directory(configuration.get('Backup', 'backup_directory'), mainlog)
     else:
         backup_procedure( configuration)
 

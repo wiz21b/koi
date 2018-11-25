@@ -2476,8 +2476,8 @@ class TaskDAO(object):
         time_limit = business_computations_service.tar_time_horizon(at_time)
 
 
-        mainlog.debug('ongoing_tasks_for_employee ' + '----' * 50)
-        mainlog.debug("From {} to {}".format(time_limit, at_time))
+        # mainlog.debug('ongoing_tasks_for_employee ' + '----' * 50)
+        # mainlog.debug("From {} to {}".format(time_limit, at_time))
 
 
         # A task is ongoing if the last TAR is a start one.
@@ -3411,7 +3411,7 @@ class OperationDAO(object):
         # Rememeber that we're interested in Task, first and foremost.
         # We allow this to be called with necessary parameters to find
         # a task (rather than the task_id iteself) to ease the implementation
-        # at the delivery_slips level.
+        # at the client level.
 
         # Here we expect one and only one row because the pair operation/machine
         # should fully discrimante one or zero TaskOnOperation (on machine)
@@ -3433,7 +3433,7 @@ class OperationDAO(object):
         # Rememeber that we're interested in Task, first and foremost.
         # We allow this to be called with necessary parameters to find
         # a task (rather than the task_id iteself) to ease the implementation
-        # at the delivery_slips level.
+        # at the client level.
 
         # Here we expect one and only one row because the operation
         # should fully discriminate one or zero TaskOnOperation (*not* on machine)
@@ -3543,7 +3543,7 @@ class OperationDAO(object):
 
             # This is an optimisation to avoid a second call to determine
             # the next action. The need for this optimisation comes from the
-            # way the delivery_slips work (scanning an operation instantly decides
+            # way the client work (scanning an operation instantly decides
             # if one has to stop/start the associated task)
 
             next_action_kind = self.find_next_action_for_employee_operation(employee_id, operation_id, commit=False)
@@ -3760,7 +3760,9 @@ class DeliverySlipDAO(object):
         parts = session().query(DeliverySlipPart.quantity_out,
                                 DeliverySlip.delivery_slip_id,
                                 DeliverySlip.creation).join(DeliverySlip).\
-            filter( and_( DeliverySlip.active == True, DeliverySlipPart.order_part_id == order_part_id) ).order_by( desc(DeliverySlip.creation))
+            filter( and_( DeliverySlip.active == True,
+                          DeliverySlipPart.order_part_id == order_part_id) ).\
+            order_by( desc(DeliverySlip.creation))
         session().commit()
         return parts
 

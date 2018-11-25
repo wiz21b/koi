@@ -1,9 +1,9 @@
 from sqlalchemy import Column, String, Boolean, Integer, Sequence
-from koi.datalayer.sqla_mapping_base import metadata,Base
+from koi.datalayer.sqla_mapping_base import metadata,Base, DATABASE_SCHEMA
 from koi.Configurator import mainlog
 from koi.datalayer.employee_mapping import RoleType
 
-user_class_id_generator = Sequence('user_class_id_generator',1,None,None,False,None,metadata)
+user_class_id_generator = Sequence('user_class_id_generator',start=1, schema=DATABASE_SCHEMA,metadata=metadata)
 
 class UserClass(Base):
     __tablename__ = 'user_classes'

@@ -1,4 +1,4 @@
-import logging
+from collections import OrderedDict
 from datetime import date,timedelta
 
 from sqlalchemy import String
@@ -343,7 +343,7 @@ class OrderDAO(object):
 
         session().flush()
 
-        audit_trail_service.record(audit_action,None, order.order_id, commit=False)
+        audit_trail_service.record(audit_action, "Save request - {}".format(str(order)), order.order_id, commit=False)
 
 
         if commit:
@@ -366,6 +366,11 @@ class OrderDAO(object):
         """
 
         audit_changes = ""
+
+        if order_id:
+            audit_action = "UPDATE_ORDER"
+        else:
+            audit_action = "CREATE_ORDER"
 
         # Parts result is a dict of dict
 
@@ -429,6 +434,7 @@ class OrderDAO(object):
         order.sent_as_preorder = estimate_sent_date
 
         mainlog.debug("Order state is {}".format(order.state))
+        mainlog.debug("Order sent_as_preorder is {}".format(order.sent_as_preorder))
 
         # Transform our parts so that we can later update
         # the merged order_parts in our lists (with a dict, that's
@@ -479,6 +485,8 @@ class OrderDAO(object):
                         # mainlog.debug( "qty={} tex2={}".format(part.qty,part.tex2))
                         if part.qty > part.tex2:
                             order_state = OrderStatusType.order_ready_for_production
+                            audit_changes += "Forcing state to  {}".format(OrderStatusType.order_ready_for_production)
+
                             break
 
                     break
@@ -497,7 +505,7 @@ class OrderDAO(object):
         # Problem is, when order is created, its state defaults to something
         # Moreover one cannot store a order in the database without having a state
         # So If create an order and force its state to None I can't save it.
-        # Problem is : it's not me who wants to save it, it's SQLAlchemy. Indieed
+        # Problem is : it's not me who wants to save it, it's SQLAlchemy. Indeed
         # it will save as soon as it needs to flush. And that comes much faster
         # than I need. For exemple, right at the end od the transition, I write
         # in the audit trail. For that, I need the order_id => I need to flush...
@@ -559,7 +567,7 @@ class OrderDAO(object):
 
         self.recompute_position_labels(order)
 
-        audit_trail_service.record("UPDATE_ORDER", audit_changes, order.order_id, who_id=None,who_else=None,commit=False)
+        audit_trail_service.record( audit_action, audit_changes, order.order_id, who_id=None,who_else=None,commit=False)
 
         session().commit()
 
@@ -593,7 +601,8 @@ class OrderDAO(object):
 
         subq = session().query(OrderPart.order_part_id.label("order_part_id"),
                                (func.greatest(func.sum(TimeTrack.duration),0)).label("part_worked_hours")).\
-            join(ProductionFile).join(Operation).join(TaskOnOperation).join(TimeTrack).\
+            join(ProductionFile).join(Operation).\
+            join(TaskOnOperation).join(TimeTrack).\
             filter(TimeTrack.start_time <= date_end).\
             group_by(OrderPart.order_part_id).subquery()
 
@@ -665,7 +674,7 @@ class OrderDAO(object):
         date_begin = _first_moment_of_month(month_date)
         date_end = _last_moment_of_month(month_date)
 
-        mainlog.debug("_active_orders_in_month_subquery from {} to {}".format(date_begin, date_end))
+        # mainlog.debug("_active_orders_in_month_subquery from {} to {}".format(date_begin, date_end))
 
         # Work done on each part up to date_end
         hsubq = self._order_parts_worked_hours(date_end)
@@ -733,7 +742,7 @@ class OrderDAO(object):
                     func.coalesce(hsubq.c.part_worked_hours,0) > 0,
 
                     # Some quantities were delivered this month. Therefore
-                        # there will be amount to bill. This is also part
+                    # there will be amount to bill. This is also part
                     # of the valuation (because we count what's left to produce)
                     # FIXME Is this correct ? Shouldn't we take all the delivery slips
                     # FIXME before date_end (and not restrict to "after date_begin")
@@ -817,7 +826,7 @@ class OrderDAO(object):
         date_end = _last_moment_of_month(month_date)
         last_mo = _last_moment_of_previous_month(month_date)
 
-        mainlog.debug("order_parts_for_monthly_report : date_end = {}".format(date_end))
+        # mainlog.debug("order_parts_for_monthly_report : date_end = {}".format(date_end))
 
         # The number of hours worked on an order part until date_end
         tsubq = self._order_parts_worked_hours(date_end)
@@ -855,7 +864,7 @@ class OrderDAO(object):
         # poitn for the quantity produced. In the report we're building
         # we're interested in what was produced and *when*.
 
-        # ( qty_out:10, worked_hours:183.75, 0, 1041, 11, 237.6, 1, Decimal('7509.4913'), Decimal('82604.4043'), Decimal('0'), '2A', 'Cobalt', "Buy'n'Large Corporation", Decimal('75094.9130'))
+
         query = session().query((OrderPart._tex + func.coalesce(qsubq.c.part_qty_out,0)).label("part_qty_out"),
                                 func.coalesce(tsubq.c.part_worked_hours,0).label("part_worked_hours"),
                                 (OrderPart._tex + func.coalesce(qsubq_last_month.c.part_qty_out,0)).label("q_out_last_month"),
@@ -879,8 +888,6 @@ class OrderDAO(object):
             join(Order).join(Customer).\
             order_by(OrderPart.order_id,OrderPart.position)
 
-        print(query)
-
         res = query.all()
         session().commit()
 
@@ -889,35 +896,11 @@ class OrderDAO(object):
             # our own stuff.
             from collections import namedtuple
             nt = namedtuple('MonthlyReportTuple', res[0]._fields + ('encours',))
-
-            wip_valuation = []
-            for r in res:
-                # if r.order_part_id == 25268:
-                #     mainlog.debug( "old {}".format( ( r.part_qty_out, r.qty, r.part_worked_hours,
-                #                      r.total_estimated_time,
-                #                      r.unit_sell_price, r.material_value,
-                #                      r.order_part_id, date_end)))
-
-                v = business_computations_service.encours_on_params(r.part_qty_out, r.qty, r.part_worked_hours,
-                                                                             r.total_estimated_time,
-                                                                             r.unit_sell_price, r.material_value,
-                                                                             r.order_part_id, date_end)
-                # if r.order_part_id == 25268:
-                #     mainlog.debug( "   --> {}".format( v))
-
-                wip_valuation.append(
-                    nt._make( tuple(r) + \
-                             ( v,)))
-
-            # mainlog.debug("encours computation")
-            # for r in wip_valuation:
-            #     mainlog.debug( "{}, {}".format(r.order_part_id, r.encours))
-            #     if r.order_part_id == 25268:
-            #         mainlog.debug( ( r.order_part_id, r.part_qty_out, r.qty, r.part_worked_hours,
-            #                       r.total_estimated_time,
-            #                       r.unit_sell_price,r.material_value, r.encours))
-
-            return wip_valuation
+            return [nt._make(tuple(r) + \
+                             (business_computations_service.encours_on_params(r.part_qty_out, r.qty, r.part_worked_hours,
+                                                                              r.total_estimated_time,
+                                                                              r.unit_sell_price,r.material_value, r.order_part_id, date_end),))\
+                    for r in res]
         else:
             return []
 
@@ -974,7 +957,7 @@ class OrderDAO(object):
         ts_begin = _first_moment_of_month(month_date)
         ts_end = _last_moment_of_month(month_date)
 
-        mainlog.debug("Turnover from {} to {} ----------------------------------------- ".format(ts_begin, ts_end))
+        # mainlog.debug("Turnover from {} to {} ----------------------------------------- ".format(ts_begin, ts_end))
 
         # for order_part,q_out, sell_price  in session().query(OrderPart, DeliverySlipPart.quantity_out, OrderPart.sell_price).\
         #     select_from(DeliverySlipPart).\
@@ -1779,8 +1762,6 @@ class OrderDAO(object):
             filter(Order.order_id == order_id).\
             order_by(OrderPart.position, Operation.position, Employee.fullname, OperationDefinition.short_id).\
             all()
-
-        from collections import OrderedDict
 
         # 1 Part -> 1 Employee -> N Timetracks
         parts = OrderedDict()

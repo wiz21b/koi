@@ -37,7 +37,7 @@ class OperationsOverviewWidget(QWidget):
         self.model = PrototypedModelView(self.operation_prototype,self)
         self.view = PrototypedQuickView(self.operation_prototype,self)
         self.view.setModel(self.model)
-        self.view.verticalHeader().hide()
+        #self.view.verticalHeader().hide()
         self.view.horizontalHeader().setResizeMode(QHeaderView.ResizeToContents) # Description column wide enough
         self.view.horizontalHeader().setResizeMode(1,QHeaderView.Stretch)
         self.view.setWordWrap(True)

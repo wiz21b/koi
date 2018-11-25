@@ -8,7 +8,8 @@
 import os
 
 from koi.gui.koi_base import KoiBase
-
+# This is a bug fix for
+# https://bitbucket.org/anthony_tuininga/cx_freeze/issue/138/cryptography-module
 os.environ['OPENSSL_CONF'] = 'fix'
 
 import sys
@@ -40,8 +41,12 @@ parser.add_argument('--demo', action='store_true', default=False, help='Run as t
 parser.add_argument('--screenshots', action='store_true', default=False, help='Make a collection of screenshots')
 parser.add_argument('--echo-sql', action='store_true', default=False, help='Show SQL statements')
 parser.add_argument('--no-update', action='store_true', default=False, help='Run without trying to update')
+parser.add_argument('--file-config', action='store_true', default=False, help='Read configuration only from our local files (not the server)')
 # parser.add_argument('--watchdog-file', action='store_true', default="watchdog", help='Watch dog file')
 args = parser.parse_args()
+
+# if args.help and sys.out:
+#     parser.print_help()
 
 if args.dev:
     args.debug = args.console = args.no_update = True
@@ -169,17 +174,20 @@ splash.show()
 splash_msg( u"{} - ".format(configuration.this_version) + _("Contacting updates server"))
 
 splash_msg( _("Loading database URL"))
-try:
-    configuration.load_database_param()
-except Exception as e:
-    mainlog.error(e)
-    mainlog.error( "I was unable to get the DB URL from the server {}, so I'll continue with the file configuration".format(
-        configuration.database_url_source))
-    showErrorBox( _("Can't connect to the main server"),
-                  _("I was unable to contact the main server (located here : {}). It is not 100% necessary to do so but that's not normal either. You should tell your administrator about that. I will now allow you to change the network address of the server I know in the preferences panel.").format(
-                      configuration.database_url_source))
-
-    splash.repaint()
+if not args.file_config:
+	try:
+	    configuration.load_database_param()
+	except Exception as e:
+	    mainlog.error(e)
+	    mainlog.error( "I was unable to get the DB URL from the server {}, so I'll continue with the file configuration".format(
+	        configuration.database_url_source))
+	    showErrorBox( _("Can't connect to the main server"),
+	                  _("I was unable to contact the main server (located here : {}). It is not 100% necessary to do so but that's not normal either. You should tell your administrator about that. I will now allow you to change the network address of the server I know in the preferences panel.").format(
+	                      configuration.database_url_source))
+	
+	    splash.repaint()
+else:
+    mainlog.info("Using configuration file (because you set --file-config) , skipping server configuration")
 
 from datetime import datetime
 
@@ -274,7 +282,8 @@ from koi.session.LoginDialog import LoginDialog
 
 from koi.junkyard.services import services
 from koi.datalayer.sqla_mapping_base import Base
-from koi.config_mgmt.view import EditConfiguration, make_configs
+from koi.config_mgmt.view import EditConfiguration
+from koi.config_mgmt.dummy_data import make_configs_dto
 
 services.register_for_in_process(session, Base)
 
@@ -539,7 +548,7 @@ class MainWindow (QMainWindow):
         # self.supply_order_overview_widget.supply_order_selected.connect(self._edit_supply_order)
 
         self.configurations_widget = EditConfiguration(None)
-        self.configurations_widget.set_configuration_articles( make_configs( session))
+        self.configurations_widget.set_configuration_articles( make_configs_dto( session))
 
         self.order_overview_widget = OrderOverviewWidget(None,self.find_order_slot,
                                                          self.create_delivery_slip_action,

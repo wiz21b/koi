@@ -43,6 +43,8 @@ from koi.gui.PersistentFilter import PersistentFilter
 from koi.gui.horse_panel import HorsePanel
 from koi.session.UserSession import user_session
 
+if __name__ != "__main__":
+    from koi.datalayer.serializers import *
 
 
 class EnumPrototype(Prototype):
@@ -281,13 +283,14 @@ class AddFileToConfiguration(QDialog):
 
 
 class EditConfiguration(HorsePanel):
+    order_part_selected = Signal(int)
 
     # def version_selected( self, ndx):
     #     self.set_config( self._current_article.configurations[ndx] )
 
     def set_configuration_articles( self, cfg_articles : list):
-        print("set_configuration_articles : {}".format(cfg_articles))
-        print("set_configuration_articles : {}".format(type(cfg_articles)))
+        #print("set_configuration_articles : {}".format(cfg_articles))
+        #print("set_configuration_articles : {}".format(type(cfg_articles)))
         self._articles = cfg_articles
         self._model_articles.reset_objects( self._articles)
         self._wl.set_objects( self._articles)
@@ -372,7 +375,7 @@ class EditConfiguration(HorsePanel):
         else:
             if config.parts:
                 self._parts_widget.setText( _("Used in : ") + ", ".join(
-                    [ "<a href='{}'>{}</a>".format( part.order_part_id, part.human_identifier) for part in config.parts] ))
+                    [ "<a href='{}/{}'>{}</a>".format( part.order_part_id, part.order.customer_id,part.human_identifier) for part in config.parts] ))
             else:
                 self._parts_widget.setText( _("Not used"))
 
@@ -572,12 +575,15 @@ class EditConfiguration(HorsePanel):
     @Slot(str)
     def partLinkClicked( self, link : str):
         order_part_id = int(link)
-        print(order_part_id)
+        self.order_part_selected.emit( order_part_id)
+
+        #print(order_part_id)
 
     def __init__( self, parent):
         super(EditConfiguration,self).__init__(parent)
         self._change_tracker = ChangeTracker()
 
+        self.set_panel_title(_('Configurations'))
         self._articles = []
         self._current_article = None
 
@@ -617,7 +623,8 @@ class EditConfiguration(HorsePanel):
         top_layout = QVBoxLayout()
         top_layout.addWidget( self._title_widget)
 
-        self.persistent_filter = PersistentFilter( filter_family="articles_configs")
+        self.super_filter_entry = QLineEdit()
+        self.persistent_filter = PersistentFilter( self.super_filter_entry, filter_family="articles_configs")
 
         self.persistent_filter.apply_filter.connect( self.apply_filter)
 
@@ -1144,146 +1151,11 @@ class ObjectComboModel(QAbstractTableModel):
 
 from sqlalchemy.orm import joinedload
 from pyxfer.type_support import SQLADictTypeSupport, ObjectTypeSupport, SQLATypeSupport
-from pyxfer.pyxfer import SQLAAutoGen, find_sqla_mappers, generated_code, USE, CodeWriter, SKIP
+from pyxfer.pyxfer import generated_code, USE, CodeWriter, SKIP, COPY
+from pyxfer.sqla_autogen import SQLAAutoGen
 import logging
 from pprint import pprint
-logging.getLogger("pyxfer").setLevel(logging.DEBUG)
 
-
-
-
-additioanl_code_for_document_dto = """
-def __str__(self):
-   return self.filename
-"""
-
-additioanl_code_for_article_configuration_dto = """@property
-def current_configuration_status(self):
-   c = ArticleConfiguration._current_configuration(self)
-
-   if c and c.frozen:
-      return "Frozen"
-   else:
-      return "Not frozen"
-
-@property
-def current_configuration_version(self):
-   c = ArticleConfiguration._current_configuration(self)
-   if c and c.version:
-      return c.version
-   else:
-      return "-"
-"""
-
-
-additional_code_for_version_status_dto ="""
-@property
-def version_status(self):
-    if self.frozen:
-        return "Rev. {}, frozen".format( self.version)
-    else:
-        return "Rev. {}".format( self.version)
-"""
-
-additioanl_code_for_impact_line_dto ="""
-@property
-def approver_short(self):
-    if self.approved_by:
-        return self.approved_by.login.upper()
-    else:
-        return ""
-
-@property
-def owner_short(self):
-    return self.owner.login.upper()
-
-@property
-def version(self):
-    return ImpactLine._version(self)
-
-@property
-def date_upload(self):
-    return ImpactLine._date_upload(self)
-"""
-
-
-model_and_field_controls = find_sqla_mappers( Base)
-model_and_field_controls[Document] = {
-    'order' : SKIP,
-    'order_part' : SKIP,
-    'quality_event' : SKIP }
-model_and_field_controls[Employee] = {
-    'picture_data' : SKIP,
-    'filter_queries' : SKIP }
-model_and_field_controls[OrderPart] = {
-    'human_position' : SKIP,
-    'production_file' : SKIP,
-    'operations' : SKIP,
-    'delivery_slip_parts' : SKIP,
-    'documents' : SKIP,
-    'quality_events' : SKIP,
-    'configuration' : SKIP,
-    'order' : SKIP }
-model_and_field_controls[ImpactLine] = {
-    'article_configuration' : SKIP } #,
-# model_and_field_controls[ArticleConfiguration] = {
-#     '_current_configuration' : SKIP }
-
-# 'configuration' : SKIP }
-
-pprint(model_and_field_controls)
-
-global_cw = CodeWriter()
-global_cw.append_code("from koi.config_mgmt.mapping import ArticleConfiguration, ImpactLine")
-
-autogen = SQLAAutoGen( SQLADictTypeSupport, ObjectTypeSupport)
-
-autogen.type_support(ObjectTypeSupport, ArticleConfiguration).additional_global_code.append_code(additioanl_code_for_article_configuration_dto)
-autogen.type_support(ObjectTypeSupport, ImpactLine).additional_global_code.append_code(additioanl_code_for_impact_line_dto)
-autogen.type_support(ObjectTypeSupport, Document).additional_global_code.append_code(additioanl_code_for_document_dto)
-autogen.type_support(ObjectTypeSupport, Configuration).additional_global_code.append_code(additional_code_for_version_status_dto)
-
-serializers = autogen.make_serializers( model_and_field_controls)
-autogen.reverse()
-serializers2 = autogen.make_serializers( model_and_field_controls)
-
-
-#autogen = SQLAAutoGen( SQLATypeSupport, SQLADictTypeSupport)
-autogen.set_type_supports( SQLATypeSupport, SQLADictTypeSupport)
-serializers5 = autogen.make_serializers( model_and_field_controls)
-autogen.reverse()
-serializers6 = autogen.make_serializers( model_and_field_controls)
-
-
-
-# Just for testing
-
-model_and_field_controls2 = {
-    Employee : model_and_field_controls[Employee],
-    OrderPart : model_and_field_controls[OrderPart],
-    Document : model_and_field_controls[Document]
-    }
-
-pprint(model_and_field_controls2)
-autogen.set_type_supports(SQLATypeSupport, ObjectTypeSupport)
-serializers3 = autogen.make_serializers( model_and_field_controls)
-autogen.reverse()
-serializers4 = autogen.make_serializers( model_and_field_controls)
-
-
-
-
-# + serializers5 + serializers6
-gencode = generated_code( serializers + serializers2 + serializers3 + serializers4+ serializers5 + serializers6, global_cw)
-
-with open("t.py","w") as fo:
-    fo.write( gencode)
-
-from koi.config_mgmt.t import *
-
-#executed_code = dict()
-#print_code(gencode)
-#exec( compile( gencode, "<string>", "exec"), executed_code)
 
 
 
@@ -1324,7 +1196,7 @@ def store_article_configuration( article_configuration):
 
     pyxfer_cache = dict()
     d = serialize_ArticleConfiguration_ArticleConfiguration_to_dict( sqla_article_configuration, None, pyxfer_cache)
-    pprint( pyxfer_cache)
+    #pprint( pyxfer_cache)
     chrono_click("read from SQLA to dict")
 
     encoded = encode(d)
@@ -1437,7 +1309,17 @@ if __name__ == "__main__":
 
     from koi.tools.chrono import *
     from koi.config_mgmt.dummy_data import make_configs_dto, _make_quick_doc_dto
-    mainlog.setLevel(logging.DEBUG)
+    #mainlog.setLevel(logging.DEBUG)
+
+    from koi.dao import dao
+
+    dao.set_session( session())
+
+    from koi.datalayer.gen_serializers import  write_code, generate_serializers
+    write_code( generate_serializers())
+    from koi.datalayer.serializers import *
+
+
 
     e = serialize_Employee_Employee_to_CopyEmployee( session().query(Employee).first(), None, {})
     user_session.open(e)

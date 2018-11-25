@@ -21,7 +21,7 @@ from BaseHTTPServer import HTTPServer
 # 	    print ex
 
 #     def handle_request(self):        
-#         from Logging import mainlog,horse_dir
+#         from koi.base_logging import mainlog,horse_dir
 
 #         mainlog.info(self.path)
 
@@ -44,7 +44,7 @@ class Handler(object):
 
     # called when the service is starting
     def Initialize(self, configFileName):
-        from Logging import mainlog, horse_dir, init_logging
+        from koi.base_logging import mainlog, horse_dir, init_logging
         init_logging('web_server.log')
         mainlog.info("Horse dir : {}".format(horse_dir))
 
@@ -68,7 +68,7 @@ class Handler(object):
     # for the stop event or the service GUI will not respond to requests to
     # stop the service
     def Run(self):
-        from Logging import mainlog
+        from koi.base_logging import mainlog
         mainlog.info("Running service")
         # All of this to make sure the service remains
         # stoppable whatever happens
@@ -94,7 +94,7 @@ class Handler(object):
 
     # called when the service is being stopped by the service manager GUI
     def Stop(self):
-        from Logging import mainlog
+        from koi.base_logging import mainlog
         mainlog.info("Service shut down requested")
         self.server.shutdown() # stop the server_forever loop
         self.stopRequestedEvent.set() # not really necessary
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     sys.path.append( os.path.join(os.path.abspath(__file__),'..','..') )
     from koi.http_handler import HorseHTTPHandler
 
-    from Logging import init_logging,mainlog,horse_dir,log_stacktrace
+    from koi.base_logging import init_logging,mainlog,horse_dir,log_stacktrace
     init_logging("file_server.log")
     from Configurator import load_configuration,init_i18n,configuration,resource_dir
     load_configuration("server.cfg","server_config_check.cfg")

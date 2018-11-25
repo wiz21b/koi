@@ -85,10 +85,12 @@ p = find_packages(BASE_DIR, include=[ "koi.server", # server, administration GUI
                                       "koi", # FIXME what for ? Configurator at least
                                       "koi.backup", # To have the back up tool
                                       "koi.datalayer",
+                                      # Migrations are not needed but are useful
+                                      "koi.datalayer.migrations",
                                       "koi.configobj",
                                       "koi.configuration",
                                       "koi.doc_manager",
-                                      "koi.gui",
+                                      "koi.config_mgmt",
                                       "koi.user_mgmt",
                                       "koi.machine",
                                       "koi.quality",
@@ -101,8 +103,8 @@ p = find_packages(BASE_DIR, include=[ "koi.server", # server, administration GUI
                                       "koi.reporting",
                                       "koi.reporting.preorder",
                                       "koi.reporting.order_confirmation",
-                                      "koi.resources",
-                                      "koi.resources.server"])
+                                      "koi.resources"])
+                                      #   "koi.resources.server"])
 print( "Packages are {}".format(p))
 
 setup(
@@ -116,14 +118,16 @@ setup(
                    "koi.resources.server": ["order_confirmation_report.docx", "preorder_letter.docx"]},
     install_requires=['CherryPy==3.6.0',
                       'configobj>=5.0.0, <5.1.0',
-                      'sqlalchemy>=0.9.9, <1.0.0',
-                      'mediafire>=0.5.2, <0.6.0',
-                      'docxtpl',
-                      'reportlab',
+                      'sqlalchemy>=1.1.0, <1.2.0',
                       'psycopg2',
-                      # 'PySide==1.2.2', # commented out because pyside doesn't provide python binaries packages
-                      # for Linux (so pip install will rebuild everything :( )
-                      # It is thus easier to use the binaries provied by the host operating system.
+                      # 'PySide==1.2.2', # commented out because pyside doesn't provide binaries for Linux (so pip install will rebuild everything :( )
+                      # It is thus easier to use the binaries provied by Debian.
+                      # Look at the employee DB mapping to see that, in case we're
+                      # on the server side, PySide is not required.
+                      # These are not normally necessary but they com
+                      # with some dependencies (that I don't have time
+                      # to remove => FIXME remove these dep's)
+                      'docxtpl', 'openpyxl', 'reportlab',
                       'lxml>=3.4.2',
                       'jsonrpc2>=0.4.1'],
     classifiers=['Programming Language :: Python :: 3.4']

@@ -1,4 +1,4 @@
-from Logging import mainlog
+from koi.base_logging import mainlog
 from PySide.QtCore import Qt
 from PySide.QtGui import QWidget,QHBoxLayout,QVBoxLayout,QLabel,QFrame
 from Configurator import configuration

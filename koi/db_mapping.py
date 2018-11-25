@@ -3,7 +3,7 @@ import sys
 import traceback
 from datetime import date, datetime, timedelta
 
-from sqlalchemy import Table, Column, Integer, String, Float, MetaData, ForeignKey, Date, DateTime, Sequence, Boolean, LargeBinary, Binary, Index, Numeric
+from sqlalchemy import Table, Column, Integer, String, Float, MetaData, ForeignKey, Date, DateTime, Sequence, Boolean, LargeBinary, Binary, Index
 from sqlalchemy.orm import mapper, relationship, column_property, backref, deferred
 from sqlalchemy.sql import select,func,and_,join
 from sqlalchemy.schema import CreateTable,DropTable,CheckConstraint,UniqueConstraint
@@ -21,10 +21,11 @@ from koi.datalayer.SQLAEnum import DeclEnum
 
 from koi.datalayer.database_session import session
 from koi.datalayer.letter_position import position_to_letters
-from koi.datalayer.sqla_mapping_base import metadata,Base,DATABASE_SCHEMA,MoneyType
+from koi.datalayer.sqla_mapping_base import metadata,Base,DATABASE_SCHEMA
 from koi.datalayer.gapless_sequence import gaplessseq
-from koi.datalayer.employee_mapping import Employee
-from koi.machine.machine_mapping import Machine
+
+from koi.datalayer.sqla_mapping_base import MoneyType
+
 
 
 # sqlhandler = logging.FileHandler("sql.log",mode="w")
@@ -34,12 +35,20 @@ from koi.machine.machine_mapping import Machine
 
 
 
-id_generator = Sequence('id_generator', start=1000, metadata=metadata)
-operation_definition_id_generator = Sequence('operation_definition_id_generator',start=10000, metadata=metadata)
-order_id_generator = Sequence('order_id_generator',start=1, metadata=metadata)
-order_accounting_id_generator = Sequence('order_accounting_id_generator',start=1, metadata=metadata)
-preorder_id_generator = Sequence('preorder_id_generator',start=10000, metadata=metadata)
+id_generator = Sequence(name='id_generator',start=1000, schema=DATABASE_SCHEMA,metadata=metadata)
+operation_definition_id_generator = Sequence('operation_definition_id_generator',start=10000, schema=DATABASE_SCHEMA,metadata=metadata)
+order_id_generator = Sequence('order_id_generator',start=1, schema=DATABASE_SCHEMA,metadata=metadata)
+order_accounting_id_generator = Sequence('order_accounting_id_generator',start=1, schema=DATABASE_SCHEMA,metadata=metadata)
+preorder_id_generator = Sequence('preorder_id_generator', schema=DATABASE_SCHEMA,start=10000,metadata=metadata)
 
+
+
+def current_gaplessseq_value(name):
+    # FIXME Move this somewhere else
+    return session().query(gapless_seq_table.columns['gseq_value']).filter(gapless_seq_table.columns['gseq_name'] == name).scalar()
+
+from koi.datalayer.employee_mapping import Employee
+from koi.machine.machine_mapping import Machine
 
 
 class OrderPartStateType(DeclEnum):
@@ -53,7 +62,7 @@ class OrderPartStateType(DeclEnum):
     production_paused = 'on_hold', _('On hold')
 
     # Not conform = a fault has been detected in the process or in the result.
-    # It may mean the part was returned from the delivery_slips and thus is marked as "failed". The order part
+    # It may mean the part was returned from the client and thus is marked as "failed". The order part
     # will stay in that state forever.
     # It may also mean that the part is internally marked as "failed". In that case, efforts
     # will be accomplished to bring the part in conformity. So, the part may go back
@@ -109,12 +118,7 @@ class OrderStatusType(DeclEnum):
     """
 
 
-class SpecialActivityType(DeclEnum):
-    holidays = 'holidays', _('Holidays')
-    partial_activity = 'partial_activity', _('Partial activity')
-    unemployment = 'unemployment', _('Unemployment')
-    sick_leave = 'sick_leave', _('Sick leave')
-    other = 'other', _('Other')
+
 
 
 
@@ -185,7 +189,7 @@ class OperationDefinitionPeriod(Base):
     cost = Column('hourly_cost',MoneyType,nullable=False,default=0)
     """ Hourly cost for the parent operation during this period.
      The cost is a *cost*, it's not the value of the operation
-     on the delivery_slips side, it's the cost of the operation for
+     on the client side, it's the cost of the operation for
      the company. This is important for the valuation of work. """
 
 
@@ -356,6 +360,13 @@ class OperationDefinition(Base):
         else:
             return 0
 
+class SpecialActivityType(DeclEnum):
+    holidays = 'holidays', _('Holidays')
+    partial_activity = 'partial_activity', _('Partial activity')
+    unemployment = 'unemployment', _('Unemployment')
+    sick_leave = 'sick_leave', _('Sick leave')
+    other = 'other', _('Other')
+
 
 
 
@@ -391,7 +402,7 @@ class TimeTrack(Base):
     """ Tracks how much time was spent on a given task and by whom.
     TimeTracks are either automatically generated from the
     TaskActionreports (managed_by_code) or directly entered by a user.
-    The rule is that Koi always generates what it can. The user
+    The rule is that we always generates what it can. The user
     then enters additional TimeTracks to fix the hours of an
     employee. A managed_by_code TimeTrack cannot be removed/edited
     by the user.
@@ -1334,7 +1345,12 @@ class DeliverySlipPart(Base):
     delivery_slip_id = Column('delivery_slip_id',Integer,ForeignKey('delivery_slip.delivery_slip_id'),nullable=False)
 
     order_part_id = Column('order_part_id',Integer,ForeignKey('order_parts.order_part_id'),nullable=False)
-    quantity_out = Column('quantity_out',Integer,nullable=False)
+    quantity_out = Column('quantity_out',Integer,default=0,nullable=False)
+
+    # The various kind of defects
+    quantity_defect = Column('quantity_defect',Integer,default=0,nullable=False)
+    quantity_tuning = Column('quantity_tuning',Integer,default=0,nullable=False)
+    quantity_derogation = Column('quantity_derogation',Integer,default=0,nullable=False)
 
     # Be careful with the delivery_slip_parts and the fact that we turn
     # off the cascading...  According to the documentation of SQL :
@@ -1352,10 +1368,29 @@ class DeliverySlipPart(Base):
     # an issue because we clean up the database sometimes.
 
     order_part = relationship('OrderPart',backref=backref('delivery_slip_parts',cascade_backrefs=False),cascade_backrefs=False)
-    delivery_slip = relationship('DeliverySlip',backref=backref('delivery_slip_parts',cascade="delete,delete-orphan"))
+    delivery_slip = relationship('DeliverySlip',backref=backref('delivery_slip_parts',cascade="delete,delete-orphan",
+                                                                order_by="DeliverySlipPart.delivery_slip_part_id"))
 
     def __repr__(self):
         return u"Quantity:{} for order_part_id:{}".format(self.quantity_out, self.order_part_id)
+
+    def __init__(self):
+        self.quantity_out = 0
+        self.quantity_defect = 0
+        self.quantity_tuning = 0
+        self.quantity_derogation = 0
+
+
+# parts_completions_states = Table('parts_completions_states', metadata,
+#     Column('order_part_id', Integer, primary_key=True),
+#     Column('completion_date', DateTime),
+#     Column('state', OrderPartStateType.db_type())
+# )
+
+# OrderPart.auto_state = column_property(
+#     select( [parts_completions_states.c.state]).\
+#             where( OrderPart.__table__.c.order_part_id == parts_completions_states.c.order_part_id).\
+#         correlate(OrderPart).as_scalar())
 
 
 # Total material value
@@ -1423,7 +1458,6 @@ Operation.done_hours = column_property(
     select([func.coalesce(func.sum(func.coalesce(TimeTrack.__table__.c.duration,0)),0)],
            from_obj=TaskOnOperation.__table__.join(Task.__table__).join(TimeTrack.__table__)).\
     where(Operation.operation_id == TaskOnOperation.__table__.c.operation_id))
-
 
 # The following works only when selecting existing
 # orders...

@@ -121,7 +121,6 @@ class TimeTracksOverviewWidget(QWidget):
             # One bucket per day
             buckets = [0] * day_max
             for t in tracks:
-                mainlog.debug("Bucket {}".format(t))
                 buckets[t.start_time.day - 1] += t.duration
 
             for b in range(len(buckets)):

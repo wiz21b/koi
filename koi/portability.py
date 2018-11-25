@@ -32,7 +32,7 @@ def open_a_file_on_os(filepath):
             import win32com.client
 
             # See http://stackoverflow.com/questions/26907177/key-error-while-using-cx-freeze-for-making-exe
-            # word = win32com.delivery_slips.gencache.EnsureDispatch('Word.Application')
+            # word = win32com.client.gencache.EnsureDispatch('Word.Application')
             word = win32com.client.dynamic.Dispatch('Word.Application')
 
             word.Visible = True

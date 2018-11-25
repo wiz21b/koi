@@ -231,18 +231,19 @@ def generic_load_all_frozen(mapped_klass,sort_criterion=None):
     items = q.all()
     for i in items:
         make_transient(i)
+    session().commit()
     return items
 
-    q = session().query(*mapped_klass.__table__.columns)
-    if sort_criterion:
-        q = q.order_by(sort_criterion)
-
-    frozen_items = q.all()
-    session().commit()
-    # mainlog.debug("generic_load_all_frozen : returning {} items".format(len(frozen_items)))
-    # for item in frozen_items:
-    #     mainlog.debug(item)
-    return frozen_items
+    # q = session().query(*mapped_klass.__table__.columns)
+    # if sort_criterion:
+    #     q = q.order_by(sort_criterion)
+    #
+    # frozen_items = q.all()
+    # session().commit()
+    # # mainlog.debug("generic_load_all_frozen : returning {} items".format(len(frozen_items)))
+    # # for item in frozen_items:
+    # #     mainlog.debug(item)
+    # return frozen_items
 
 def defrost_to_session(obj,klass):
     assert obj

@@ -1,7 +1,7 @@
 from datetime import date
 from sqlalchemy.sql import select,func,and_,or_
 
-from Logging import mainlog,init_logging
+from koi.base_logging import mainlog,init_logging
 from Configurator import init_i18n,load_configuration,configuration,resource_dir
 init_logging()
 init_i18n()

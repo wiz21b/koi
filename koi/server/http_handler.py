@@ -5,7 +5,7 @@ import urlparse
 import re
 import socket
 
-from Logging import init_logging,mainlog,horse_dir,log_stacktrace
+from koi.base_logging import init_logging,mainlog,horse_dir,log_stacktrace
 from Configurator import load_configuration,configuration,resource_dir
 from pymediafire import MediaFireSession, MediaFireFile,MediaFireFolder
 

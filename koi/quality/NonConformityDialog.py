@@ -457,7 +457,7 @@ if __name__ == "__main__":
     dialog = NonConformityDialog(None, remote_documents_service)
 
     order_part = dao.order_part_dao.find_youngest()
-    print(order_part.nb_non_conformities)
+    #print(order_part.nb_non_conformities)
 
     dialog.set_blank_quality_issue(QualityEventType.non_conform_customer, order_part.order_part_id)
 
@@ -470,7 +470,3 @@ if __name__ == "__main__":
 
     if dialog.result() == QDialog.Accepted:
         business_computations_service.mark_as_non_conform( dialog.quality_event())
-
-
-
-

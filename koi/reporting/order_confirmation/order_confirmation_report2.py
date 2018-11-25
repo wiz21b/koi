@@ -10,7 +10,7 @@ if __name__ == "__main__":
     init_db_session(configuration.database_url, metadata, False or configuration.echo_query)
 
 import os
-
+from datetime import date
 from docxtpl import DocxTemplate
 
 from koi.dao import dao
@@ -19,7 +19,7 @@ from koi.doc_manager.documents_service import DocumentsService
 from koi.doc_manager.client_utils import download_document
 from koi.reporting.utils import make_home_file
 from koi.portability import open_a_file_on_os
-from koi.translators import amount_to_s
+from koi.translators import amount_to_s, date_to_dmy
 
 HORSE_REFERENCE = "order_confirmation_letter"
 HORSE_TEMPLATE = "order_confirmation_report.docx"
@@ -77,6 +77,7 @@ def print_order_confirmation_report(order_id):
         'total_parts' : moneyfmt(grand_total),
 
         'items' : parts_table ,
+        'date_gen' : date_to_dmy(date.today())
     }
 
     tpl=DocxTemplate( tpl_path)

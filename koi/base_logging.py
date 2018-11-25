@@ -173,7 +173,8 @@ def init_logging(log_file = "{}.log".format(codename),hook_exceptions=True, cons
     except AttributeError as ex:
         # This to avoid "nose" error. My guess is that
         # nose redefines sys.stdout and forget to add
-        # the encoding field
+        # the encoding field. Under cx_freeze frozen
+        # execution, sys.stdout is also None.
         pass
 
     if log_file:
@@ -183,8 +184,7 @@ def init_logging(log_file = "{}.log".format(codename),hook_exceptions=True, cons
         handler.setFormatter(EncodingFormatter())
         mainlog.addHandler(handler)
 
-    # if not getattr(sys, 'frozen', False) and console_log:
-    if console_log:
+    if not getattr(sys, 'frozen', False) and console_log:
         # I'm under the impression that once we run without
         # a console, things get a little bit trickier
         # so I disable logging to console in that case
@@ -239,6 +239,7 @@ mainlog.setLevel(logging.INFO)
 for h in mainlog.handlers:
     mainlog.removeHandler(h)
 
+mainlog.setLevel(logging.ERROR)
 # I don't log anything at this point because sometimes the logger must
 # be manipulated some more before being used (for example when one
 # makes a Windows service, nothing must be sent to STDOUT)

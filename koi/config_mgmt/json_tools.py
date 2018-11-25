@@ -8,6 +8,12 @@ from koi.base_logging import mainlog
 from koi.python3 import DeclEnum,EnumSymbol
 
 class HorseJsonEncoder(JSONEncoder):
+    """An encoder that's meant to convert from dict to json, with the
+    additional hypothesis that the dict only contains python base
+    objects (numbers, dates, dict, set, enums, etc. but no plain
+    object).
+
+    """
 
     def default(self, obj):
         """ As stated in Python's doc : implement a default() method
@@ -21,6 +27,7 @@ class HorseJsonEncoder(JSONEncoder):
         elif isinstance(obj,Decimal):
             return { '__dec__' : str(obj) }
         elif isinstance(obj,EnumSymbol):
+            # Legacy enum's from Koi
             return { '__old_enum__' : (obj.value, obj.cls.__name__) }
         elif isinstance(obj,enum.Enum):
             # Python 3 enums are not regular classes (see "How are Enums

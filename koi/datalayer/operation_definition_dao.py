@@ -68,7 +68,6 @@ class OperationDefinitionDAO:
 
     @RollbackDecorator
     def save(self,opdef):
-        mainlog.debug("operation_definition_dao : save")
         must_refresh_tasks_activity = False
 
         if opdef not in session():
@@ -77,11 +76,10 @@ class OperationDefinitionDAO:
             insp = inspect(opdef)
             imputable_state = insp.attrs.imputable
 
-            must_refresh_tasks_activity = imputable_state and imputable_state.history and len(imputable_state.history.unchanged) == 0
+            must_refresh_tasks_activity = (imputable_state is not None) and imputable_state.history and len(imputable_state.history.unchanged) == 0
 
 
         session().flush()
-        mainlog.debug("operation_definition_dao : flushed")
 
         if len(opdef.periods) == 0:
             raise Exception("An operation definition must always have at least on period")

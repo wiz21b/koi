@@ -26,10 +26,6 @@ from koi.server.net_tools import string_represents_ip_address
 from koi.as_unicorn import codename
 from koi.server.net_tools import guess_server_public_ip
 
-
-if sys.platform == 'win32':
-    from win32com.shell import shell, shellcon
-
 BASE_PACKAGE = 'koi'
 
 class Configuration(object):
@@ -178,7 +174,7 @@ class Configuration(object):
     def load_network_param(self):
         """ Load the network parameters. The priority is the config file first,
         then, if empty or not properly filled in, we guess it for net.cfg.
-        This is for the delivery_slips side.
+        This is for the client side.
         :return:
         """
 
@@ -233,8 +229,7 @@ class Configuration(object):
 
         config_spec = os.path.join( resource_dir, "server_config_check.cfg")
 
-        data_dir = os.path.join( shell.SHGetFolderPath(0, shellcon.CSIDL_COMMON_APPDATA, 0, 0),
-                                 codename)
+        data_dir = get_data_dir()
         config_file = os.path.join(data_dir, 'server.cfg')
 
         if not os.path.exists(os.path.join(data_dir)):

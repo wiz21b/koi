@@ -124,21 +124,19 @@ class DeclEnumType(SchemaType, TypeDecorator):
     def _sql_type_name(self):
         return "ck%s" % re.sub(
             '([A-Z])', lambda m: '_' + m.group(1).lower(), self.enum.__name__)
-    
+
     def drop(self,bind=None,checkfirst=False):
-        # print("drop "*10)
         z =  self.impl.drop(bind, checkfirst)
-        # print("drop "*10)
         return z
 
-    
+
         return "DROP TYPE IF EXISTS {}".format( self._sql_type_name())
 
     # def create(self, schema):
     #     return "CREATE TYPE {} AS ENUM ({})".format(
     #         schema,
     #         ','.join([ "'{}'".format(n) for n in self.enum.names()]))
-    
+
     def _set_table(self, table, column):
         self.impl._set_table(table, column)
 

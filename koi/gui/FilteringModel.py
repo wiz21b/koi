@@ -2,7 +2,7 @@ if __name__ == "__main__":
     import sys
     from PySide.QtGui import QApplication,QMainWindow
 
-    from Logging import init_logging
+    from koi.base_logging import init_logging
     from koi.Configurator import init_i18n,load_configuration, configuration
     init_logging()
     init_i18n()

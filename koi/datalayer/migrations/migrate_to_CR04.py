@@ -49,6 +49,7 @@ def alter_structure():
     create_entity( session, ConfigurationLine)
 
 
+    # By default added columns are nullable
     session().connection().execute("ALTER TABLE {} ADD configuration_id INTEGER".format(order_parts_tn))
     session().connection().execute("ALTER TABLE {} ADD CONSTRAINT fk_configuration FOREIGN KEY(configuration_id) REFERENCES {} (configuration_id)".format(order_parts_tn, configuration_tn))
     session().commit()

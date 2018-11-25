@@ -1,6 +1,6 @@
 import urllib.request, urllib.error, urllib.parse
 
-from Logging import init_logging,mainlog,horse_dir,log_stacktrace
+from koi.base_logging import init_logging,mainlog,horse_dir,log_stacktrace
 init_logging("file_server.log")
 from Configurator import load_configuration,init_i18n,configuration,resource_dir
 load_configuration("server.cfg","server_config_check.cfg")

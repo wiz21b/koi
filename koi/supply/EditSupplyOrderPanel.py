@@ -2,13 +2,13 @@ if __name__ == "__main__":
     import sys
     from PySide.QtGui import QApplication,QMainWindow
 
-    from Logging import mainlog,init_logging
+    from koi.base_logging import mainlog,init_logging
 
     init_logging()
     init_i18n()
     load_configuration()
 
-    from db_mapping import metadata
+    from koi.db_mapping import metadata
 
     init_db_session(configuration.database_url, metadata, False or configuration.echo_query)
 

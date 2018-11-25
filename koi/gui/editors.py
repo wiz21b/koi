@@ -3,10 +3,10 @@ from PySide.QtGui import QLineEdit,QComboBox,QValidator
 
 from koi.Configurator import mainlog
 from koi.QuickComboModel import QuickComboModel
-from koi.configuration.business_functions import business_computations_service
 from koi.gui.ComboDelegate import TimestampValidator,DurationValidator
 from koi.gui.ProxyModel import OrderPartIdentifierValidator
 from koi.translators import time_to_timestamp,duration_to_hm
+from koi.configuration.business_functions import business_computations_service
 
 
 class StandardEditInstrumentation(object):
@@ -19,6 +19,10 @@ class StandardEditInstrumentation(object):
     # The price to pay is that we need a little more code
     # when not using Qt Quick (one line to create the editor, and a second
     # one to add the associated Qt widget to, say, a QLayout).
+    # But this is a disadvantage if we actually code in a not-so-nice
+    # way. That is, we should have a view class that is only concerned
+    # with building the GUI with Qt's widgets. Beside that, we'd have
+    # a controller which is inherited from this very class.
 
     def __init__(self, field_name, user_name, nullable, widget):
         assert widget is not None

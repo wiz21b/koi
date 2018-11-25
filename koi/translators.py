@@ -256,7 +256,12 @@ def format_number(n):
         return "{:,d}".format(int(n)).replace(u",",u" ")
 
 import locale
-decimal_point = locale.localeconv()['decimal_point']
+decimal_point = ","
+try:
+    decimal_point = locale.localeconv()['decimal_point']
+except Exception as ex:
+    # This crashes on Wine
+    pass
 
 def format_csv(n):
     if n is None:

@@ -24,7 +24,7 @@ if __name__ == "__main__":
     elif 'VNCDESKTOP' in os.environ:
         clock_client_id = os.environ['VNCDESKTOP']
     else:
-        print("Please provide a suitable clock delivery_slips ID")
+        print("Please provide a suitable clock client ID")
         print("It is either a command line parameter or the env. variable VNCDESKTOP")
         exit()
 

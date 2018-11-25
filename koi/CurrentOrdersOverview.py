@@ -741,6 +741,7 @@ class CurrentOrdersOverviewWidget(QWidget):
         if type(criteria) == int:
             self.base_date = base_date
             self.parts_data = dao.order_dao.load_order_parts_overview(self.base_date, criteria)
+            
             # self.overview_frame.set_title(_("Orders for {}").format(date_to_my(self.base_date,full=True)))
             self.fill_model(self.parts_data)
         else:
@@ -1374,12 +1375,8 @@ class CurrentOrdersOverviewWidget(QWidget):
             op = model.objects[current.row()]
 
             if op and op.operation_id:
-
-                mainlog.debug("operation_selection_changed : loading employees")
                 employees = dao.operation_dao.last_employees_on_operation(op.operation_id)
-                mainlog.debug("operation_selection_changed : loading employees - 2")
                 employees = [ (emp, duration_to_hm(hours))  for emp, hours in employees]
-                mainlog.debug("operation_selection_changed : loading employees - 3")
                 # self.employee_view.set_model(employees)
                 return
 
@@ -1398,9 +1395,6 @@ class YoModel(PrototypedModelView):
 
 
 class PartActivityView(QWidget):
-
-    FONT_WIDTH = 10 # FIXME Huge approximation !
-
     def __init__(self, parent):
         super(PartActivityView,self).__init__(parent)
 
@@ -1501,24 +1495,25 @@ class PartActivityView(QWidget):
 
 
             for line in events.rget(date,'QUALITY'):
-                fulltext += "<tr bgcolor=red>" \
+                mainlog.debug("quality event to show")
+                fulltext += "<tr bgcolor=red>"  \
                             "<td align='right'>{}&nbsp;</td>" \
-                            "<td colspan='6'><font color=white>{}</font></td>" \
-                            "</tr>".format(
-                    date_shown, wrap_html_text( "{} : {}".format(line.kind.description, remove_crlf(line.description)),
-                                                self.events_view.width() // self.FONT_WIDTH))
+                            "<td colspan='3'><font color=white>{} : {}</font></td>" \
+                            "</tr>".format( date_shown, line.kind.description, remove_crlf(line.description))
                 date_shown = ""
 
             for line in events.rget(date,'SLIP'):
                 fulltext += "<tr bgcolor=lime>" \
                             "<td align='right'>{}&nbsp;</td>" \
-                            "<td colspan='6'><font color=black>{}</font></td>" \
-                            "</tr>".format(
+                            "<td colspan='3'><font color=black>{}</font></td>" \
+                            "</tr>".format( \
                     date_shown, _("Delivery slip {}, <b>{}</b> units").format(line.delivery_slip_id, line.quantity_out))
                 date_shown = ""
 
             if events.rget(date,'SLIP') and events.rget(date,'TIMETRACK'):
-                fulltext += "<tr bgcolor={}><td colspan='7'><font size=1>&nbsp;</font></td></tr>".format(bgcolor)
+                fulltext += "<tr bgcolor={}>" \
+                            "<td colspan='4'><font size=1>&nbsp;</font></td>" \
+                            "</tr>".format(bgcolor)
 
             # work = "<table>"
             for line in events.rget(date,'TIMETRACK'):
@@ -1534,7 +1529,7 @@ class PartActivityView(QWidget):
                             "<td align='right'>{}&nbsp;</td>" \
                             "<td align='right'>{}&nbsp;</td>" \
                             "<td align='right'>{}&nbsp;&nbsp;&nbsp;</td>" \
-                            "<td align='left' colspan='4' width='100%'>{}</td>" \
+                            "<td align='left' width='100%'>{}</td>" \
                             "</tr>".format(
                     bgcolor, date_shown, line.short_id, duration_to_s(line.duration), line.fullname)
                 date_shown = ""
@@ -1542,12 +1537,13 @@ class PartActivityView(QWidget):
             # work += "</table>"
 
 
-            fulltext += "<tr bgcolor={}>".format(bgcolor) + "<td><font size=1>&nbsp;</font></td>"*7 + "</tr>"
+            fulltext += "<tr bgcolor={}>".format(bgcolor) + "<td><font size=1>&nbsp;</font></td>"*4 + "</tr>"
 
         # fulltext += "<tr><td>MM/MM</td><td>MM.MM</td><td>MMMM</td><td></td></tr>"
         fulltext += "</table>"
         self.events_view.setText(fulltext)
         # self._model.buildModelFromObjects(res)
+
 
 if __name__ == "__main__":
     employee = dao.employee_dao.any()

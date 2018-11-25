@@ -5,7 +5,7 @@ from datetime import datetime
 import sys
 sys.path.append('..')
 
-from Logging import init_logging
+from koi.base_logging import init_logging
 init_logging(r"ipython.log")
 from Configurator import init_i18n,mainlog,load_configuration
 load_configuration()

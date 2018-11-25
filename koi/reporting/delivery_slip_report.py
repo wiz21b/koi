@@ -1,13 +1,6 @@
-if __name__ == "__main__":
-    from Logging import init_logging
-    init_logging("rlab.log")
-    from Configurator import configuration,mainlog,init_i18n,load_configuration
-    init_i18n()
-    load_configuration()
-
-
 from datetime import datetime,date
 from decimal import *
+import os
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
@@ -21,8 +14,6 @@ from reportlab.lib import colors
 
 from koi.translators import nunicode,date_to_dmy,crlf_to_br
 from koi.reporting.utils import MyTable,make_pdf_filename,open_pdf,customer_PDF,moneyfmt,NumberedCanvas,append_general_conditions,append_header_block,escape_html
-
-import os
 from koi.Configurator import resource_dir
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -108,7 +99,7 @@ def _make_delivery_slip(dao,slip_id,filename):
     complete_document.append(t)
 
     complete_document.append(spacer)
-    p = Paragraph(_(u"Sauf avis contraire stipule ci-dessus, les marchandises circulent aux<br/> frais du delivery_slips et a ses risques et perils."),s)
+    p = Paragraph(_(u"Sauf avis contraire stipule ci-dessus, les marchandises circulent aux<br/> frais du client et a ses risques et perils."),s)
     complete_document.append(p)
     p = Paragraph(_(u"Les frais de port seront portes en facture."),s)
     complete_document.append(p)
@@ -131,12 +122,3 @@ def print_delivery_slip(dao,slip_id):
     open_pdf(filename)
     return True
 
-
-
-if __name__ == "__main__":
-    from db_mapping import metadata
-    from datalayer.database_session import init_db_session,session
-    init_db_session(configuration.database_url, metadata, False or configuration.echo_query)
-    from dao import DAO
-    dao = DAO(session())
-    print_delivery_slip(dao,800)

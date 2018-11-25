@@ -587,11 +587,8 @@ class OrderPartDAO(object):
                     # op.transition_state(OrderPartStateType.state_from_order_state(order.state))
                     assert op.order_part_id, "There was a failure in session handling"
                     business_computations_service.transition_part_state(op,
-                                                                        business_computations_service.order_part_state_from_order_state(order.state))
+                        business_computations_service.order_part_state_from_order_state(order.state))
                     mainlog.debug("Changed it to {}".format(op.state))
-
-                # elif op.state == OrderPartStateType.completed:
-                #     op.state = business_computations_service.infer_part_state( op)
 
         # Remember that when doing flush, nothing guarantees
         # that the DB statements will be sent to the DB
@@ -696,7 +693,7 @@ class OrderPartDAO(object):
 
         for action_type,op,op_ndx in actions:
             if action_type == DBObjectActionTypes.TO_DELETE:
-                if op.operation_id:
+                if op.operation_id > 0:
 
                     op = session().query(Operation).filter(Operation.operation_id == op.operation_id).one()
 
@@ -713,6 +710,7 @@ class OrderPartDAO(object):
 
                         # session().delete(op) # Will cascade to the task
                         ops.remove(op) # Should trigger delete
+                        audit_trail_service.record("DELETE_OPERATION", "Delete operation", op.operation_id, commit=False)
                     else:
                         # Normally this error should be caught in the GUI
                         # before arriving here, but you never know...
@@ -794,56 +792,20 @@ class OrderPartDAO(object):
 
         session().flush() # Apply updates and creations, with offset positions
 
-
-        # operations = order_part.production_file[0].operations
-        # for action_type,op,op_ndx in actions:
-        #     if action_type == DBObjectActionTypes.TO_UPDATE:
-        #         for current_op in operations:
-        #             if current_op.operation_id == op.operation_id:
-        #                 current_op.position = op_ndx
-        #     elif action_type == DBObjectActionTypes.TO_CREATE:
-        #         op.production_file_id = order_part.production_file[0].production_file_id # each operation belongs to a ProductioFile (and it shouldn't FIXME)
-        #         op.position = op_ndx
-        #         session().add(op)
-        #
-        #         operations.insert()
-
-
-        # pos = 10000
-        # for action_type,op,op_ndx in actions:
-        #     mainlog.debug("reorder operation positin {}".format(op_ndx))
-        #     if action_type == DBObjectActionTypes.TO_CREATE:
-        #         op.position = pos
-        #         session().add(op)
-        #         # This has sometimes triggered a flush which in turn
-        #         # triggered "violates check constraint "position_one_based""
-        #         order_part.production_file[0].operations.append(op)
-        #
-        #     if action_type != DBObjectActionTypes.TO_DELETE:
-        #         pos += 1
-
-        session().flush()
-
-        # Now we reorder the operations
-        # The following operations are efficient only if the
-        # operations are all in the SQLA session. If not this will
-        # result in lots of objects loads.
-
-        # pos = 100000 # Make sure this doesn't collide with previously added
-        # # operations' positions
-        # for action_type,operation,op_ndx in actions:
-        #     if action_type != DBObjectActionTypes.TO_DELETE:
-        #         operation.position = pos
-        #         pos += 1
-        #
-        # session().flush()
-
         # Operations were reordered, now we bring them into
         # place
 
         pos = 1
         for action_type,operation,op_ndx in actions:
+
+
+            if action_type == DBObjectActionTypes.TO_CREATE:
+                audit_trail_service.record("CREATE_OPERATION", "{}, planned hours: {}".format(operation.description, operation.planned_hours), operation.operation_id, commit=False)
+            elif action_type == DBObjectActionTypes.TO_UPDATE:
+                audit_trail_service.record("UPDATE_OPERATION", "{}, planned hours: {}".format(operation.description, operation.planned_hours), operation.operation_id, commit=False)
+
             if action_type != DBObjectActionTypes.TO_DELETE:
+                mainlog.debug("Reordering {} {} #{} {}".format(action_type, str(operation),op_ndx, operation in session()))
                 operation.position = pos
                 pos += 1
 
@@ -906,21 +868,21 @@ class OrderPartDAO(object):
 
     def value_work_on_order_part_up_to_date(self,order_part_id,d):
 
-        if order_part_id == 25268:
-            mainlog.debug("value_work_on_order_part_up_to_date: {}".format(d))
-            for tt in session().query(TimeTrack.start_time,TimeTrack.duration,OperationDefinition.description,OperationDefinitionPeriod.start_date,OperationDefinitionPeriod.end_date,OperationDefinitionPeriod.cost).\
-                join(TaskOnOperation).\
-                join(Operation).\
-                join(ProductionFile).\
-                join(OperationDefinition).\
-                join(OperationDefinitionPeriod, OperationDefinitionPeriod.operation_definition_id == OperationDefinition.operation_definition_id).\
-                join(OrderPart).\
-                filter(and_(OrderPart.order_part_id == order_part_id,
-                            TimeTrack.start_time <= d,
-                            TimeTrack.start_time >= OperationDefinitionPeriod.start_date,
-                            or_(OperationDefinitionPeriod.end_date == None,
-                                TimeTrack.start_time <= OperationDefinitionPeriod.end_date))).all():
-                mainlog.debug(tt)
+        #if order_part_id == 25268:
+        #    mainlog.debug("value_work_on_order_part_up_to_date: {}".format(d))
+        #    for tt in session().query(TimeTrack.start_time,TimeTrack.duration,OperationDefinition.description,OperationDefinitionPeriod.start_date,OperationDefinitionPeriod.end_date,OperationDefinitionPeriod.cost).\
+        #        join(TaskOnOperation).\
+        #        join(Operation).\
+        #        join(ProductionFile).\
+        #        join(OperationDefinition).\
+        #        join(OperationDefinitionPeriod, OperationDefinitionPeriod.operation_definition_id == OperationDefinition.operation_definition_id).\
+        #        join(OrderPart).\
+        #        filter(and_(OrderPart.order_part_id == order_part_id,
+        #                    TimeTrack.start_time <= d,
+        #                    TimeTrack.start_time >= OperationDefinitionPeriod.start_date,
+        #                    or_(OperationDefinitionPeriod.end_date == None,
+        #                        TimeTrack.start_time <= OperationDefinitionPeriod.end_date))).all():
+        #        mainlog.debug(tt)
 
 
         r = session().query(func.sum(TimeTrack.duration * OperationDefinitionPeriod.cost)).\

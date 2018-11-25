@@ -5,7 +5,7 @@ from sqlalchemy import and_,or_
 from koi.datalayer.database_session import session
 from koi.datalayer.RollbackDecorator import RollbackDecorator
 from koi.datalayer.audit_trail_mapping import AuditTrail
-from koi.db_mapping import Employee,OrderPart
+from koi.db_mapping import Employee,OrderPart, ProductionFile, Operation
 from koi.session.UserSession import user_session
 
 
@@ -29,13 +29,18 @@ class AuditTrailService(object):
 
         subq = session().query(AuditTrail.who_id).\
                join(OrderPart, OrderPart.order_id == order_id).\
+               join(ProductionFile, ProductionFile.order_part_id == OrderPart.order_part_id).\
+               join(Operation, Operation.production_file_id == ProductionFile.production_file_id).\
                filter(and_( AuditTrail.when > tlimit,
                             AuditTrail.who_id != not_me_id,
                             AuditTrail.who_id != None, # is not null
                             or_(and_(AuditTrail.target_id == order_id,
                                      AuditTrail.what.in_(["CREATE_ORDER","UPDATE_ORDER","ORDER_STATE_CHANGED"])),
+                                and_(AuditTrail.target_id == Operation.operation_id,
+                                     AuditTrail.what.in_(["CREATE_OPERATION", "UPDATE_OPERATION", "DELETE_OPERATION"])),
                                 and_(AuditTrail.target_id == OrderPart.order_part_id,
-                                     AuditTrail.what.in_(["CREATE_ORDER_PART","UPDATE_ORDER_PART","DELETE_ORDER_PART"]))))).order_by(AuditTrail.when).subquery()
+                                     AuditTrail.what.in_(["CREATE_ORDER_PART","UPDATE_ORDER_PART","DELETE_ORDER_PART"])))
+                            )).order_by(AuditTrail.when).subquery()
 
         res = session().query(Employee.fullname).\
               select_from(subq).\
@@ -54,11 +59,17 @@ class AuditTrailService(object):
 
         res = session().query(AuditTrail.what,AuditTrail.detailed_what,AuditTrail.when,Employee.fullname).\
               join(Employee).\
-              join(OrderPart, OrderPart.order_id == order_id).\
-              filter(or_(and_(AuditTrail.target_id == order_id,
-                              AuditTrail.what.in_(["VIEW_ORDER","CREATE_ORDER","UPDATE_ORDER","ORDER_STATE_CHANGED"])),
-                         and_(AuditTrail.target_id == OrderPart.order_part_id,
-                              AuditTrail.what.in_(["CREATE_ORDER_PART","UPDATE_ORDER_PART","DELETE_ORDER_PART"])))).order_by(AuditTrail.when).distinct().all()
+              join(OrderPart, OrderPart.order_id == order_id). \
+              join(ProductionFile, ProductionFile.order_part_id == OrderPart.order_part_id). \
+              join(Operation, Operation.production_file_id == ProductionFile.production_file_id). \
+            filter(
+                or_(and_(AuditTrail.target_id == order_id,
+                         AuditTrail.what.in_(["CREATE_ORDER", "UPDATE_ORDER", "ORDER_STATE_CHANGED"])),
+                    and_(AuditTrail.target_id == Operation.operation_id,
+                         AuditTrail.what.in_(["CREATE_OPERATION", "UPDATE_OPERATION", "DELETE_OPERATION"])),
+                    and_(AuditTrail.target_id == OrderPart.order_part_id,
+                         AuditTrail.what.in_(["CREATE_ORDER_PART", "UPDATE_ORDER_PART", "DELETE_ORDER_PART"])))
+        ).order_by(AuditTrail.when).distinct().all()
 
         session().commit()
         return res
@@ -78,10 +89,12 @@ class AuditTrailService(object):
 
         global user_session
 
+        assert target_id is not None # Reflect DB constraint
+
         a = AuditTrail()
-        a.what = str(what)
+        a.what = str(what or _("Unspecified"))
         a.target_id = target_id
-        a.detailed_what = str(detailed_what)
+        a.detailed_what = str(detailed_what or _("Unspecified"))
 
         if who_id is None and who_else is None:
             a.who_id = user_session.user_id

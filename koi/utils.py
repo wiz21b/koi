@@ -160,7 +160,7 @@ def make_temp_file(prefix = None, extension : str = None):
 
 content_disposition_download_regex = re.compile("attachment; +filename=\"([^\"]+)\"")
 
-def download_file(url, progress_tracker = None, destination = None):
+def download_file(url, destination = None, progress_tracker = None):
     """ Download document from url.
 
     :param progress_tracker: a progress tacker

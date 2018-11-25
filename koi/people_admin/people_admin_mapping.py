@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.schema import CheckConstraint,UniqueConstraint
 
 
-from koi.datalayer.sqla_mapping_base import Base, metadata
+from koi.datalayer.sqla_mapping_base import Base, metadata, DATABASE_SCHEMA
 from koi.datalayer.SQLAEnum import DeclEnum
 from koi.datalayer.employee_mapping import Employee
 
@@ -52,7 +52,9 @@ class DayEventType(DeclEnum):
         else:
             return "???"
 
-day_event_id_generator = Sequence('day_event_id_generator',start=1,metadata=metadata)
+
+
+day_event_id_generator = Sequence('day_event_id_generator',start=1, schema=DATABASE_SCHEMA,metadata=metadata)
 
 
 class DayEvent(Base):

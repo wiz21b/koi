@@ -22,7 +22,6 @@ import re
 
 
 from koi.Configurator import mainlog,configuration,get_data_dir,resource_dir
-from koi.utils import download_file, make_temp_file
 
 
 
@@ -36,6 +35,32 @@ def extractAll(zipName,tmp_dir = ""):
             os.makedirs(dest)
         else:
             z.extract(f,tmp_dir)
+
+def download_file(url, destination_file):
+    mainlog.info("Downloading new version to {}".format(destination_file))
+    mainlog.debug("Opening {}".format(url))
+
+    u = urlopen(url)
+    f = open(destination_file, 'wb')
+    meta = u.info()
+
+    file_size = int(meta["Content-Length"])
+
+    file_size_dl = 0
+    block_sz = 8192
+    while True:
+        buffer = u.read(block_sz)
+        if not buffer:
+            break
+
+        file_size_dl += len(buffer)
+        f.write(buffer)
+
+        # status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
+        # status = status + chr(8)*(len(status)+1)
+        # print status,
+
+    f.close()
 
 
 def get_server_version(url_version):
@@ -160,6 +185,7 @@ def upgrade_process( args):
 
         try:
             tmpfile = make_temp_file(prefix='NewVersion_'+version_to_str(next_version), extension='.zip')
+
             download_file( configuration.update_url_file, tmpfile)
 
             newdir = os.path.join(get_data_dir(), "{}-{}".format(codename, version_to_str(next_version)))

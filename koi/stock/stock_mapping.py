@@ -16,9 +16,9 @@ stock_movement:
 import decimal
 from sqlalchemy.orm import composite
 from sqlalchemy import Column, String, Boolean, Float, Integer, Sequence, ForeignKey, DateTime, Numeric
-from koi.datalayer.sqla_mapping_base import metadata,Base
+from koi.datalayer.sqla_mapping_base import metadata,Base,DATABASE_SCHEMA
 
-stock_item_id_generator = Sequence('resource_id_generator',1,None,None,False,None,metadata)
+stock_item_id_generator = Sequence('resource_id_generator',start=1, schema=DATABASE_SCHEMA,metadata=metadata)
 
 
 Price = Numeric(10,2)

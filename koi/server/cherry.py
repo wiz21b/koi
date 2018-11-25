@@ -8,7 +8,7 @@ pip install psycopg2
 pip install sqlalchemy
 pip install jsonrpc2
 
-Download pywin32 from http://www.lfd.uci.edu/~gohlke/pythonlibs/#pywin32 
+Download pywin32 from http://www.lfd.uci.edu/~gohlke/pythonlibs/#pywin32
 ... bercause it is built for Python 3.4 (may take time)
 pip install Downloads\ pywin32-219-cp34-none-win32.whl
 
@@ -24,8 +24,8 @@ import cherrypy
 import re
 import zipfile
 
+#from mediafire.client import MediaFireClient
 
-from mediafire.client import MediaFireClient
 
 
 from koi.Configurator import init_i18n
@@ -181,7 +181,7 @@ def http_download(download_url, outfile, proxy_url=None, proxy_port = None):
 
 def upgrade_file(path):
     global configuration
-    re_file = re.compile(r'koi-delivery_slips-([0-9]+\.[0-9]+\.[0-9]+)\.zip')
+    re_file = re.compile(r'koi-client-([0-9]+\.[0-9]+\.[0-9]+)\.zip')
     exe_filename = "{}/{}.exe".format( configuration.get("Globals","codename"), configuration.get("Globals","codename"))
 
     if os.path.exists(path):
@@ -204,13 +204,13 @@ def upgrade_file(path):
                 configuration.set("DownloadSite","current_version",str(version))
                 configuration.set("DownloadSite","client_path",path)
                 configuration.save()
-                mainlog.info("Configuration successfully updated with delivery_slips version {}.".format(version))
+                mainlog.info("Configuration successfully updated with client version {}.".format(version))
                 mainlog.warning("Don't forget to restart the server to take it into account !")
                 return True
             else:
                 mainlog.error("Didn't find {} inside the file you've given. Possible candidates {}".format(exe_filename, ", ".join(candidates)))
         else:
-            mainlog.error("I don't recognize the filename. It should be 'koi-delivery_slips-a.b.c.zip'.")
+            mainlog.error("I don't recognize the filename. It should be 'koi-client-a.b.c.zip'.")
     else:
         mainlog.error("The file {} was not found.".format(path))
 
@@ -302,7 +302,7 @@ img {background-color:white;}
    <table width="100%" height="1"><tr><td></td><tr/></table><br/><br/>
    <h2>This is the #NAME# download site !</h2>
 <p>The current version is <b>{version}</b>.</p>
-<p>To download the latest delivery_slips, <a href='/file'>click here</a>.</p>
+<p>To download the latest client, <a href='/file'>click here</a>.</p>
 <br/><br/><br/><br/>
 <div style='color:grey'>
 <p>#COPYRIGHT#</p>
@@ -322,7 +322,7 @@ img {background-color:white;}
     @cherrypy.expose
     def upgrade(self, version):
         """
-        :param version: Upgrades the delivery_slips to a specific version (higher or lower than current one.
+        :param version: Upgrades the client to a specific version (higher or lower than current one.
         :return:
         """
         return upgrade_mediafire(version)
@@ -343,7 +343,7 @@ img {background-color:white;}
             raise cherrypy.HTTPError(404, message=msg) # Won't create an exception
 
         # I don't inject at update time because if one copies
-        # a delivery_slips in, then that delivery_slips must be injected as well.
+        # a client in, then that client must be injected as well.
 
         public_ip = configuration.get("DEFAULT","public_ip")
 
@@ -354,7 +354,6 @@ img {background-color:white;}
         inject_public_ip_in_client(public_ip)
 
         return cherrypy.lib.static.serve_download(file_path, name=configuration.get("Globals","codename") + '.zip')
-
 
     @cherrypy.expose
     def database(self):
@@ -750,6 +749,9 @@ if __name__ == "__main__":
                         type=int,
                         help='Creates a DB filled with dummy data that shows {} features. The value is the number of orders to create in that database.'.format(codename),
                         metavar="NB_ORDERS")
+    parser.add_argument('--port', action='store',
+                        type=int,
+                        help='Port to listen to')
     parser.add_argument('--reset-root', action='store_const', const=True, help='Resets the root account to admin/admin'.format(codename))
     parser.add_argument('--debug', action='store_const', const=True, help='Activate debug logging'.format(codename))
 
@@ -806,6 +808,9 @@ if __name__ == "__main__":
             exit(0)
         else:
             exit(-1)
+
+    if args.port:
+        configuration.set('DownloadSite','port', args.port)
 
     base_init()
 

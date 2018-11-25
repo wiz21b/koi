@@ -33,6 +33,13 @@ class CRL(enum.Enum):
     def __str__(self):
         return self.value
 
+
+ImpactApprovalSQLA = Enum(ImpactApproval, schema=DATABASE_SCHEMA, name='impact_approval')
+TypeConfigDocSQLA = Enum(TypeConfigDoc, schema=DATABASE_SCHEMA, name='type_config_doc')
+CRLSQLA = Enum(CRL, schema=DATABASE_SCHEMA, name='CRL')
+
+
+
 class Configuration(Base):
     __tablename__ = 'configurations'
     configuration_id = Column(Integer,id_generator,nullable=False,primary_key=True)
@@ -64,10 +71,10 @@ class ConfigurationLine(Base):
     # Version of the document in this configuration line
     version = Column(Integer, default=0)
     document_id = Column(Integer, ForeignKey(Document.document_id))
-    document_type = Column(Enum( TypeConfigDoc, inherit_schema=True))
+    document_type = Column( TypeConfigDocSQLA)
     modify_config = Column(Boolean)
     date_upload = Column(Date)
-    crl = Column(Enum(CRL))
+    crl = Column(CRLSQLA)
 
     document = relationship(Document, uselist=False)
     configuration_id = Column(Integer, ForeignKey(Configuration.configuration_id))
@@ -157,7 +164,7 @@ class ImpactLine(Base):
     # Some unstructured meta information about the document can fit here.
     description = Column(String)
 
-    approval = Column(Enum(ImpactApproval, inherit_schema=True))
+    approval = Column(ImpactApprovalSQLA)
     approval_date = Column(Date)
     active_date = Column(Date)
 

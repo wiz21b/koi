@@ -87,14 +87,15 @@ def extend_enumeration(db_engine, enumeration : DeclEnum, symbol : EnumSymbol):
 def init_base():
     init_logging()
     mainlog.setLevel(logging.INFO)
-    load_configuration("server.cfg")
+    configuration.load_server_configuration()
 
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description='This is an Horse! migration script.',
                                      epilog="For example --db-url {}".format(
                                          configuration.get("Database", "admin_url")))
 
-    parser.add_argument('--db-url', default=configuration.database_url, help='Database URL')
+    parser.add_argument('--db-url', default=configuration.get('Database','admin_url'),
+                        help='Database URL')
     args = parser.parse_args()
 
     mainlog.info("Connecting to {}".format(args.db_url))

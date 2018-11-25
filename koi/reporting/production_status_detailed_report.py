@@ -145,7 +145,7 @@ def print_production_status_detailed(dao):
                         data_ops.append(data1)
                         data_ops.append(data2)
 
-                        data1 = ["","--->"]
+                        data1 = ["",_('Continued')]
                         data2 = ["","--->"]
 
                 r = 2 + operations_columns - len(data1)

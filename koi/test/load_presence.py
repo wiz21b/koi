@@ -6,7 +6,7 @@ import Configurator
 
 
 import logging
-from Logging import init_logging
+from koi.base_logging import init_logging
 init_logging("test.log")
 
 from Configurator import init_i18n,load_configuration

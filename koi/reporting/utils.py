@@ -1,6 +1,8 @@
 import os
 import tempfile
 import subprocess
+import platform
+
 from decimal import *
 from datetime import datetime
 
@@ -19,6 +21,9 @@ from koi.translators import date_to_dmy,crlf_to_br,EURO_SIGN
 from koi.session.UserSession import user_session
 from koi.Configurator import resource_dir,configuration
 from koi.base_logging import mainlog
+
+if platform.system() == "Windows":
+    import win32com.client
 
 
 def escape_html(s):
@@ -402,17 +407,19 @@ def open_pdf(filename):
         p1.wait()
 
 def open_docx(filename):
-    import win32com.client
-    word = win32com.client.dynamic.Dispatch('Word.Application')
-    word.Visible = True
-    doc = word.Documents.Open(filename)
+    mainlog.info("Trying to start this : {}".format(filename))
+    if platform.system() == "Windows":
+        word = win32com.client.dynamic.Dispatch('Word.Application')
+        word.Visible = True
+        doc = word.Documents.Open(filename)
 
 def open_xlsx(filename):
-    import win32com.client
-    # http://stackoverflow.com/questions/26907177/key-error-while-using-cx-freeze-for-making-exe
-    word = win32com.client.dynamic.Dispatch('Excel.Application')
-    word.Visible = True
-    doc = word.Workbooks.Open(filename)
+    mainlog.info("Trying to start this : {}".format(filename))
+    if platform.system() == "Windows":
+        # http://stackoverflow.com/questions/26907177/key-error-while-using-cx-freeze-for-making-exe
+        word = win32com.client.dynamic.Dispatch('Excel.Application')
+        word.Visible = True
+        doc = word.Workbooks.Open(filename)
 
 
 def append_general_conditions(complete_document):

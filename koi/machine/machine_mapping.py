@@ -9,7 +9,7 @@ from koi.datalayer.sqla_mapping_base import metadata,Base,DATABASE_SCHEMA
 from koi.Configurator import mainlog
 
 
-resource_id_generator = Sequence('resource_id_generator', start=1, metadata=metadata)
+resource_id_generator = Sequence('resource_id_generator',start=1, schema=DATABASE_SCHEMA,metadata=metadata)
 
 class Resource(Base):
     __tablename__ = 'resources'

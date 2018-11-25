@@ -63,8 +63,6 @@ class StackedBarsChart(LinesChart):
 
 
         if summed_series[0]:
-            mainlog.debug("stacked bar charts : summed series[0] = ...")
-            mainlog.debug(summed_series[0])
             self.mini, self.maxi = self.clip_mini_maxi(0, max(summed_series[0]))
         else:
             self.mini, self.maxi = self.clip_mini_maxi(0, 0)

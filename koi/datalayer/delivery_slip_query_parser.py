@@ -241,10 +241,10 @@ if __name__ == "__main__":
 
     #mainlog.debug("TEST --------------------" + str(find_suggestions("status",6)))
     # mainlog.debug("TEST --------------------" + str(find_suggestions("sta",3)))
-    # mainlog.debug("TEST --------------------" + str(find_suggestions("delivery_slips = ze",11)))
+    # mainlog.debug("TEST --------------------" + str(find_suggestions("client = ze",11)))
 
-    # mainlog.debug("TEST --------------------" + str(find_suggestions("delivery_slips = ",9)))
-    # mainlog.debug("TEST --------------------" + str(find_suggestions("delivery_slips = \"ABM",11)))
+    # mainlog.debug("TEST --------------------" + str(find_suggestions("client = ",9)))
+    # mainlog.debug("TEST --------------------" + str(find_suggestions("client = \"ABM",11)))
     # mainlog.debug("TEST --------------------" + str(find_suggestions("Client=\"ABMI sprl \"  ",21)))
 
 

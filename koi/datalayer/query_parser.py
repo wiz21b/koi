@@ -839,7 +839,7 @@ if __name__ == "__main__":
     try:
         result = parser.parse(s,lexer=lexer)
     except Exception as ex:
-        print("Can't parse the string : {}".format(s))
+        print("Can't parse the string : {}, because {}".format(s, ex))
 
 
         lexer.input(s)

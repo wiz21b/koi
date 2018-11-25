@@ -72,8 +72,6 @@ class Menu:
 def f():
     pass
 
-print("go")
-
 a1 = Action("alpha","The quick",f,None)
 m1 = Menu("parts")
 m1.add_items([a1])
@@ -91,5 +89,5 @@ m3.add_items([a3])
 
 menu_registry.update(m3.items())
 
-for k,v in menu_registry.items():
-    print(str(k) + " " + str(v))
+# for k,v in menu_registry.items():
+#     print(str(k) + " " + str(v))

@@ -1,6 +1,6 @@
 from datetime import date
 
-from koi.config_mgmt.t import *
+from koi.datalayer.serializers import *
 from koi.config_mgmt.mapping import  TypeConfigDoc, ImpactApproval
 
 def _make_quick_doc( name : str):
