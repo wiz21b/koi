@@ -2,7 +2,7 @@ from datetime import datetime
 
 from PySide.QtCore import Qt,Slot
 from PySide.QtGui import QLabel, QHeaderView, QDialog, QDialogButtonBox
-from PySide.QtGui import QVBoxLayout, QDesktopWidget, QCheckBox # , QHBoxLayout, QLineEdit, QGroupBox
+from PySide.QtGui import QVBoxLayout, QDesktopWidget, QCheckBox
 
 from koi.gui.dialog_utils import TitleWidget, showErrorBox,showWarningBox,confirmationBox
 from koi.gui.ProxyModel import PrototypeController,IntegerNumberPrototype, TextLinePrototype, TrackingProxyModel

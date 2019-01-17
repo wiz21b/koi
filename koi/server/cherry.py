@@ -23,6 +23,10 @@ import argparse
 import cherrypy
 import re
 import zipfile
+import shutil
+from urllib.request import build_opener,ProxyHandler,HTTPHandler,HTTPSHandler,HTTPRedirectHandler
+from http.client import HTTPConnection
+from jsonrpc2 import JsonRpc
 
 #from mediafire.client import MediaFireClient
 
@@ -42,13 +46,14 @@ if __name__ == "__main__":
 
 
 from koi.tools.chrono import *
-from koi.Configurator import configuration,resource_dir,configuration_file_exists, path_to_config, make_empty_configuration_file, load_configuration_server, guess_server_url
+from koi.Configurator import configuration,resource_dir,configuration_file_exists, path_to_config, make_empty_configuration_file, load_configuration_server
 from koi.server.net_tools import guess_server_public_ip
 from koi.legal import copyright, license_short
 from koi.dao import dao
-from koi.backup.pg_backup import full_restore
 from koi.server.demo import create_demo_database
 from koi.datalayer.create_database import create_root_account
+from koi.backup.pg_backup import full_restore, backup_procedure
+from koi.backup.bitrot_shield import checksum_directory
 
 
 def base_init():
@@ -86,6 +91,7 @@ def base_init():
 
 from koi.datalayer.sqla_mapping_base import metadata
 from koi.datalayer.database_session import init_db_session, disconnect_db
+from koi.datalayer.create_database import create_blank_database
 
 # mainlog.debug("Starting server, DB is : {}".format(configuration.get('Database','url')))
 # init_db_session(configuration.get('Database','url'), metadata, False or configuration.echo_query)
@@ -128,10 +134,6 @@ from koi.charts.indicators_service import IndicatorsService
 #                                        IndicatorsService(), JsonCallWrapper.CHERRYPY_MODE))
 
 
-from urllib.request import build_opener,ProxyHandler,HTTPHandler,HTTPSHandler,HTTPRedirectHandler
-from http.client import HTTPConnection
-
-from jsonrpc2 import JsonRpc
 
 
 from koi.datalayer.database_session import session
@@ -179,10 +181,12 @@ def http_download(download_url, outfile, proxy_url=None, proxy_port = None):
     datasource.close()
 
 
+
 def upgrade_file(path):
     global configuration
-    re_file = re.compile(r'koi-client-([0-9]+\.[0-9]+\.[0-9]+)\.zip')
-    exe_filename = "{}/{}.exe".format( configuration.get("Globals","codename"), configuration.get("Globals","codename"))
+
+    re_file = configuration.client_name_regex()
+    exe_filename = configuration.client_exe_path().replace("\\","/")
 
     if os.path.exists(path):
         match = re_file.match(os.path.basename(path))
@@ -201,8 +205,12 @@ def upgrade_file(path):
                         candidates.append(item.filename)
 
             if exe_correct:
+
+                d = os.path.join( get_data_dir(), os.path.basename(path))
+                shutil.copyfile( path, d)
+
                 configuration.set("DownloadSite","current_version",str(version))
-                configuration.set("DownloadSite","client_path",path)
+                configuration.set("DownloadSite","client_path",d)
                 configuration.save()
                 mainlog.info("Configuration successfully updated with client version {}.".format(version))
                 mainlog.warning("Don't forget to restart the server to take it into account !")
@@ -210,7 +218,7 @@ def upgrade_file(path):
             else:
                 mainlog.error("Didn't find {} inside the file you've given. Possible candidates {}".format(exe_filename, ", ".join(candidates)))
         else:
-            mainlog.error("I don't recognize the filename. It should be 'koi-client-a.b.c.zip'.")
+            mainlog.error("I don't recognize the filename. It should match {}.".format(re_file))
     else:
         mainlog.error("The file {} was not found.".format(path))
 
@@ -221,8 +229,7 @@ def upgrade_file(path):
 
 
 def upgrade_http(version, url, proxy_url=None, proxy_port = None):
-    codename = configuration.get("Globals","codename")
-    filename = "{}-{}.zip".format(codename, version)
+    filename = configuration.client_zip_name( version)
     dest = os.path.join(get_data_dir(),filename)
 
     mainlog.info("Upgrading from {} to version {}. File will be sotred in {}".format(url, version, dest))
@@ -246,8 +253,7 @@ def upgrade_mediafire(version):
     This allows to downgrade (in case of a failed upgrade)
     """
 
-    codename = configuration.get("Globals","codename")
-    filename = "{}-{}.zip".format(codename, version)
+    filename = configuration.client_zip_name( version)
     dest = os.path.join(get_data_dir(),filename)
 
     mainlog.info("Downloading a new version {} into {} proxyport={}".format(filename,dest,configuration.get("Proxy","proxy_port")))
@@ -338,26 +344,32 @@ img {background-color:white;}
         file_path = configuration.get("DownloadSite","client_path")
 
         if not file_path or not os.path.exists(file_path):
-            msg = "I can't serve the file {} because it doesn't exist.".format(file_path)
+            msg = "I can't serve the file {} because it doesn't exist. Use the --load-client option or update the DownloadSite/client_path section of the configuration file (see help for location).".format(file_path)
             mainlog.error(msg)
             raise cherrypy.HTTPError(404, message=msg) # Won't create an exception
 
         # I don't inject at update time because if one copies
         # a client in, then that client must be injected as well.
 
-        public_ip = configuration.get("DEFAULT","public_ip")
-
-        if not public_ip:
+        if configuration.is_set("DEFAULT","public_ip"):
+            public_ip = configuration.get("DEFAULT","public_ip")
+        else:
             public_ip = guess_server_public_ip()
             mainlog.warn("Server configuration is borken : missing DEFAULT/public_ip. I'll default to what I guessed instead : {}".format(public_ip))
 
         inject_public_ip_in_client(public_ip)
 
-        return cherrypy.lib.static.serve_download(file_path, name=configuration.get("Globals","codename") + '.zip')
+        return cherrypy.lib.static.serve_download(file_path, name=configuration.client_zip_name( configuration.get("DownloadSite","current_version")))
 
     @cherrypy.expose
     def database(self):
-        if type( configuration.get("Database","url")) == list:
+        # Deprectated, use database.url instead
+
+        if configuration.is_set("DownloadSite","db_url"):
+
+            return configuration.get("DownloadSite","db_url")
+
+        elif type( configuration.get("Database","url")) == list:
             return ",".join(configuration.get("Database", "url"))
         else:
             return configuration.get("Database","url")
@@ -714,6 +726,9 @@ def reload_config():
 #
 
 def init_configuration():
+    """ Creates a blank configuration
+    """
+
     p = path_to_config("server.cfg")
     if not os.path.exists(p) :
         ps = os.path.join( resource_dir, "server_config_check.cfg")
@@ -724,6 +739,10 @@ def init_configuration():
             configuration.set_server_network_address(ip_or_host=guess_server_url(), port=8079, overwrite=True)
 
             set_default_document_root(configuration)
+
+            if codename == 'horse':
+                configuration['Globals']['name'] = "Horse"
+
             configuration.save()
             mainlog.info("Configuration file created at {}".format(p))
             return True
@@ -735,25 +754,27 @@ def init_configuration():
         return False
 
 
-from koi.datalayer.create_database import create_blank_database
 
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description='This is the server for Koi!')
+    parser = argparse.ArgumentParser(description='This is the server for Koi! Currrent configuration is located here {}'.format( path_to_config('server.cfg')))
     parser.add_argument('--make-config', action='store_const', const=True, help='Make a blank configuration file.')
     parser.add_argument('--reset-database', action='store_const', const=True, help='Reset the database and returns.')
+    parser.add_argument('--backup', action='store_const', const=True, help='Make a backup.')
+    parser.add_argument('--send-mail', action='store_const', const=True, help='Send mail after backups.')
+    parser.add_argument('--bitrot-shield', action='store_true', default=False, help='Check files in the backup directory against some checksums.')
     parser.add_argument('--restore-backup', help='Restore a backup from the given directory.')
-    parser.add_argument('--load-client', help='Loads a packaged client in the server (the server needs to be restarted afterwards)')
+    parser.add_argument('--load-client', help='Loads a packaged client in the server (the server needs to be restarted afterwards).')
     parser.add_argument('--demo-database', action='store',
                         type=int,
                         help='Creates a DB filled with dummy data that shows {} features. The value is the number of orders to create in that database.'.format(codename),
                         metavar="NB_ORDERS")
     parser.add_argument('--port', action='store',
                         type=int,
-                        help='Port to listen to')
-    parser.add_argument('--reset-root', action='store_const', const=True, help='Resets the root account to admin/admin'.format(codename))
-    parser.add_argument('--debug', action='store_const', const=True, help='Activate debug logging'.format(codename))
+                        help='Port to listen to.')
+    parser.add_argument('--reset-root', action='store_const', const=True, help='Resets the root account to admin/admin.'.format(codename))
+    parser.add_argument('--debug', action='store_const', const=True, help='Activate debug logging.'.format(codename))
 
     args = parser.parse_args()
 
@@ -788,6 +809,18 @@ if __name__ == "__main__":
         except Exception as ex:
             mainlog.exception(ex)
             exit(-1)
+
+    elif args.backup:
+        backup_procedure( configuration, args.send_mail)
+        exit(0)
+
+    elif args.bitrot_shield:
+
+        if not configuration.get('Backup', 'backup_directory'):
+            raise Exception("Missing Backup/backup_directory in configuration file")
+        checksum_directory(configuration.get('Backup', 'backup_directory'), mainlog)
+        exit(0)
+
     elif args.restore_backup:
         try:
 

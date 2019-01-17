@@ -21,6 +21,10 @@ from koi.OperationDefinitionsCache import operation_definition_cache
 
 
 class OperationsOverviewWidget(QWidget):
+    def resizeEvent( self, event):
+        super(OperationsOverviewWidget, self).resizeEvent(event)
+        self.view.resizeRowsToContents()
+
     def __init__(self,parent=None):
         super(OperationsOverviewWidget,self).__init__(parent)
 

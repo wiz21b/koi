@@ -425,7 +425,7 @@ class DocumentsModel(ObjectModel):
 
         return Qt.GlobalColor.black
 
-    def __getitem__(self, ndx, value):
+    def __getitem__(self, ndx):
         return self._objects[ndx]
 
     def __len__(self):

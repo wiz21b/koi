@@ -24,10 +24,10 @@ def upload_download(pid):
     for i in range(100):
         print("[{}] {}".format(pid,i))
 
-        # Download the delivery_slips version
+        # Download the client version
         next_version = get_server_version(configuration.update_url_version) # available on the server (abd maybe already downloaded)
 
-        # Download the delivery_slips
+        # Download the client
         tmpfile = r"c:\temp\test_{}.tst".format(pid)
         # download_file(configuration.update_url_file,tmpfile)
 

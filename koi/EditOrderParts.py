@@ -54,7 +54,7 @@ from koi.ChangeCustomerDialog import ChangeCustomerDialog
 from koi.tools.chrono import *
 
 from koi.reporting.order_activity_report import print_iso_status
-from koi.reporting.order_report import print_order_report
+from koi.reporting.order_report import print_order_report, print_bill_of_operations_report
 from koi.reporting.preorder_report import print_preorder
 from koi.reporting.audit_order_report import print_order_audit_report
 
@@ -1020,14 +1020,14 @@ class EditOrderPartsWidget(HorsePanel):
         # mainlog.debug("objects is {} items long".format(len(self.controller_part.model.objects)))
         # mainlog.debug("objects is {}".format(self.controller_part.model.objects))
 
-        
+
         order_part = self.controller_part.model.objects[ndx]
         if order_part and order_part.state:
             # newly added part have no objects assocaited to them (that's strange)
             self.order_part_state_label.setText("<b>{}</b>".format(order_part.state.description))
         else:
             self.order_part_state_label.setText("/")
-            
+
         # FIXME This may be run more than once, and that's not 100% right !
 
         if not self.controller_part.model.has_submodels():
@@ -1752,8 +1752,18 @@ class EditOrderPartsWidget(HorsePanel):
         # self.state_menu.addAction("alpha")
         # self.state_menu.addAction("beta")
 
+
+        self._print_bill_of_operations_menu = QMenu(_("Print operations"))
+
+        bop_actions = [ (_("Print all"), self.orderPrint,        QKeySequence(Qt.CTRL + Qt.Key_P),None),
+                        (_("Print selected"), self.print_bill_of_operations_selected,
+                         QKeySequence("Ctrl+Shift+P"),None) ]
+
+        populate_menu( self._print_bill_of_operations_menu, self, bop_actions, context=Qt.WidgetWithChildrenShortcut)
+
         list_actions = [ (_("Save order"),self.save_button_clicked,        QKeySequence(Qt.CTRL + Qt.Key_S),None),
-                         (_("Print operations"),self.orderPrint,           QKeySequence(Qt.CTRL + Qt.Key_P),None),
+                         ( self._print_bill_of_operations_menu, None, None ),
+                         #(_("Print operations"),self.orderPrint,           QKeySequence(Qt.CTRL + Qt.Key_P),None),
                          (_("Print as preorder"),self.preorderPrint,       None,[RoleType.view_prices]),
                          (_("Print as preorder 2"),self.preorder_report,       None,[RoleType.view_prices]),
                          (_("Activity report"),self.activity_report,       None,None),
@@ -2545,6 +2555,36 @@ class EditOrderPartsWidget(HorsePanel):
 
         d.deleteLater()
 
+    def print_bill_of_operations_selected( self):
+
+        if self.save_if_necessary():
+            selected_row_indices = self.controller_part.view.selected_rows()
+
+            if not selected_row_indices:
+                showWarningBox( _("Nothing selected"), _("You have selected no parts to print."))
+
+            mainlog.debug("print_bill_of_operations_selected {}".format( selected_row_indices))
+
+            m = self.controller_part.model
+            parts = [m.object_at(n) for n in selected_row_indices]
+
+            if sum( [ len(part.operations) for part in parts]) == 0:
+                showWarningBox(_("Empty order parts"),_("All the parts you have selected have no operations. There's nothing to print."))
+                return
+
+            # The test on 0 operation above must be done firsst.
+
+            bad_state = [ part.label for part in parts if part.state not in (OrderPartState.ready_for_production, OrderPartState.production_paused, OrderPartState.non_conform,)]
+
+            if bad_state:
+                if not confirmationBox( _("Order part not ready for production"),
+                                        _("Some order parts you selected {} are not ready for prodution. Are you sure you want to print their bill of operatioons ? Are you sure you want to proceed ?").format(",".join(bad_state))):
+                    return
+
+            part_ids = [p.order_part_id for p in parts]
+            print_bill_of_operations_report( dao, self._current_order.order_id, part_ids)
+
+
     def orderPrint(self):
         global dao
 
@@ -2723,7 +2763,7 @@ class EditOrderPartsWidget(HorsePanel):
             mainlog.debug("change_customer : changed to {}".format(self.current_customer_id))
         else:
             mainlog.debug("change_customer : customer left unchanged")
-            
+
         d.deleteLater()
 
 

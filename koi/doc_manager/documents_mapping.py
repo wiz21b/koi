@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship,backref
 from sqlalchemy.schema import UniqueConstraint,CheckConstraint
 
 from koi.datalayer.sqla_mapping_base import metadata,Base,DATABASE_SCHEMA
+from koi.datalayer.quality import QualityEvent
 
 class DocumentCategory(Base):
     __tablename__ =  'documents_categories'
@@ -102,7 +103,7 @@ class Document(Base):
                          uselist=False,
                          backref=backref('documents',collection_class=set,order_by='Document.server_location',cascade='delete'))
 
-    quality_event = relationship('QualityEvent',secondary=documents_quality_events_table,
+    quality_event = relationship(QualityEvent,secondary=documents_quality_events_table,
                          uselist=False,
                          backref=backref('documents',collection_class=set,order_by='Document.server_location',cascade='delete'))
 

@@ -1,6 +1,8 @@
 import logging
 import argparse
-from sqlalchemy.ext.declarative.api import DeclarativeMeta, Table
+from sqlalchemy.ext.declarative.api import DeclarativeMeta
+from sqlalchemy import Sequence, Table
+
 
 from koi.datalayer.SQLAEnum import EnumSymbol, DeclEnum, DeclEnumMeta
 from koi.base_logging import mainlog,init_logging
@@ -8,8 +10,8 @@ from koi.Configurator import init_i18n,load_configuration,configuration
 from koi.datalayer.database_session import init_db_session, DATABASE_SCHEMA
 
 
-def full_table_name(entity_class):
-    if isinstance( entity_class, Table):
+def full_entity_name(entity_class):
+    if isinstance( entity_class, Table) or isinstance( entity_class, Sequence):
         return "{}.{}".format(DATABASE_SCHEMA, entity_class.name)
     else:
         return "{}.{}".format(DATABASE_SCHEMA, entity_class.__tablename__)
@@ -43,7 +45,12 @@ def create_entity( session, entity):
 
     if isinstance(entity, Table):
         entity.create(checkfirst=True)
-        session().connection().execute("GRANT SELECT,INSERT,UPDATE,DELETE ON {} TO horse_clt".format(full_table_name(entity)))
+        session().connection().execute("GRANT SELECT,INSERT,UPDATE,DELETE ON {} TO horse_clt".format(full_entity_name(entity)))
+        session().commit()
+
+    elif isinstance(entity, Sequence):
+        entity.create(checkfirst=True)
+        session().connection().execute("GRANT SELECT,UPDATE ON {} TO horse_clt".format(full_entity_name(entity)))
         session().commit()
 
     elif isinstance(entity, DeclEnumMeta):

@@ -23,6 +23,7 @@ import re
 
 from koi.Configurator import mainlog,configuration,get_data_dir,resource_dir
 
+from koi.utils import make_temp_file, download_file
 
 
 def extractAll(zipName,tmp_dir = ""):
@@ -35,32 +36,6 @@ def extractAll(zipName,tmp_dir = ""):
             os.makedirs(dest)
         else:
             z.extract(f,tmp_dir)
-
-def download_file(url, destination_file):
-    mainlog.info("Downloading new version to {}".format(destination_file))
-    mainlog.debug("Opening {}".format(url))
-
-    u = urlopen(url)
-    f = open(destination_file, 'wb')
-    meta = u.info()
-
-    file_size = int(meta["Content-Length"])
-
-    file_size_dl = 0
-    block_sz = 8192
-    while True:
-        buffer = u.read(block_sz)
-        if not buffer:
-            break
-
-        file_size_dl += len(buffer)
-        f.write(buffer)
-
-        # status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
-        # status = status + chr(8)*(len(status)+1)
-        # print status,
-
-    f.close()
 
 
 def get_server_version(url_version):
@@ -91,7 +66,7 @@ def find_highest_installed_version():
 
     mainlog.debug("Looking for new version of '{}' in {}".format( codename, get_data_dir()))
 
-    select = re.compile(codename + r'-([0-9]+\.[0-9]+\.[0-9]+)$')
+    select = configuration.client_name_regex('')
 
     highest_version = None
 
@@ -146,13 +121,16 @@ def upgrade_process( args):
         #     else:
         #         pysideDir = _utils.get_pyside_dir()
         #
+        # ...
+        #
+        # # _setupQtDirectories()
+        #
 
         try:
             from PySide import _setupQtDirectories
         except Exception as ex:
-            mainlog.error("Unable to import _setupQtDirectories. Remember this was a bug fix, make sure "
-                          + "_setupQtDirectories is not called at the end of the __init__.py of pyside. "
-                          + "Check the comments in the code for more info.")
+            mainlog.error("Unable to import _setupQtDirectories. Remember this was a bug fix, make sure __init__.py of pyside is patched. "
+                          + "Check the comments in download_version.py for more info.")
             mainlog.exception(ex)
             return
 
@@ -188,7 +166,7 @@ def upgrade_process( args):
 
             download_file( configuration.update_url_file, tmpfile)
 
-            newdir = os.path.join(get_data_dir(), "{}-{}".format(codename, version_to_str(next_version)))
+            newdir = os.path.join(get_data_dir(), configuration.client_zip_name(next_version, ''))
             extractAll(tmpfile,newdir)
 
             # show that we actually downloaded something
@@ -203,14 +181,14 @@ def upgrade_process( args):
     # by the user)
 
     if current_version:
-        current_dir = os.path.join(get_data_dir(), "{}-{}".format(codename, version_to_str(current_version)))
+        current_dir = os.path.join(get_data_dir(), configuration.client_zip_name( current_version, ''))
 
         # --no-update "signals" the control transfer (without it we'd
         # try to update with the latest version again creating an
         # endless loop)
 
         # os.chdir(os.path.join(current_dir,codename)) # FIXME Not sure this is useful; too tired to test
-        cmd = [ os.path.join(os.path.join(current_dir,codename), codename + '.exe'), '--no-update']
+        cmd = [ os.path.join(current_dir,configuration.client_exe_path()), '--no-update']
         mainlog.info("Transferring control to {}".format( ' '.join(cmd)))
 
         # DETACHED_PROCESS = 0x00000008

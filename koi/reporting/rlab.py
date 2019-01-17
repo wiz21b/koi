@@ -470,8 +470,14 @@ def customer_PDF(name="form_letter.pdf"):
 
     return ladderDoc
 
-
 def print_employees_badges(dao):
+    filename = make_pdf_filename("EmployeeBadges")
+    _print_employees_badges(dao, filename)
+    open_pdf(filename)
+    return True
+
+
+def _print_employees_badges(dao, filename):
     global header_text
     global sub_header_text
 
@@ -517,14 +523,12 @@ def print_employees_badges(dao):
     complete_document = []
     complete_document.append(t)
 
-
-    filename = make_pdf_filename("EmployeeBadges")
     ladderDoc = start_PDF(filename)
     ladderDoc.build(complete_document,canvasmaker=NumberedCanvas)
-    open_pdf(filename)
 
 
-def print_non_billable_tasks(dao):
+
+def _print_non_billable_tasks(dao, filename):
     global header_text, sub_header_text
     header_text = ""
     sub_header_text = _("Non billable tasks")
@@ -556,6 +560,11 @@ def print_non_billable_tasks(dao):
                 row = []
                 i = 0
 
+        if row:
+            # Finish last row
+            array.append(row)
+
+
         t = platypus.Table(array, repeatRows=1, colWidths=[6*cm]*tasks_per_line) # Repeat the table header
 
         ts = platypus.TableStyle([('FONT', (0, 0), (-1, -1), 'Helvetica', 8)])
@@ -573,10 +582,15 @@ def print_non_billable_tasks(dao):
     else:
         complete_document.append(Paragraph(_("There currently are no unbillable operations defined"),s))
 
-    filename = make_pdf_filename("NonBillableTasks")
     ladderDoc = start_PDF(filename)
     ladderDoc.build(complete_document,canvasmaker=NumberedCanvas)
+
+
+def print_non_billable_tasks(dao):
+    filename = make_pdf_filename("NonBillableTasks")
+    print_non_billable_tasks(dao, filename)
     open_pdf(filename)
+    return True
 
 
 

@@ -47,7 +47,6 @@ def current_gaplessseq_value(name):
     return session().query(gapless_seq_table.columns['gseq_value']).filter(gapless_seq_table.columns['gseq_name'] == name).scalar()
 
 
-
 def make_gapless_seq_function(schema, table, seq_field, gapless_seq_name,func_base_name):
 
     if schema:

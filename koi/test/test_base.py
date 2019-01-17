@@ -500,7 +500,10 @@ class TestBase(unittest.TestCase):
     def assertEqualEpsilon(self,a,b,eps=0.0001):
         if type(a) == tuple:
             for aa,bb in zip(a,b):
-                self.assertEqualEpsilon(aa,bb,eps)
+                # Casting to float because we can receive decimals...
+                delta = float(aa) - float(bb)
+                if delta*delta > eps*eps:
+                    self.fail("{} ~!= {}".format(a,b))
         else:
             # Casting to float because we can receive decimals...
             delta = float(a) - float(b)
@@ -519,18 +522,25 @@ class TestBase(unittest.TestCase):
             mainlog.debug(u"  > {}".format(tt))
 
     @classmethod
-    def show_order(cls,order):
+    def show_order(cls,order, ref_date = date.today()):
         mainlog.debug(u"Order [{}]: {} accounting label:{} state:{}".format(order.order_id, order.description, order.accounting_label,order.state))
-        for part in order.parts:
-            mainlog.debug(u"{} {} {}".format(str(part), part.state.description, part.human_identifier))
+        cls.show_order_parts( order.parts)
 
+    @classmethod
+    def show_order_parts(cls,order_parts, ref_date = date.today()):
+        for part in order_parts:
+            mainlog.debug( "{} {} {}".format(str(part), part.state.description, part.human_identifier))
+
+            opcnt = 1
             for operation in part.operations:
-                mainlog.debug(u"         op: " + str(operation))
+                opdef = operation.operation_model
+                mainlog.debug( "       {}  op: ({} {})".format( opcnt, opdef.short_id, opdef.cost( ref_date)))
                 for tt in session().query(TimeTrack).join(TaskOnOperation).filter(TaskOnOperation.operation == operation).all():
-                    mainlog.debug(u"             tt:{}".format(tt))
-            for slip in session().query(DeliverySlipPart).join(DeliverySlip).filter(DeliverySlipPart.order_part == part).all():
-                mainlog.debug(u"       slip: {} - {}".format(slip.delivery_slip.creation,slip))
+                    mainlog.debug( "             tt:{}".format(tt))
+                opcnt += 1
 
+            for slip in session().query(DeliverySlipPart).join(DeliverySlip).filter(DeliverySlipPart.order_part == part).all():
+                mainlog.debug( "       slip: {} - {}".format(slip.delivery_slip.creation,slip))
 
 
     @Slot()

@@ -9,7 +9,8 @@ from koi.reporting.utils import make_pdf_filename
 from koi.reporting.preorder_report import _make_preorder_report
 from koi.reporting.delivery_slip_report import _make_delivery_slip
 from koi.reporting.order_activity_report import _print_iso_status # print_order_report,
-
+from koi.db_mapping import DeliverySlipPart
+from koi.reporting.rlab import _print_employees_badges, _print_non_billable_tasks
 
 class TestReport(TestBase):
 
@@ -48,6 +49,22 @@ class TestReport(TestBase):
         _make_delivery_slip(dao,slip_id,n)
         assert os.path.getsize(n) > 5000
         os.remove(n)
+
+    def test_badges(self):
+        n = make_pdf_filename("test")
+        _print_employees_badges(dao, n)
+        mainlog.debug( "Test badges. Filename {} = {} bytes".format(n, os.path.getsize(n)))
+        assert os.path.getsize(n) > 8000
+        os.remove(n)
+
+    def test_non_billable_tasks(self):
+        n = make_pdf_filename("test")
+        _print_non_billable_tasks(dao, n)
+        mainlog.debug( "Test non billable tasks. Filename {} = {} bytes".format(n, os.path.getsize(n)))
+        assert os.path.getsize(n) > 8000
+        os.remove(n)
+
+
 
 if __name__ == '__main__':
     unittest.main()

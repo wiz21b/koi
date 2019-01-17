@@ -456,6 +456,102 @@ subtitle_style = ParagraphStyle(name = "subtitle", fontName = 'Helvetica-Bold', 
 page_style = ParagraphStyle(name = "page_number", fontName = 'Helvetica', fontSize=14)
 
 
+
+def print_bill_of_operations_report( dao, order_id, order_part_id_selection = set(), test_mode = False):
+    global header_text,sub_header_text
+
+    mainlog.debug('print_bill_of_operations_report: order_id={}, parts={}'.format(order_id, order_part_id_selection))
+
+    o = dao.order_dao.find_by_id(order_id)
+
+    header_text = u"{} [{}]".format(o.customer.fullname, o.customer_order_name)
+    sub_header_text = u"Mode op\u00E9ratoire"
+
+    big_order_nr = ParagraphStyle(name = "subtitle", fontName = 'Helvetica-Bold', fontSize=24, leading=26)
+
+    topstyle = ParagraphStyle(name = "zou", fontName = 'Helvetica', fontSize=16)
+
+    p = platypus.Paragraph(u"<b>Client {}, commande #{}</b>".format(o.customer.customer_id,o.accounting_label),topstyle)
+    spacer = platypus.Spacer(1,50)
+
+    centered = ParagraphStyle(name = "zou", fontName = 'Helvetica-bold', alignment=TA_CENTER, fontSize=14) #, borderWidth=1, borderColor=colors.black)
+    s = ParagraphStyle(name = "zou", fontName = 'Helvetica', fontSize=14, leading=16) #, borderWidth=1, borderColor=colors.black)
+    page_number_style = ParagraphStyle(name = "page_number_style", fontName = 'Helvetica', alignment=TA_RIGHT, fontSize=12, leading=12) #, borderWidth=1, borderColor=colors.black)
+    opNumberStyle = ParagraphStyle(name = "zou", fontName = 'Helvetica-bold', alignment=TA_CENTER, fontSize=28,leading=28) #, borderWidth=1, borderColor=colors.black)
+    complete_document = []
+
+    global satisfied
+    satisfied = False
+    sections.clear()
+    headings_frame = HeadingsFrame(*basic_frame_dimensions)
+    # complete_document.append(DocAssign("i",0))
+
+    for part in o.parts:
+
+        if order_part_id_selection and part.order_part_id not in order_part_id_selection:
+            # Ski non selected parts
+            continue
+
+        # Build up a table with accompanying style
+
+        # data_ops = [ ['Poste',None,u'Op\u00E9ration',None] ]
+
+        # We build up a data model and the appropriate styling information
+
+        titles_row = []
+
+        if part.production_file and len(part.production_file[0].operations) > 0:
+
+            data_ops = [[Paragraph(part.human_identifier,big_order_nr),
+                         Paragraph(escape_html(part.description),subtitle_style)],
+                        [SubSectionNumber(part.human_identifier, page_number_style),
+                         Paragraph(_("Quantity : {} - Deadline: {}").format(part.qty, date_to_dmy(part.deadline)),subtitle_style)]]
+
+            ts = platypus.TableStyle()
+            ts.add('GRID',(0,0),(-1,-1),0.5,colors.black)
+            ts.add('VALIGN', (0, 0), (-1, -1), 'TOP')
+            ts.add('ALIGN', (0, 1), (-1, 1), 'RIGHT')
+
+
+            start_mark = PageMarker()
+            complete_document.append( start_mark)
+
+            header_maker = HeaderMaker(data_ops, ts, col_widths=compute_strut([3.8*cm, None], A4[0]-1*cm))
+            complete_document.append(HeaderSetter( header_maker))
+
+            operation_ndx = 1
+            for op in part.production_file[0].operations:
+                complete_document.append(
+                    KeepTogether( [
+                        make_boxes(operation_ndx, op, test_mode),
+                        platypus.Spacer(1,0.1*cm) ] ))
+
+                operation_ndx += 1
+
+            end_mark = PageMarker()
+            complete_document.append( end_mark)
+            sections[part.human_identifier] = (start_mark, end_mark)
+
+            complete_document.append(HeaderSetter(None))
+            complete_document.append(PageBreak())
+            # complete_document.append(platypus.Spacer(1,30))
+
+    session().close() # FIXME Dirty
+
+    if len(complete_document) > 0:
+        filename = make_pdf_filename("OrderAndParts_{}_".format(order_id))
+        ladderDoc = basic_PDF(filename,body_frame=headings_frame)
+        ladderDoc.subject = u"Mode op\u00E9ratoire"
+        ladderDoc.title = u"Client {}".format(o.customer.customer_id)
+
+        ladderDoc.multiBuild(complete_document,canvasmaker=NumberedCanvas)
+        open_pdf(filename)
+        return True
+    else:
+        raise ServerException( ServerErrors.printing_an_empty_report)
+
+
+
 def print_order_report(dao, order_id, test_mode=False):
     global header_text,sub_header_text
 

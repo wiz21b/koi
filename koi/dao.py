@@ -1810,8 +1810,6 @@ class TaskActionReportDAO(object):
 
             elif TaskActionReportType.stop_task :
 
-                assert task_action_reports
-
                 for tar in sorted(task_action_reports, key=lambda tar:tar.time, reverse=True):
                     if tar.task_id == task_id and tar.task_id not in last_action_on_task_id:
                         last_action_on_task_id[task_id] = tar
@@ -3779,16 +3777,16 @@ class DeliverySlipDAO(object):
         session().commit()
         return parts
 
-        parts = session().query(DeliverySlipPart).join(OrderPart).filter(DeliverySlipPart.delivery_slip_id == slip_id).order_by(OrderPart.position).all()
-
-        res = []
-        for part in parts:
-            fopart = freeze2(part.order_part)
-            fpart = type("FrozenDeliverySlipPart", (object,), { 'quantity_out' : part.quantity_out, 'order_part' : fopart })
-            res.append(fpart)
-
-        session().commit()
-        return res
+        # parts = session().query(DeliverySlipPart).join(OrderPart).filter(DeliverySlipPart.delivery_slip_id == slip_id).order_by(OrderPart.position).all()
+        #
+        # res = []
+        # for part in parts:
+        #     fopart = freeze2(part.order_part)
+        #     fpart = type("FrozenDeliverySlipPart", (object,), { 'quantity_out' : part.quantity_out, 'order_part' : fopart })
+        #     res.append(fpart)
+        #
+        # session().commit()
+        # return res
 
 
     @RollbackDecorator

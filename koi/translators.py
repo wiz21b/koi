@@ -88,19 +88,19 @@ def date_to_s(d,full=False):
         days = [_("Monday"),_("Tuesday"),_("Wednesday"),_("Thursday"),_("Friday"),_("Saturday"),_("Sunday")]
         return u"{} {}/{}/{}".format(days[d.weekday()], d.day,d.month,d.year)
 
-def date_to_dmy(d,full_month=False):
+def date_to_dmy(d,full_month=False, if_none=""):
     global _days, _months
 
     if d is None:
-        return u""
+        return if_none
 
-    day = u"{}".format(d.weekday())
+    day = d.weekday()
 
-    month = u"/{}/".format(d.month)
+    month = "/{}/".format(d.month)
     if full_month:
-        month = u" {} ".format(_months[d.month-1])
+        month = " {} ".format(_months[d.month-1])
 
-    return u"{}{}{}".format(d.day, month,d.year)
+    return "{}{}{}".format(d.day, month,d.year)
 
 
 def date_to_dm(d,year=True):

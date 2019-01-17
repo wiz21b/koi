@@ -83,7 +83,7 @@ class HorseHTTPHandler(BaseHTTPRequestHandler):
             self.wfile.write(configuration.get("Database","url"))
             return
 
-        elif path == '/delivery_slips':
+        elif path == '/client':
             f = open( configuration.get("DownloadSite","client_path"), 'rb' )
             bytes = f.read()
             f.close()
@@ -154,7 +154,7 @@ img {background-color:white;}
    <table width="100%" height="1"><tr><td></td><tr/></table><br/><br/>
    <h2>This is the Horse download site !</h2>
 <p>The current version is <b>{version}</b>.</p>
-<p>To download the latest delivery_slips, <a href='/file'>click here</a>.</p>
+<p>To download the latest client, <a href='/file'>click here</a>.</p>
 </body></html>
 """
             bytes = bytes.replace("{version}",configuration.get("DownloadSite","current_version"))

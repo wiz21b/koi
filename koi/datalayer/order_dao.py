@@ -1,4 +1,4 @@
-from collections import OrderedDict
+from collections import namedtuple,OrderedDict
 from datetime import date,timedelta
 
 from sqlalchemy import String
@@ -894,7 +894,6 @@ class OrderDAO(object):
         if res:
             # We extend the tuple returned by SQLAlchemy with
             # our own stuff.
-            from collections import namedtuple
             nt = namedtuple('MonthlyReportTuple', res[0]._fields + ('encours',))
             return [nt._make(tuple(r) + \
                              (business_computations_service.encours_on_params(r.part_qty_out, r.qty, r.part_worked_hours,
@@ -927,8 +926,7 @@ class OrderDAO(object):
 
         parts = self.order_parts_for_monthly_report(month_date)
 
-        # mainlog.debug( [ (p.order_part_id, p.encours) for p in parts])
-        mainlog.debug("compute_encours_for_month month_date {}".format(month_date))
+        mainlog.debug("compute_encours_for_month. month_date={}; Base Values= {}".format( month_date, str(  [ (p.order_part_id, p.encours) for p in parts])))
 
         if parts:
             return sum( [p.encours for p in parts or []] )

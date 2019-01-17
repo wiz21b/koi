@@ -322,6 +322,9 @@ class BusinessComputationsService:
         if unit_price > 0:
             return float(material_price) + float(qty_produced) * float(unit_price)
         else:
+            # We assume the part we're looking at is not complete ('cos if it
+            # wasn't then it wouldn't belong to the valuation)
+
             return self.dao.order_part_dao.value_work_on_order_part_up_to_date(
                 order_part_id, ref_date)
 

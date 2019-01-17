@@ -1395,6 +1395,9 @@ class YoModel(PrototypedModelView):
 
 
 class PartActivityView(QWidget):
+
+    FONT_WIDTH = 10 # FIXME Huge approximation !
+
     def __init__(self, parent):
         super(PartActivityView,self).__init__(parent)
 
@@ -1498,8 +1501,12 @@ class PartActivityView(QWidget):
                 mainlog.debug("quality event to show")
                 fulltext += "<tr bgcolor=red>"  \
                             "<td align='right'>{}&nbsp;</td>" \
-                            "<td colspan='3'><font color=white>{} : {}</font></td>" \
-                            "</tr>".format( date_shown, line.kind.description, remove_crlf(line.description))
+                            "<td colspan='3'><font color=white>{}</font></td>" \
+                            "</tr>".format( date_shown, 
+                                            wrap_html_text( "{} : {}".format(
+                                                line.kind.description, remove_crlf(line.description)),
+                                                self.events_view.width() // self.FONT_WIDTH))
+
                 date_shown = ""
 
             for line in events.rget(date,'SLIP'):

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import locale
+import re
 import sys
 import os
 import platform
@@ -72,7 +73,7 @@ class Configuration(object):
     def is_set(self, section, tag):
         # Pay attention ! If the key is not found in the configuration, configobj will
         # look at the default value in the spec.
-        if section in self.base_configuration and tag in self.base_configuration[section] and self.base_configuration[section][tag]:
+        if section in self.base_configuration and tag in self.base_configuration[section] and self.base_configuration[section][tag].strip():
             # mainlog.debug(u"Found tag {}/{} in config file -> {}".format(section,tag,self.base_configuration[section][tag]))
             return True
         else:
@@ -274,20 +275,36 @@ class Configuration(object):
 
         self.base_configuration.validate(validate.Validator())
 
-        if 'Programs' not in self.base_configuration or 'pdf_viewer' not in self.base_configuration['Programs'] or not self.base_configuration['Programs']['pdf_viewer'] or not os.path.exists(self.base_configuration['Programs']['pdf_viewer']):
+        if not self.is_set('Globals', 'codename'):
+            configuration.set("Globals","codename", codename)
+
+        if (not self.is_set('Programs','pdf_viewer')) or (not os.path.exists(self.base_configuration['Programs']['pdf_viewer'])):
 
             if platform.system() == 'Linux':
                 self.base_configuration['Programs']['pdf_viewer'] = 'xpdf'
             else:
                 self.base_configuration['Programs']['pdf_viewer'] = os.path.join(resource_dir,'SumatraPDF.exe')
-
-
                 # self._load_web_server_source()
 
     def save(self):
         mainlog.debug("Saving configuration in {}".format(self.base_configuration.filename))
         self.base_configuration.write()
         mainlog.debug("Configuration saved")
+
+    def client_exe_path( self):
+        return os.path.join( configuration.get("Globals","codename"), configuration.get("Globals","codename") + '.exe')
+
+    def client_name_regex( self, ext='zip'):
+
+        if ext:
+            ext = r'\.' + ext
+        else:
+            ext = '$'
+
+        return re.compile(configuration.get("Globals","codename") + r'-([0-9]+\.[0-9]+\.[0-9]+)' + ext)
+
+    def client_zip_name( self, version, ext='.zip'):
+        return "{}-{}{}".format( self.get("Globals","codename"), version, ext)
 
 
 def package_dir():

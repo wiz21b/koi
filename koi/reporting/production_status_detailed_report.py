@@ -71,7 +71,7 @@ def print_production_status_detailed(dao):
     for opdef in opdefs:
         opdef_from_id[opdef.short_id] = opdef
 
-    operations_columns = 10
+    operations_columns = 9
 
     data_ops = []
     data_ops.append([_("NOrd"), _("Customer (d/l-Price)")] + [ str(i) for i in range(1,operations_columns+1)]+ [_('Tot')])

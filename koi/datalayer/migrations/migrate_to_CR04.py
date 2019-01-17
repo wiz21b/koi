@@ -20,8 +20,8 @@ def alter_structure():
 
     # python -m koi.datalayer.migrations.migrate_to_CR04
 
-    order_parts_tn = full_table_name(OrderPart)
-    configuration_tn = full_table_name(Configuration)
+    order_parts_tn = full_entity_name(OrderPart)
+    configuration_tn = full_entity_name(Configuration)
 
     try:
         session().connection().execute("ALTER TABLE {} DROP configuration_id".format(order_parts_tn))
@@ -39,9 +39,6 @@ def alter_structure():
     drop_entity( db_engine, session, ImpactLine)
     drop_entity( db_engine, session, Configuration)
     drop_entity( db_engine, session, ArticleConfiguration)
-
-    # It's here because it was not in the horse schema (but in the public)
-    id_generator.create(checkfirst=True)
 
     create_entity( session, ArticleConfiguration)
     create_entity( session, Configuration)

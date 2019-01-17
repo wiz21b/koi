@@ -138,7 +138,9 @@ class TestFinancial(TestBase):
         # I use time because no two delivey slips can be issues
         # simultaneously
         n = datetime.now()
-        cls.delivery_slip1 = dao.delivery_slip_part_dao.make_delivery_slip_for_order(order.order_id, {order.parts[0].order_part_id : 2, order.parts[1].order_part_id : 3}, datetime(2012,3,20,n.hour,n.minute,n.second,n.microsecond), False)
+        cls.delivery_slip1 = dao.delivery_slip_part_dao.make_delivery_slip_for_order(order.order_id, {
+            order.parts[0].order_part_id : 2,
+            order.parts[1].order_part_id : 3}, datetime(2012,3,20,n.hour,n.minute,n.second,n.microsecond), False)
 
 
 
@@ -352,15 +354,30 @@ class TestFinancial(TestBase):
 
         # Test active slip
 
+        ref_date = date(2012,3,28)
+
         slip = dao.delivery_slip_part_dao.find_by_id(self.delivery_slip1)
         assert slip.active == True
         self.assertEqual(7, self.order_with_work.parts[0].tex2)
         self.assertEqual(10, self.order_with_work.parts[1].tex2)
 
-        self.assertEqualEpsilon( (2*self.order_with_work.parts[0].sell_price + 3*self.order_with_work.parts[1].sell_price, 120, 0, 653),
-                                 dao.order_dao.compute_turnover_on(date(2012,3,28)))
+        # turnover =  to_bill, encours_this_month, encours_previous_month, turnover
 
-        # Test deactivated slip
+        TestBase.show_order_parts( session().query(OrderPart).filter(OrderPart.state != OrderPartStateType.preorder ).all(), ref_date)
+
+        # The billable amounts are based on the delivery slips issued up to the
+        # reference date.
+        # We count 2 & 3 delivery slips for the valuation on the ref. month
+        # because of reference date (and dataset), the encours in the previous month is zero (there are no delivery slips)
+        # It happens that billable and valuation are equals (because all the intersting
+        # delivery slips have been issued on the same month)
+
+        value_delivered = 2*self.order_with_work.parts[0].sell_price + 3*self.order_with_work.parts[1].sell_price
+        self.assertEqualEpsilon( (value_delivered, value_delivered, 0,
+                                  value_delivered + value_delivered - 0),
+                                 dao.order_dao.compute_turnover_on(ref_date))
+
+        # Test deactivate slip (we deactivate the one with 2 and 3 units on different parts)
 
         dao.delivery_slip_part_dao.deactivate(self.delivery_slip1)
 
@@ -372,10 +389,13 @@ class TestFinancial(TestBase):
 
         # to_bill, encours_this_month, encours_previous_month, turnover
 
-        # Check to bill amount and encours are modified
+        # Check to see if bill amount and encours are modified
 
-        self.assertEqualEpsilon( (0*(2*100+3*111), 120, 0, 0*(2*100+3*111) + 120 - 0),
-                                 dao.order_dao.compute_turnover_on(date(2012,3,28)))
+        value_delivered = 0
+        self.assertEqualEpsilon( (value_delivered, value_delivered, 0,
+                                  value_delivered + value_delivered - 0),
+                                 dao.order_dao.compute_turnover_on(ref_date))
+
 
 
 
@@ -435,15 +455,8 @@ class TestFinancial(TestBase):
         d = date.today()
 
         # zero hours done = zero valuation
-        self.assertEqual( 1, enc(0,10,hours_consumed=0,hours_planned=10,unit_price=1,material_price=1,order_part_id=o.order_part_id,ref_date=d))
-        self.assertEqual( 4, enc(3,10,hours_consumed=0,hours_planned=10,unit_price=1,material_price=1,order_part_id=o.order_part_id,ref_date=d))
-
-        # nothing produced but all hours or more consumed
-        self.assertEqual( 9, enc(0,10,hours_consumed=10,hours_planned=10,unit_price=1,material_price=1,order_part_id=o.order_part_id,ref_date=d))
-        self.assertEqual( 9, enc(0,10,hours_consumed=20,hours_planned=10,unit_price=1,material_price=1,order_part_id=o.order_part_id,ref_date=d))
-
-        # all was produced => zero valuation
-        self.assertEqual( 0, enc(10,10,hours_consumed=10,hours_planned=10,unit_price=1,material_price=1,order_part_id=o.order_part_id,ref_date=d))
+        self.assertEqual( 0*10 + 1, enc(qty_produced=0,qty_ordered=10,hours_consumed=0,hours_planned=10,unit_price=10,material_price=1,order_part_id=o.order_part_id,ref_date=d))
+        self.assertEqual( 3*10 + 1, enc(qty_produced=3,qty_ordered=10,hours_consumed=0,hours_planned=10,unit_price=10,material_price=1,order_part_id=o.order_part_id,ref_date=d))
 
         # hours done but unit price is zero => we estimate based on operations
         self.assertEqual( (11+13+23) * 63.3, enc(0,10,hours_consumed=5,hours_planned=10,unit_price=0,material_price=1,order_part_id=o.order_part_id,ref_date=d))

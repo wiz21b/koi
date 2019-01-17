@@ -1,3 +1,4 @@
+import mimetypes
 import tempfile
 import os.path
 import re
@@ -6,7 +7,6 @@ import sys
 from urllib.request import build_opener,ProxyHandler,HTTPHandler,HTTPSHandler
 from http.client import HTTPConnection, HTTPSConnection, OK
 
-from pymediafire import MultiRead
 
 from koi.base_logging import mainlog
 from koi.Configurator import configuration
@@ -39,7 +39,8 @@ class MultiRead:
         if logger:
             self.logger = logger
         else:
-            self.logger = DevNullLogger()
+            self.logger = mainlog
+
         self.to_read = []
         self.current_file_dnx = 0
         self.current_file = None
@@ -121,11 +122,8 @@ class MultiRead:
             self.logger.debug("Picking next item to upload : opening one more")
             to_send = self.to_read[self.current_file_ndx]
 
-            if type(to_send) == str or type(to_send) == unicode:
-                if sys.version[0] == "2":
-                    self.current_file = io.BytesIO(bytearray(to_send.encode('utf-8')))
-                else:
-                    self.current_file = io.BytesIO(bytes(to_send,'utf-8'))
+            if type(to_send) == str:
+                self.current_file = io.BytesIO(bytes(to_send,'utf-8'))
 
             # elif type(to_send) == unicode:
             #     self.current_file = StringIO(to_send.encode('utf-8'))
@@ -306,7 +304,7 @@ def download_document(doc_id, progress_tracker = None, destination = None):
 from koi.doc_manager.documents_service import documents_service
 from koi.server.json_decorator import JsonCallWrapper
 
-documents_service = JsonCallWrapper( documents_service, JsonCallWrapper.DIRECT_MODE)
+documents_service = JsonCallWrapper( documents_service, JsonCallWrapper.HTTP_MODE)
 
 def update_name_and_description(document_id, name, description):
     documents_service.update_name_and_description(document_id, name, description)

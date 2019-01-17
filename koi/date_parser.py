@@ -1,7 +1,6 @@
 import re
 #import formencode
 from datetime import datetime,date
-import unittest
 
 from koi.Configurator import mainlog
 

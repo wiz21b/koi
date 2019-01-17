@@ -30,6 +30,11 @@ from koi.download_version import upgrade_process, RETURN_CODE_SUCCESS
 from koi.legal import copyright, license_short
 
 
+if '--help' in sys.argv and not sys.stdout:
+    init_logging( console_log=False)
+    mainlog.error("Can't display --help on GUI application (on windows they have stdout none)")
+    exit()
+
 
 parser = argparse.ArgumentParser(description='Here are the command line arguments you can use :')
 parser.add_argument('--finish-update', default=False, help='Continue the update process started by a previous instance')
@@ -721,6 +726,9 @@ class MainWindow (QMainWindow):
 
 
 
+    @Slot(int)
+    def edit_order_part_by_id(self,order_part_id):
+        self.edit_order_part( dao.order_part_dao.find_by_id( order_part_id))
 
     @Slot(OrderPart)
     def edit_order_part(self,order_part):

@@ -11,13 +11,14 @@ if __name__ == "__main__":
 
 import os
 from datetime import date
+from decimal import localcontext, Decimal
 from docxtpl import DocxTemplate
 
 from koi.dao import dao
 from koi.server.json_decorator import JsonCallWrapper
 from koi.doc_manager.documents_service import DocumentsService
 from koi.doc_manager.client_utils import download_document
-from koi.reporting.utils import make_home_file
+from koi.reporting.utils import make_home_file, moneyfmt
 from koi.portability import open_a_file_on_os
 from koi.translators import amount_to_s, date_to_dmy
 
@@ -38,14 +39,11 @@ def print_order_confirmation_report(order_id):
 
     order = dao.order_dao.find_by_id(order_id)
 
-    from decimal import localcontext, Decimal
-
     with localcontext() as ctx: # decimal context
         ctx.prec = 10+2
         qtize = Decimal(10)**-2
 
         grand_total = Decimal(0)
-        from koi.reporting.utils import moneyfmt
 
 
         parts_table = []
@@ -62,7 +60,8 @@ def print_order_confirmation_report(order_id):
                 'description' : part.description or "",
                 'quantity' : part.qty,
                 'unit_price' : moneyfmt(sell_price),
-                'total_price' : moneyfmt( total_price)
+                'total_price' : moneyfmt( total_price),
+                'deadline' : date_to_dmy( part.deadline, if_none="-")
             })
 
 

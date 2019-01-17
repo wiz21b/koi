@@ -1498,6 +1498,12 @@ class TrackingProxyModel(ProxyModel):
 
         self.dataChanged.emit( ndx_begin, ndx_end)
 
+    def value_at(self, row : int, column_label : str, role = Qt.UserRole):
+        # We suppose the prototype is of type PrototypeArray
+        c = self.prototype.index_of(column_label)
+        return self.data( self.index( row, c), role)
+
+
     def object_at(self,ndx):
         """ The object on the same row as the passed index.
         The index can be either an int (in this case it's a row number)
@@ -2209,6 +2215,12 @@ class PrototypedTableView(TableViewSignaledEvents):
             self._setup_delegates()
             model.rowsInserted.connect( self.rowsInsertedInModel)
 
+    def selected_rows(self):
+        s = set()
+        for ndx in self.selectedIndexes():
+            if ndx.row() >= 0:
+                s.add( ndx.row())
+        return s
 
 class EditPanel(QFrame):
     def __init__(self,parent):
@@ -2308,6 +2320,12 @@ class ProxyTableView(PrototypedTableView):
         return super(ProxyTableView,self).leaveEvent(event)
 
     def resizeEvent(self,event):
+
+        # So all the tables will have this behaviour (ie
+        # no space wandering in the table after a resize)
+
+        self.resizeRowsToContents()
+
         if self.edit_panel_enabled:
 
             r = self.edit_panel.geometry()
@@ -2326,6 +2344,7 @@ class ProxyTableView(PrototypedTableView):
                                                self.size().height() - s.height() - dy,
                                                s.width(),
                                                s.height()))
+
         return super(ProxyTableView,self).resizeEvent(event)
 
 

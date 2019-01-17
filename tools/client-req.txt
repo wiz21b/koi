@@ -1,0 +1,29 @@
+# Use this file like this :
+#  pip install -r client-req.txt
+# or (from behind SSL spying proxy)
+#  pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r client-req.txt
+
+# If not explained, a version number simply means we
+# know it builds with that version. Feel free to push
+# versions up.
+
+psycopg2 == 2.7.*
+sqlalchemy == 1.1.*
+configobj == 5.0.*
+pywin32
+reportlab == 3.4.*
+jsonrpc2 == 0.4.*
+pymediafire
+docxtpl == 0.4.*
+openpyxl == 2.5.*
+
+# Builds that are not available from PyPi
+c:/Users/stc/Downloads/PySide-1.2.4-cp36-cp36m-win32.whl
+
+# For additional tooling and source code management
+pytest
+pandocfilters
+cx-Freeze == 5.1.*
+
+# For the server
+CherryPy == 15.0.*

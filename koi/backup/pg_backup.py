@@ -23,8 +23,6 @@ from koi.datalayer.utils import _extract_db_params_from_url
 
 def _run_shell(cmd, env, logger):
 
-    logger.info("About to run : {}".format(" ".join(cmd)))
-
     if env and platform.system() == "Windows":
 
         # For some reason, on widnows, using enviro variables
@@ -34,11 +32,14 @@ def _run_shell(cmd, env, logger):
         # I wasn't able to turn something up...
 
         logger.info("We're on Windows, I can't use environment variables...")
-        env = None
+        # env = None
 
+    full_env = { **os.environ, **env }
+    logger.info("About to run : {}".format(" ".join(cmd)))
+    logger.info("Enviro : {}".format( full_env))
 
     try:
-        popen = subprocess.Popen( cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, universal_newlines=True)
+        popen = subprocess.Popen( cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=full_env, universal_newlines=True)
     except Exception as ex:
         logger.error("Can't run the command because {}".format(ex))
         raise ex
@@ -76,8 +77,8 @@ def dump_and_zip_database(base_configuration):
     if not base_configuration.get('Commands','pg_dump_cmd'):
         mainlog.error("Missing Commands/pg_dump_cmd in configuration file")
         error = True
-    if not base_configuration.get('Backup','db_url'):
-        mainlog.error("Missing Backup/db_url in configuration file")
+    if not base_configuration.get('Database','admin_url'):
+        mainlog.error("Missing Database/admin_url in configuration file")
         error = True
     if not base_configuration.get('Backup','prefix'):
         mainlog.error("Missing Backup/prefix in configuration file")
@@ -97,7 +98,7 @@ def dump_and_zip_database(base_configuration):
     command1 = [base_configuration.get('Commands','pg_dump_cmd'),
                 '--format=custom',
                 '--file={}'.format(final_destination),
-                base_configuration.get("Backup","db_url")]
+                base_configuration.get("Database","admin_url")]
 
     mainlog.info("Creating backup : {}".format(" ".join(command1)))
     p1 = subprocess.Popen(command1)
@@ -353,7 +354,7 @@ def send_mail(subject,content,cfg):
     mainlog.info("Mail sent")
 
 
-def rsync_export_files(db_file, logger):
+def rsync_export_files(db_file, logger, configuration):
     """
     This function exports the backup files to another Koi server.
 
@@ -362,35 +363,35 @@ def rsync_export_files(db_file, logger):
     :return:
     """
 
-    rsync_cmd = configuration.get("Commands","rsync")
     codename = configuration.get("Globals","codename")
 
     errors = False
-    if not rsync_cmd:
+    if not configuration.is_set("Commands","rsync"):
         logger.warn("Can't rsync because the rsync command is not configured")
         errors = True
 
-    rsync_documents_destination = configuration.get("Backup","rsync_documents_destination")
 
-    if not rsync_documents_destination:
+    if not configuration.is_set("Backup","rsync_documents_destination"):
         logger.error("Can't rsync because the rsync destination is not configured (so I don't know where to send files)")
         errors = True
 
-    rsync_database_destination = configuration.get("Backup","rsync_database_destination")
 
-    if not rsync_database_destination:
+    if not configuration.is_set("Backup","rsync_database_destination"):
         logger.error("Can't rsync because the rsync database destination is not configured (so I don't know where to send files)")
         errors = True
 
-    restore_backup = configuration.get("Backup","restore_backup")
 
-    if not restore_backup:
+    if not configuration.is_set("Backup","restore_backup"):
         logger.error("Can't restore_backup because restore_backup is not configured")
         errors = True
 
     if errors:
         return errors
 
+    rsync_cmd = configuration.get("Commands","rsync")
+    rsync_documents_destination = configuration.get("Backup","rsync_documents_destination")
+    rsync_database_destination = configuration.get("Backup","rsync_database_destination")
+    restore_backup = configuration.get("Backup","restore_backup")
 
     # Now the database file
     cmd = shlex.split(rsync_database_destination.format(db_file))
@@ -425,7 +426,7 @@ def restore_procedure():
               configuration)
 
 
-def backup_procedure( configuration):
+def backup_procedure( configuration, will_send_mail=True, will_rsync=False):
     if not configuration.get('Backup','backup_directory'):
         raise Exception("Missing Backup/backup_directory in configuration file")
 
@@ -452,43 +453,19 @@ def backup_procedure( configuration):
             configuration)
         mainlog.info("Documents copy done. {} files copied ({} bytes), {} files scanned.".format(total_files, size_to_str(total_bytes), scanned_files))
 
-        mainlog.info("Syncing the back up remotely")
-        rsync_export_files( filename, mainlog)
+        if will_rsync:
+            mainlog.info("Syncing the back up remotely")
+            rsync_export_files( filename, mainlog, configuration)
 
-        send_mail("Backup SUCCESS",
-                  "The backup of was done correctly DB:{}, files: {} / {} bytes.".format(size_to_str(bytes),
-                                                                                         total_files,
-                                                                                         total_bytes),
-                  configuration)
+        if will_send_mail:
+            send_mail("Backup SUCCESS",
+                      "The backup of was done correctly DB:{}, files: {} / {} bytes.".format(size_to_str(bytes),
+                                                                                             total_files,
+                                                                                             total_bytes),
+                      configuration)
 
     except Exception as ex:
         mainlog.error("Failed to complete backup")
         mainlog.exception(ex)
-        send_mail("Backup FAILURE", "The backup of was *not* done correctly.", configuration)
-
-from koi.backup.bitrot_shield import checksum_directory
-
-if __name__ == "__main__":
-    from koi.base_logging import init_logging, mainlog
-    import logging
-    mainlog.setLevel(logging.DEBUG)
-    init_logging("backup.log")
-    from koi.Configurator import load_configuration, configuration, get_data_dir
-    configuration.load_server_configuration()
-
-    parser = argparse.ArgumentParser(description='Here are the command line arguments you can use :')
-    parser.add_argument('--backup',  action='store_true', default=False, help='Backup database and documents')
-    parser.add_argument('--restore', action='store_true', default=False, help='Restore database and documents')
-    parser.add_argument('--bitrot-shield', action='store_true', default=False, help='Check files in the backup directory against some checksums')
-
-    args = parser.parse_args()
-
-    if args.restore:
-        restore_procedure()
-    elif args.bitrot_shield:
-        if not configuration.get('Backup', 'backup_directory'):
-            raise Exception("Missing Backup/backup_directory in configuration file")
-        checksum_directory(configuration.get('Backup', 'backup_directory'), mainlog)
-    else:
-        backup_procedure( configuration)
-
+        if will_send_mail:
+            send_mail("Backup FAILURE", "The backup of was *not* done correctly.", configuration)

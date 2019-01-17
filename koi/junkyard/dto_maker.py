@@ -252,7 +252,6 @@ def _has_primary_key_set(knames, d):
 
 
 def dict_to_sqla(metadata : SQLAMetaData, model, d, recursive_set, with_persistence=True):
-
     fnames, rnames, single_rnames, knames = metadata.attributes_names(model)
 
     if with_persistence:
@@ -686,7 +685,7 @@ class JsonCaller:
     def params_to_jsonable(self, signature : Signature, in_recursive_set, values):
         """
 
-        This is meant to be called on the delivery_slips side (when the delivery_slips invokes
+        This is meant to be called on the client side (when the client invokes
         a method on a service)
 
         JSON-RPC : we use the call by-name convention, so we produce a dict.
@@ -723,7 +722,7 @@ class JsonCaller:
     def jsonable_to_params(self, signature : Signature, in_recursive_set, values):
         """
 
-        Once the delivery_slips has issued its call. We receive the parameters as json,
+        Once the client has issued its call. We receive the parameters as json,
         we unjson them. Then we process them here to bring them back to an
         array of stuff that can be passed to the actual service method.
 

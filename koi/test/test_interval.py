@@ -1,3 +1,4 @@
+import unittest
 from koi.Interval import *
 
 class TestInterval(unittest.TestCase):

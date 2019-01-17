@@ -4,9 +4,9 @@ from PySide.QtCore import QObject
 from PySide.QtGui import QApplication, QPushButton
 from PySide.QtTest import QTest
 
+from koi.test.test_base import TestBase
 from koi.EditCustomerDialog import EditEmployeeDialog
 from koi.dao import *
-from koi.test.test_base import TestBase
 
 class TestEmployeeDialog(TestBase):
 
@@ -39,6 +39,7 @@ class TestEmployeeDialog(TestBase):
         self.widget = None
 
     def test_add(self):
+        nb_employees = self.widget.list_view.model().rowCount()
 
         b = self.widget.findChild( QPushButton, "newButton")
         save = self.widget.findChild( QPushButton, "saveButton")
@@ -69,7 +70,7 @@ class TestEmployeeDialog(TestBase):
         # delete.click()
 
         m = self.widget.list_view.model()
-        self.assertEqual( 5, m.rowCount())
+        self.assertEqual( nb_employees+1, m.rowCount())
 
         self.widget.line_in.setText("Gongo")
 

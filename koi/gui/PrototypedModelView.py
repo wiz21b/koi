@@ -99,6 +99,7 @@ class PrototypedModelView(QAbstractTableModel):
         if orientation == Qt.Horizontal and section >= 0 and section < len(self.prototype) and role == Qt.DisplayRole:
             return self.prototype[section].title
         else:
+            return super(PrototypedModelView, self).headerData(section, orientation, role)
             return None
 
     def parent(self):
