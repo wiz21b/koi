@@ -574,7 +574,7 @@ class BooleanDelegate(StandardTableDelegate):
     # event handler.
 
     # However, if this is use by Koi's form's stuff, then we'll create
-    # editor
+    # editor as a regular checkbox.
 
     def __init__(self,items,section_width = None,parent=None, editable=True):
         super(BooleanDelegate,self).__init__(parent)
@@ -1036,6 +1036,9 @@ class TextAreaSpecialEdit(QPlainTextEdit):
 
 
 class TextAreaTableDelegate(StandardTableDelegate):
+
+    CELL_ALIGNMENT = Qt.AlignLeft | Qt.AlignTop | Qt.TextWordWrap
+
     def timer_top(self):
         self.table.resizeRowsToContents()
 
@@ -1054,39 +1057,15 @@ class TextAreaTableDelegate(StandardTableDelegate):
 
     def paint_data(self,painter,option,r,text,index):
 
-        bbox = painter.boundingRect(r,Qt.AlignLeft | Qt.AlignTop | Qt.TextWordWrap,text)
-        k = "{}x{}".format(index.row(),index.column())
+        if text:
+            text = text.strip()
 
-        # painter.drawRect(QRect(r.x(),r.y(),bbox.width(),bbox.height()))
+        painter.drawText(r.x(),r.y(),r.width(),r.height(),self.CELL_ALIGNMENT,text)
 
-        if bbox.height() > r.height():
-            # We're too big
-            # print "too big had ({}):{}x{} needed:{}x{}".format(k,r.width(),r.height(),bbox.width(),bbox.height())
-            painter.drawText(r.x(),r.y(),r.width(),r.height(),Qt.AlignLeft | Qt.AlignTop | Qt.TextWordWrap,text)
-            self.last_bbox["{}x{}".format(index.row(),index.column())] = bbox
 
-            if self.table:
-                # If there are multiple redraws, they will be compressed
-                # in only one
 
-                # print "resizing"
-                # self.table.program_redraw()
-                self.timer.start(100)
-
-                # self.table.resizeRowToContents(index.row())
-        else:
-            # print "enough space ({}) had:{}x{} needed:{}x{}".format(k, r.width(),r.height(),bbox.width(),bbox.height())
-            painter.drawText(r.x(),r.y(),r.width(),r.height(),Qt.AlignLeft | Qt.AlignVCenter | Qt.TextWordWrap,text)
-            # if k in self.last_bbox:
-            #     del self.last_bbox[k]
 
     def sizeHint(self, option, index):
-        k = "{}x{}".format(index.row(),index.column())
-        if "{}x{}".format(index.row(),index.column()) in self.last_bbox:
-            s =  self.last_bbox[k]
-            # print "reusing ndx={}  {}x{}".format(k,s.width(),s.height())
-            del self.last_bbox[k]
-            return QSize(s.width(),s.height())
 
         s = self.get_displayed_data(index)
         if s == None:
@@ -1096,10 +1075,10 @@ class TextAreaTableDelegate(StandardTableDelegate):
         w = self.table.columnWidth(index.column())
         # if option.rect.width() > 0:
         #     w = option.rect.width()
-        size = fm.boundingRect(0, 0, w, 30000,Qt.AlignTop | Qt.AlignLeft | Qt.TextWordWrap, s, 0, [])
+        size = fm.boundingRect(0, 0, w, 30000, self.CELL_ALIGNMENT, s.strip(), 0, [])
 
         # if s and len(s) > 50:
-        #     print("[{}] w={} / s.w={} s.h={} txt:{}".format(self.i,w,size.width(),size.height(),s))
+        #print("[{}] t.w={} / s.w={} s.h={} txt:{}".format(self.i,w,size.width(),size.height(),s))
 
         # h = max( size.height(), self.last_bbox.height())
         # print "using ndx={}  {}x{}".format(k, size.width(),size.height())

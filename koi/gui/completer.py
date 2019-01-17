@@ -19,6 +19,9 @@ class TurboModel(QAbstractTableModel):
         self.references = []
         self.width = 0
 
+    def indexForReference( self, ref):
+        return self.references.index( ref)
+
     def clear(self):
         self.beginRemoveRows(QModelIndex(),0,self.rowCount()-1)
         self.beginRemoveColumns(QModelIndex(),0,self.width-1)
@@ -204,6 +207,14 @@ class AutoCompleteComboBox(QComboBox):
 
       # print "getCurrentItem: {} {} ".format(self.currentIndex(), self.list_view.currentIndex().row())
 
+  def setCurrentReference(self, ref):
+      self.setCurrentIndex(
+          self.list_model.indexForReference( ref))
+
+  def getCurrentReference(self):
+      m = self.model()
+      return m.data( m.index( self.currentIndex(),0), Qt.UserRole)
+
   def __init__(self,delegate = None, parent=None, sections = [100,300]):
     super(AutoCompleteComboBox,self).__init__(parent)
 
@@ -384,6 +395,7 @@ class AutoCompleteComboBox(QComboBox):
 
     if isinstance(self.view_items[0],list):
       width = len(self.view_items[0])
+      # print("indices : {}, view_items: {}".format( len(indices), len(self.view_items)))
       for rowndx in indices:
         t.append(self.view_items[rowndx])
         ref.append(self.reference[rowndx])

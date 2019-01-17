@@ -449,8 +449,20 @@ def yesNoBox(text,info_text,object_name="confirmationBox"):
     warningBox.setIcon(QMessageBox.Question)
     _setBoxTexts(warningBox,text,info_text)
     warningBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel);
+
+    # Check result against == QMessageBox.Yes,...
     return warningBox.exec_()
 
+def yesNoBox2(text,info_text,object_name="yesNoBox"):
+    warningBox = QMessageBox()
+    warningBox.setObjectName(object_name)
+    warningBox.setWindowTitle(_("Please confirm"))
+    warningBox.setIcon(QMessageBox.Question)
+    _setBoxTexts(warningBox,text,info_text)
+    warningBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No);
+
+    # Check result against == QMessageBox.Yes,...
+    return warningBox.exec_() == QMessageBox.Yes
 
 def makeInformationBox(text,info_text = None):
     warningBox = QMessageBox()

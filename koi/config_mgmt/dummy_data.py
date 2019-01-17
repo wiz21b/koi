@@ -205,35 +205,41 @@ def make_configs( session):
 
 def make_configs_dto( session):
 
-    cust1 = CopyCustomer()
-    cust1.fullname = "Cockerill"
-    cust1.customer_id = 1232
+    customers = session().query(Customer).limit(5).all()
 
-    cust2 = CopyCustomer()
-    cust2.fullname = "Laminer"
-    cust2.customer_id = 5589
+    cust1 = serialize_Customer_Customer_to_CopyCustomer( customers[0], None, {})
+    cust2 = serialize_Customer_Customer_to_CopyCustomer( customers[1], None, {})
+
+    # Limit is to alloww to run on a test DB with too many parts.
+    oparts = session().query(OrderPart).limit(5).all()
+
+    op = serialize_OrderPart_OrderPart_to_CopyOrderPart( oparts[0], None, {})
+    op2 = serialize_OrderPart_OrderPart_to_CopyOrderPart( oparts[1], None, {})
+    op3 = serialize_OrderPart_OrderPart_to_CopyOrderPart( oparts[2], None, {})
+
+    employees = session().query(Employee).limit(5).all()
+
+    employee1 = serialize_Employee_Employee_to_CopyEmployee( employees[0], None, {})
+    employee2 = serialize_Employee_Employee_to_CopyEmployee( employees[1], None, {})
+    employee3 = serialize_Employee_Employee_to_CopyEmployee( employees[2], None, {})
+
+    # cust1 = CopyCustomer()
+    # cust1.fullname = "Cockerill"
+    # cust1.customer_id = 1232
+
+    # cust2 = CopyCustomer()
+    # cust2.fullname = "Laminer"
+    # cust2.customer_id = 5589
 
     ac = CopyArticleConfiguration()
 
     ac.customer = cust1
     ac.customer_id = cust1.customer_id
 
-    ### ac.customer = session().query(Customer).filter( Customer.customer_id == 18429).one()
     ac.identification_number = "4500250418"
     ac.revision_number = "C"
     ac.date_creation = date(2016,11,19)
 
-    oparts = session().query(OrderPart).all()
-
-    op = serialize_OrderPart_OrderPart_to_CopyOrderPart( oparts[0], None, {})
-    op2 = serialize_OrderPart_OrderPart_to_CopyOrderPart( oparts[1], None, {})
-    op3 = serialize_OrderPart_OrderPart_to_CopyOrderPart( oparts[2], None, {})
-
-    employees = session().query(Employee).all()
-
-    employee1 = serialize_Employee_Employee_to_CopyEmployee( employees[0], None, {})
-    employee2 = serialize_Employee_Employee_to_CopyEmployee( employees[1], None, {})
-    employee3 = serialize_Employee_Employee_to_CopyEmployee( employees[2], None, {})
 
     #op = session().query(OrderPart).filter( OrderPart.order_part_id == 151547).one()
     #op2 = session().query(OrderPart).filter( OrderPart.order_part_id == 246051).one()
@@ -279,8 +285,11 @@ def make_configs_dto( session):
                 _make_config_line_dto( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
                 _make_config_line_dto( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
     c.version = 3
+    c.frozen = date(2018,3,5)
+    c.freezer = employee2
     c.frozen = None
-    c.lines[2].modify_config = True
+    c.freezer = None
+    c.lines[3].modify_config = True
     #ac.configurations.append( c)
 
 
@@ -325,19 +334,20 @@ def make_configs_dto( session):
     impact.configuration = None
     impact.document = _make_quick_doc_dto("impact_v3.doc")
     impact.article_configuration = ac
+    impact.configuration =  ac.configurations[2]
     ac.impacts.append(impact)
 
-    impact = CopyImpactLine()
-    impact.owner = employee1
-    #impact.owner = session().query(Employee).filter( Employee.employee_id == 20).one()
-    impact.description = "four Production settings v2"
-    impact.approval = ImpactApproval.UNDER_CONSTRUCTION
-    impact.approved_by = None
-    impact.active_date = None
-    impact.configuration = None
-    impact.document = _make_quick_doc_dto("impact_v3bis.doc")
-    impact.article_configuration = ac
-    ac.impacts.append(impact)
+    # impact = CopyImpactLine()
+    # impact.owner = employee1
+    # #impact.owner = session().query(Employee).filter( Employee.employee_id == 20).one()
+    # impact.description = "four Production settings v2"
+    # impact.approval = ImpactApproval.UNDER_CONSTRUCTION
+    # impact.approved_by = None
+    # impact.active_date = None
+    # impact.configuration = None
+    # impact.document = _make_quick_doc_dto("impact_v3bis.doc")
+    # impact.article_configuration = ac
+    # ac.impacts.append(impact)
 
 
     # -------------------------------------------------------------------------

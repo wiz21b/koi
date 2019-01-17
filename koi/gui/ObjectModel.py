@@ -207,6 +207,23 @@ class ObjectModel(QAbstractTableModel):
         self._changed_objects.add(obj)
         self.dataChanged.emit(self.index(row,0), self.index(row, self.columnCount()-1))
 
+    def set_object_at(self, ndx, obj):
+
+        old_obj = self.object_at( ndx)
+
+        if obj != old_obj:
+            if old_obj in self._changed_objects:
+                self._changed_objects.remove( old_obj)
+
+            if old_obj in self._deleted_objects:
+                self._deleted_objects.remove( old_obj)
+
+            if old_obj in self._created_objects:
+                self._created_objects.remove( old_obj)
+
+            self._objects[ndx] = obj
+            self.dataChanged.emit( self.index( ndx, 0), self.index( ndx, self.columnCount()-1))
+
     def object_at(self,ndx):
         """ The object on the same row as the passed index.
         The index can be either an int (in this case it's a row number)

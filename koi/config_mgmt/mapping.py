@@ -45,7 +45,13 @@ class Configuration(Base):
     configuration_id = Column(Integer,id_generator,nullable=False,primary_key=True)
 
     frozen = Column(Date, default=None)
+
+    # Configuration 0 is the baseline configuration for a given item/item version.
+    # As such, it shouldn't require impact documents to be created.
+    # Also, it should not be shown as configuration "0" but as "baseline" to the user.
+
     version = Column(Integer, default=0)
+
     freezer_id = Column(Integer, ForeignKey(Employee.employee_id))
     article_configuration_id = Column(Integer, ForeignKey("article_configurations.article_configuration_id"))
 
@@ -56,6 +62,9 @@ class Configuration(Base):
     # which are represented here.
     origins = relationship("ImpactLine", backref=backref("configuration", uselist=False))
 
+    @property
+    def is_baseline( self):
+        return self.version == 0
 
     def __init__(self):
         self.version = 0
@@ -103,10 +112,18 @@ class ArticleConfiguration(Base):
     factory. This is done with a set of documents (represented by
     ConfigurationLines entities).
 
-    Impact documents always precede configuration. So the user first
-    creates an impact and then fills in its configuration. Therefore
-    an ImpactLine can exist without a Configuration, but the opposite
-    is not possible.
+    An impact document justifiy the existence of a given configuration.
+    Impact documents should normally be created before each configuration
+    except for the baseline one (the "revision 0"). But we allow them to
+    be created after, for more user firendliness. However, we enforce
+    the fact that there must be an impact document (at least one) to
+    to freeze a configuration. So when a configuration comes in use
+    then we know its documentation is complete as far as the process
+    of related to imlpact documents is concerned. An exception is made
+    for the baseline configuration. This exists just because of the
+    will of the user, and it just requires a plan/part to exist before
+    hand. So in that case, we don't request an impact document to
+    allow freezing.
 
     """
 
@@ -159,7 +176,6 @@ class ImpactLine(Base):
     __tablename__ = 'impact_lines'
     impact_line_id = Column(Integer,id_generator,nullable=False,primary_key=True)
 
-
     # Short description of the document.
     # Some unstructured meta information about the document can fit here.
     description = Column(String)
@@ -176,8 +192,8 @@ class ImpactLine(Base):
     # Conversely, a configuration may have several impact documents.
     configuration_id = Column(Integer, ForeignKey( Configuration.configuration_id))
 
-    # Even if impact line defines confiugration versions, they
-    # noentheless belong to one article confiugration.
+    # Even if impact line defines configuration versions, they
+    # nonetheless belong to one article configuration.
     article_configuration_id = Column(Integer, ForeignKey(ArticleConfiguration.article_configuration_id),nullable=False)
     article_configuration = relationship(ArticleConfiguration, uselist=False, backref=backref("impacts", enable_typechecks=False), enable_typechecks=False)
 

@@ -12,12 +12,15 @@ from PySide.QtGui import QTableWidget,QScrollArea, QResizeEvent, QFrame, QApplic
 DEMO_MODE = 1
 
 if __name__ == "__main__":
+    import logging
     from PySide.QtGui import QMainWindow
 
-    from koi.base_logging import mainlog,init_logging
+    from koi.base_logging import init_logging, mainlog
     from koi.Configurator import init_i18n,load_configuration,configuration
 
     init_logging()
+    mainlog.setLevel(logging.DEBUG)
+
     init_i18n()
     load_configuration()
 
@@ -30,21 +33,32 @@ if __name__ == "__main__":
 # for t in session().query(Employee.employee_id).all():
 #     print("{} {}".format( type(t), t.employee_id))
 
+from koi.base_logging import mainlog
 from koi.config_mgmt.mapping import *
 
 from koi.gui.ObjectModel import ObjectModel
+from koi.gui.combo_object_model import ObjectComboModel
 from koi.gui.ComboDelegate import PythonEnumComboDelegate
 from koi.gui.ProxyModel import PrototypeController,IntegerNumberPrototype,FloatNumberPrototype, DurationPrototype,TrackingProxyModel,OperationDefinitionPrototype,PrototypedTableView,ProxyTableView,OrderPartDisplayPrototype,TextAreaPrototype, FutureDatePrototype,PrototypeArray,TextLinePrototype, Prototype, DatePrototype, BooleanPrototype
-from koi.gui.dialog_utils import SubFrame, TitleWidget, showWarningBox
+from koi.gui.dialog_utils import SubFrame, TitleWidget, showWarningBox, yesNoBox2
 
 from koi.gui.PrototypedModelView import PrototypedModelView
 from koi.config_mgmt.dragdrop_widget import DragDropWidget
 from koi.gui.PersistentFilter import PersistentFilter
 from koi.gui.horse_panel import HorsePanel
 from koi.session.UserSession import user_session
+from koi.datalayer.serializers import CopyConfiguration
 
 if __name__ != "__main__":
     from koi.datalayer.serializers import *
+
+from koi.config_mgmt.dummy_data import _make_quick_doc_dto
+from koi.config_mgmt.service import configuration_management_service
+from koi.config_mgmt.track_item import TrackNewItemDialog
+
+
+def open_impact_documents( ac : ArticleConfiguration):
+    return list( filter( lambda il: il.configuration_id is None, [ c for c in ac.impacts]))
 
 
 class EnumPrototype(Prototype):
@@ -82,11 +96,16 @@ class InstrumentedObject:
 
 
 
-# def configuration_version_status( self : Configuration):
-#     if self.frozen:
-#         return "Rev. {}, frozen".format( self.version)
-#     else:
-#         return "Rev. {}".format( self.version)
+def configuration_version_status( cfg : CopyConfiguration):
+    if cfg.is_baseline:
+        v = _("Baseline configuration")
+    else:
+        v = _("Revision {}").format( cfg.version)
+
+    if cfg.frozen:
+        return "{}, frozen".format( v)
+    else:
+        return "{}".format( v)
 
 # setattr( Configuration, "version_status", property(configuration_version_status))
 
@@ -156,24 +175,22 @@ class EditArticleConfiguration(QDialog):
 
         self._make_ui()
 
-class FreezeConfiguration(QDialog):
+class SelectImpactDocumentsDialog(QDialog):
 
-    def _make_ui(self):
-        title = _("Freeze a configuration")
-        self.setWindowTitle(title)
+    def _make_ui(self, info_text):
 
         config_impact_proto = list()
+
         config_impact_proto.append( BooleanPrototype('selected', "", editable=True))
-        config_impact_proto.append( TextLinePrototype('description',_('Description'),editable=True))
-        config_impact_proto.append( IntegerNumberPrototype('version',_('Cfg\nRev.'),editable=False))
+        config_impact_proto.append( TextLinePrototype('description',_('Description'),editable=False))
+        # config_impact_proto.append( IntegerNumberPrototype('version',_('Cfg\nRev.'),editable=False))
         config_impact_proto.append( TextLinePrototype('document',_('File'), editable=False))
         config_impact_proto.append( EnumPrototype('approval',_('Approval'), ImpactApproval, editable=False))
         config_impact_proto.append( DatePrototype('date_upload',_('Date'), editable=False))
 
         top_layout = QVBoxLayout()
 
-        top_layout.addWidget( QLabel("Please select the impact(s) document(s) that " +
-                                     "correspond to the new frozen configuration."))
+        top_layout.addWidget( QLabel( info_text))
 
         self._model_impact = ImpactsModel( self, config_impact_proto, None) # We won't create impact lines here
         self._view_impacts = PrototypedTableView(None, config_impact_proto)
@@ -194,26 +211,48 @@ class FreezeConfiguration(QDialog):
         self.buttons.accepted.connect(self.accept)
         self.buttons.rejected.connect(self.reject)
 
-    def __init__(self, parent, config : Configuration, impacts):
-        super( FreezeConfiguration, self).__init__(parent)
+        self._model_impact.dataChanged.connect( self._data_changed)
 
-        self._make_ui()
 
-        self.impacts = [ ImpactLineExtended( c ) for c in impacts]
+    @Slot()
+    def _data_changed( self, topLeft : QModelIndex, bottomRight : QModelIndex):
+        left_column = topLeft.column()
+        right_column = bottomRight.column()
+
+        if left_column <= 0 <= right_column:
+            for impact in self._model_impact.read_only_objects():
+                if impact.selected:
+                    self.buttons.button(QDialogButtonBox.Ok).setEnabled( True)
+                    return
+
+        self.buttons.button(QDialogButtonBox.Ok).setEnabled( False)
+
+    def __init__(self, parent, config : Configuration, impacts, info_text):
+        super( SelectImpactDocumentsDialog, self).__init__(parent)
+
+        self._make_ui( info_text)
+
+        self.impacts = list( filter( lambda il: il.configuration_id is None, [ ImpactLineExtended( c ) for c in impacts]))
         self._model_impact.reset_objects( self.impacts )
+        self.buttons.button(QDialogButtonBox.Ok).setEnabled( False)
+
+    def selected_impacts(self):
+        return [proxy._object for proxy in filter( lambda impact: impact.selected == True, self.impacts)]
 
     @Slot()
     def accept(self):
-        return super(FreezeConfiguration,self).accept()
+        return super(SelectImpactDocumentsDialog,self).accept()
 
     @Slot()
     def reject(self):
-        return super(FreezeConfiguration,self).reject()
+        return super(SelectImpactDocumentsDialog,self).reject()
 
 
 
 class AddFileToConfiguration(QDialog):
-    def __init__(self, parent, filename, previous_lines):
+
+
+    def __init__(self, parent, filename, previous_lines, for_impact_doc=False):
         super( AddFileToConfiguration, self).__init__(parent)
 
         self.crl = None
@@ -222,20 +261,26 @@ class AddFileToConfiguration(QDialog):
         self.type_ = TypeConfigDoc.PROGRAM
         self.version = 1
 
-        title = _("Add a file to a configuration")
-        self.setWindowTitle(title)
-
         top_layout = QVBoxLayout()
         self.setLayout(top_layout)
 
         top_layout.addWidget( QLabel("Filename : <b>{}</b>".format( filename)))
 
-        self.type_choice = QComboBox()
-        for s in TypeConfigDoc:
-            self.type_choice.addItem( s.value, s)
+        if not for_impact_doc:
+            self.type_choice = QComboBox()
+            for s in TypeConfigDoc:
+                if s != TypeConfigDoc.IMPACT:
+                    self.type_choice.addItem( s.value, s)
 
-        top_layout.addWidget( QLabel("Type :"))
-        top_layout.addWidget( self.type_choice)
+            self._type_label = QLabel("Type :")
+            top_layout.addWidget( self._type_label)
+            top_layout.addWidget( self.type_choice)
+            title = _("Add a file to a configuration")
+        else:
+            self.type_choice = None
+            title = _("Add an impact document")
+
+        self.setWindowTitle(title)
 
         self._description_widget = QLineEdit()
         top_layout.addWidget( QLabel("Description :"))
@@ -270,7 +315,11 @@ class AddFileToConfiguration(QDialog):
     def accept(self):
         self.description = self._description_widget.text()
         self.crl = self.crl_choice.itemData( self.crl_choice.currentIndex())
-        self.type_ = self.type_choice.itemData( self.type_choice.currentIndex())
+        if self.type_choice:
+            self.type_ = self.type_choice.itemData( self.type_choice.currentIndex())
+        else:
+            self.type_ = None
+
         return super(AddFileToConfiguration,self).accept()
 
     @Slot()
@@ -293,37 +342,71 @@ class EditConfiguration(HorsePanel):
         #print("set_configuration_articles : {}".format(type(cfg_articles)))
         self._articles = cfg_articles
         self._model_articles.reset_objects( self._articles)
-        self._wl.set_objects( self._articles)
-        self.set_article_configuration( self._articles[0])
+
+        if DEMO_MODE == 0:
+            self._wl.set_objects( self._articles)
+
+        if self._articles:
+            self.set_article_configuration( self._articles[0])
+        else:
+            self.set_article_configuration( None)
 
     def set_article_configuration( self, ca : ArticleConfiguration):
 
-        wrapped = self._change_tracker.wrap_in_change_detector(ca)
+        assert ca is None or isinstance(ca, ArticleConfiguration) or isinstance(ca, CopyArticleConfiguration), "Bad type {}".format( type(ca))
 
-        if wrapped == self._current_article:
-            return
+        # wrapped = self._change_tracker.wrap_in_change_detector(ca)
+        # if wrapped == self._current_article:
+        #     return
+        # else:
+        #     self._current_article = wrapped
 
-        self._current_article = wrapped
-        #print("--- version combo setModel : {}".format( type( self._current_article.configurations)))
-        self._version_combo_model.setObjects( self._current_article.configurations)
-        #print("-o- "*10)
-        self._model_impact.reset_objects( self._current_article.impacts )
+        if self._current_article and self._current_article.article_configuration_id == ca.article_configuration_id:
+            keep_configuration_open = self._current_config.configuration_id
+        else:
+            keep_configuration_open = False
 
+        self._current_article = ca
 
-        # By default, we display the last frozen config.
+        if self._current_article:
+            #print("--- version combo setModel : {}".format( type( self._current_article.configurations)))
+            self._version_combo_model.setObjects( self._current_article.configurations)
+            #print("-o- "*10)
+            self._model_impact.reset_objects( self._current_article.impacts )
 
-        config_set = False
-        for c in reversed( self._current_article.configurations):
-            if c.frozen:
-                self.set_configuration(c)
-                config_set = True
-                break
+            if self._view_articles.currentIndex().isValid():
+                ndx = self._view_articles.currentIndex().row()
+                selected_ca = self._model_articles.object_at( ndx)
+                if selected_ca.article_configuration_id == ca.article_configuration_id:
+                    self._model_articles.set_object_at( ndx, ca)
 
-        if not config_set:
-            if len( self._current_article.configurations) > 0:
-                self.set_configuration(ca.configurations[len( self._current_article.configurations) - 1])
+            # By default, we display the last frozen config.
+
+            config_set = False
+
+            if keep_configuration_open:
+                for c in reversed( self._current_article.configurations):
+                    if c.configuration_id == keep_configuration_open:
+                        self.set_configuration(c)
+                        config_set = True
+                        break
+
             else:
-                self.set_configuration( None)
+                for c in reversed( self._current_article.configurations):
+                    if c.frozen:
+                        self.set_configuration(c)
+                        config_set = True
+                        break
+
+            if not config_set:
+                if len( self._current_article.configurations) > 0:
+                    self.set_configuration(ca.configurations[len( self._current_article.configurations) - 1])
+                else:
+                    self.set_configuration( None)
+        else:
+            self._version_combo_model.setObjects([])
+            self._model_impact.reset_objects([])
+            self.set_configuration( None)
 
 
     def set_configuration( self, config : Configuration):
@@ -348,20 +431,34 @@ class EditConfiguration(HorsePanel):
 
 
         ac = config.article_configuration
-        full_version = "{}/{}".format( ac.identification_number, ac.revision_number)
+        full_version = "{}/{}".format( ac.identification_number, ac.revision_number or "-")
         msg = "Configuration for part <b>{}</b>, client : <b>{}</b>".format( full_version, ac.customer_id)
 
         self._freeze_button.setEnabled(True)
         if config.frozen:
             freeze_msg = "<b><font color = 'green'>FROZEN on {} by {}</font></b>".format( config.frozen, config.freezer.fullname)
-            self._freeze_button.setText("Unfreeze")
+
+            self._freeze_button.setText(_("Unfreeze"))
+            self._freeze_button.setEnabled( True)
         else:
             freeze_msg = "<b><font color = 'red'>NOT frozen</font></b>"
-            self._freeze_button.setText("Freeze")
 
+            can_freeze = len(config.lines) >= 1 # Configuration must not be empty
+            self._freeze_button.setText(_("Freeze"))
+            self._freeze_button.setEnabled( can_freeze)
+
+
+        can_add_revision = len(config.lines) >= 1 # Adding a revision after an empty one seems strange
+        self._add_config_button.setEnabled(can_add_revision)
 
         self._subframe.set_title( msg)
-        self._version_config_label.setText( "Revision {}, {}".format(config.version, freeze_msg))
+
+        if config.version == 0:
+            rev = "Baseline"
+        else:
+            rev = "Revision {}".format(config.version)
+
+        self._version_config_label.setText( "{}, {}".format(rev, freeze_msg))
         self._model.reset_objects( config.lines )
 
         self._versions_combo.setEnabled(True)
@@ -374,114 +471,81 @@ class EditConfiguration(HorsePanel):
             self._parts_widget.set_objects( part_revs)
         else:
             if config.parts:
-                self._parts_widget.setText( _("Used in : ") + ", ".join(
+                self._parts_widget.setText( _("Used in order part(s) : ") + ", ".join(
                     [ "<a href='{}/{}'>{}</a>".format( part.order_part_id, part.order.customer_id,part.human_identifier) for part in config.parts] ))
             else:
                 self._parts_widget.setText( _("Not used"))
 
 
     def _create_configuration( self, impact_documents):
-        assert impact_documents, "Configuration *must* be wired to impact document"
-
-        c = CopyConfiguration()
-
-        existing_versions = [c.version for c in self._current_article.configurations]
-        if existing_versions:
-            c.version = max( existing_versions) + 1
-        else:
-            c.version = 1
-
-        c.article_configuration = self._current_article
-        self._current_article.configurations.append(c)
-
-        for impact in impact_documents:
-            #impact.configuration_id = c.configuration_id
-            impact.configuration = c
-
-        return c
+        ac = configuration_management_service.add_configuration_revision(
+            self._current_article.article_configuration_id, [ doc.impact_line_id for doc in impact_documents ])
+        self.set_article_configuration( ac)
+        return ac.configurations[-1]
 
     @Slot()
     def add_configuration(self):
 
-        for c in reversed( self._current_article.configurations):
-            if not c.frozen:
-                showWarningBox(_("There's already a not frozen revision. Edit that one first."))
+        if self._current_config != self._current_article.configurations[-1]:
+            if not yesNoBox2("Are you sure ?","There's another revision with higher version. Are you sure you want to create another one ?"):
                 return
 
-        selected_indices = self._view_impacts.selectedIndexes()
-        if selected_indices and len(selected_indices) >= 1:
-            impact_documents = [self._model_impact.object_at(ndx.row()) for ndx in selected_indices]
+        oidocs = open_impact_documents( self._current_article)
+
+        if oidocs :
+            dialog = SelectImpactDocumentsDialog( self, self._current_config,
+                                                  filter( lambda imp: imp.approval == ImpactApproval.UNDER_CONSTRUCTION, oidocs),
+                                                  "Please select at least one impact document that correspond to the new revision.")
+            dialog.setWindowTitle( _("Add a configuration revision"))
+            dialog.exec_()
+            if dialog.result() == QDialog.Accepted:
+                self._create_configuration( dialog.selected_impacts())
+
+            dialog.deleteLater()
         else:
-            # no selected impact !
-            showWarningBox( _("No impact selected document, so no active configuration"),
-                            _("Please select an impact document to show which configuration to add a document to."))
-            return
-
-
-        c = self._create_configuration( impact_documents)
-        self.set_configuration( c)
+            showWarningBox( _("Can't create new configuration revision !"),
+                            _("You cannot create the configuration revision because there are no suitable impact document in the article. You should add a new impact document first."))
 
 
     @Slot()
     def freeze_configuration(self):
+        if self._freeze_button.text() == _("Freeze"):
+            self.set_article_configuration(
+                configuration_management_service.freeze_configuration( self._current_config ))
+        else:
+            self.set_article_configuration(
+                configuration_management_service.unfreeze_configuration( self._current_config ))
 
-        impacts = filter( lambda imp: imp.approval == ImpactApproval.UNDER_CONSTRUCTION, self._current_article.impacts)
-
-        dialog = FreezeConfiguration( self, self._current_config, impacts)
-        dialog.exec_()
-        if dialog.result() == QDialog.Accepted:
-
-            self._current_config.frozen = date.today()
-            self._current_config.freezer = "Daniel Dumont"
-
-            c = ConfigurationDto()
-            c.frozen = None
-            c.version = max([c.version for c in self._current_article.configurations]) + 1
-            self._current_article.configurations.append( c)
-
-            # for c in range( self.version_choice.count()):
-            #     self.version_choice.removeItem(0)
-
-            # for c in self._current_article:
-            #     self.version_choice.addItem("Revision {}".format(c.version))
-
-            # self.version_choice.setCurrentIndex( len(self._current_article) - 2)
-            #self.version_selected( len(self._current_article) - 2)
-
-        dialog.deleteLater()
 
     @Slot()
     def configFilesDropped( self,paths):
-        if self._model_impact.rowCount() == 0:
-            showWarningBox( _("Trying to create a configuration without impact document"),
-                            _('It is not allowed to add files to a configuration while there are no impact file that "frame" it. Please create an impact document first.'))
-            return
+        # if not self._current_config.is_baseline and self._model_impact.rowCount() == 0:
+        #     showWarningBox( _("Trying to create a configuration without impact document"),
+        #                     _('It is not allowed to add files to a configuration while there are no impact file that "frame" it. Please create an impact document first.'))
+        #     return
 
-        selected_indices = self._view_impacts.selectedIndexes()
-        if selected_indices and len(selected_indices) >= 1:
-            impact_documents = [self._model_impact.object_at(ndx.row()) for ndx in selected_indices]
-        else:
-            impact_documents = None
+        # selected_indices = self._view_impacts.selectedIndexes()
+        # if selected_indices and len(selected_indices) >= 1:
+        #     impact_documents = [self._model_impact.object_at(ndx.row()) for ndx in selected_indices]
+        # else:
+        #     impact_documents = None
 
-        if self._current_config is None:
+        # if self._current_config is None:
 
-            if not impact_documents:
-                # no selected impact !
-                showWarningBox( _("No impact selected document, so no active configuration"),
-                                _("Please select an impact document to show which configuration to add a document to."))
-                return
+        #     if not impact_documents:
+        #         # no selected impact !
+        #         showWarningBox( _("No impact selected document, so no active configuration"),
+        #                         _("Please select an impact document to show which configuration to add a document to."))
+        #         return
 
-        elif self._current_config.frozen:
+        if self._current_config.frozen:
             showWarningBox( _("Trying to modify a frozen configuration"),
-                            _("It is not allowed to modify a frozen configuration."))
+                            _("It is not allowed to modify a frozen configuration. Unfreeze it first."))
             return
 
         dialog = AddFileToConfiguration( self, paths[0][1], [])
         dialog.exec_()
         if dialog.result() == QDialog.Accepted:
-
-            if not self._current_config:
-                self._current_config = self._create_configuration( impact_documents)
 
             new_line = CopyConfigurationLine()
             new_line.description = dialog.description
@@ -490,43 +554,33 @@ class EditConfiguration(HorsePanel):
             new_line.document = _make_quick_doc_dto(dialog.filename)
             new_line.crl = dialog.crl
             new_line.modify_config = True
-            self._current_config.lines.append( new_line)
+            new_line.configuration_id = self._current_config.configuration_id
 
-            # FIXME should use a simpmle "datachagned" no ?
-            # self._model.reset_objects( self._current_config.lines )
-
-            self.set_configuration( self._current_config)
+            ac = configuration_management_service.add_document_to_configuration( new_line)
+            self.set_article_configuration( ac)
 
         dialog.deleteLater()
 
     @Slot()
     def impactFilesDropped( self,paths):
-        dialog = AddFileToConfiguration( self, paths[0][1], [])
+        dialog = AddFileToConfiguration( self, paths[0][1], [], for_impact_doc=True)
+
         dialog.exec_()
         if dialog.result() == QDialog.Accepted:
 
             new_line = CopyImpactLine()
 
-            new_line.article_configuration = self._current_article
+            # new_line.article_configuration = self._current_article
             new_line.article_configuration_id = self._current_article.article_configuration_id
-            new_line.owner = user_session.employee()
+            # new_line.owner = user_session.employee()
             new_line.owner_id = user_session.employee().employee_id
             new_line.description = dialog.description
             new_line.document = _make_quick_doc_dto(dialog.filename)
             new_line.crl = dialog.crl
-            new_line.modify_config = True
+            new_line.approval = ImpactApproval.UNDER_CONSTRUCTION
 
-
-            # saved_line = store_impact_line( new_line)
-            self._current_article.impacts.append( new_line)
-
-            if len(self._current_article.impacts) == 1:
-                # First impact
-
-                pass
-
-            # FIXME should use a simpmle "datachanged" no ?
-            self._model_impact.reset_objects( self._current_article.impacts )
+            ac = configuration_management_service.add_impact_document( new_line)
+            self.set_article_configuration( ac)
 
         dialog.deleteLater()
 
@@ -542,7 +596,51 @@ class EditConfiguration(HorsePanel):
             if impact.configuration:
                 self.set_configuration( impact.configuration)
             else:
-                self.set_configuration( None)
+                # Selecting an impact document that is not wired to a specific configuration
+                # just produces no effect.
+                pass
+                # self.set_configuration( None)
+
+    @Slot()
+    def _search_configuration_articles(self):
+        key = self._search_line_edit.text()
+        mainlog.debug("Searching {}".format( key))
+        self.set_configuration_articles( configuration_management_service.search_configuration_articles( key))
+
+    @Slot(QPoint)
+    def showACContextualMenu(self, position : QPoint):
+        mainlog.debug("showACContextualMenu")
+        menu = QMenu()
+        # menu.addAction(self.copy_operations_action)
+        menu.addAction( self.edit_ac_action)
+
+        action = menu.exec_(QCursor.pos())
+
+    @Slot()
+    def edit_article_configuration(self):
+        mainlog.debug("edit_article_configuration")
+
+        ac = self._model_articles.object_at( self._view_articles.currentIndex().row())
+        d = TrackNewItemDialog(None, None)
+        d.load_inputs( ac)
+        d.exec_()
+
+        if d.result() == QDialog.Accepted:
+            ac.customer_id, ac.identification_number, ac.revision_number = d.inputs()
+            #self._article_configuration = configuration_management_service.edit_item( ac)
+            #model.signal_object_change(self, obj):
+
+
+    @Slot()
+    def _track_new_item(self):
+        d = TrackNewItemDialog(None, None)
+        d.exec_()
+
+        if d.result() == QDialog.Accepted:
+
+            ac = ArticleConfiguration()
+            ac.customer_id, ac.identification_number, ac.revision_number = d.inputs()
+            self.set_configuration_articles( [ configuration_management_service.track_new_item( ac) ])
 
     @Slot()
     def article_selected(self,selected,deselected):
@@ -574,7 +672,8 @@ class EditConfiguration(HorsePanel):
 
     @Slot(str)
     def partLinkClicked( self, link : str):
-        order_part_id = int(link)
+        order_part_id, customer_id = [int(x) for x in link.split('/')]
+
         self.order_part_selected.emit( order_part_id)
 
         #print(order_part_id)
@@ -586,6 +685,13 @@ class EditConfiguration(HorsePanel):
         self.set_panel_title(_('Configurations'))
         self._articles = []
         self._current_article = None
+
+
+        self.edit_ac_action = QAction(_("Edit article configuration"),self)
+        self.edit_ac_action.triggered.connect( self.edit_article_configuration)
+        #self.edit_ac_action.setShortcut(QKeySequence(Qt.CTRL + Qt.Key_C))
+        self.edit_ac_action.setShortcutContext(Qt.WidgetWithChildrenShortcut)
+
 
         config_article_proto = list()
         config_article_proto.append(TextLinePrototype('customer_id',_('Customer'),editable=False))
@@ -623,12 +729,10 @@ class EditConfiguration(HorsePanel):
         top_layout = QVBoxLayout()
         top_layout.addWidget( self._title_widget)
 
-        self.super_filter_entry = QLineEdit()
-        self.persistent_filter = PersistentFilter( self.super_filter_entry, filter_family="articles_configs")
-
-        self.persistent_filter.apply_filter.connect( self.apply_filter)
-
-        top_layout.addWidget(self.persistent_filter)
+        # self.super_filter_entry = QLineEdit()
+        # self.persistent_filter = PersistentFilter( self.super_filter_entry, "articles_configs" )
+        # self.persistent_filter.apply_filter.connect( self.apply_filter)
+        # top_layout.addWidget(self.persistent_filter)
 
         content_layout = QHBoxLayout()
         top_layout.addLayout( content_layout)
@@ -642,30 +746,46 @@ class EditConfiguration(HorsePanel):
         self._view_articles.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self._view_articles.setSelectionBehavior(QAbstractItemView.SelectRows)
         self._view_articles.selectionModel().selectionChanged.connect(self.article_selected)
+        self._view_articles.customContextMenuRequested.connect(self.showACContextualMenu)
+        self._view_articles.setContextMenuPolicy(Qt.CustomContextMenu)
 
         left_layout = QVBoxLayout()
 
-        wl = SelectableWidgetsList(self)
-        wl.item_selected.connect( self.article_activated)
-        self._wl = wl
-        scroll_area = Scroll()
-        self._gefilter = GEFilter()
-        self._gefilter.widget_list = wl
-        self._gefilter.scroll_area = scroll_area
-        scroll_area.installEventFilter( self._gefilter)
 
-        addw = QWidget(self)
-        addw.setLayout( QVBoxLayout())
-        addw.layout().setContentsMargins(0,0,0,0)
-        addw.layout().addWidget( wl)
-        addw.layout().addStretch() # that's the importnat bit
-        scroll_area.setWidget(addw) # wl
+
+        self._search_line_edit = QLineEdit()
+        self._search_line_edit.returnPressed.connect( self._search_configuration_articles)
+
+        search_box_hlayout = QHBoxLayout()
+        search_box_hlayout.addWidget( QLabel( _("Find")))
+        search_box_hlayout.addWidget( self._search_line_edit)
+        b = QPushButton(_("New"))
+        b.clicked.connect( self._track_new_item)
+        search_box_hlayout.addWidget( b)
+
 
 
         if DEMO_MODE == 0:
-            left_layout.addWidget(SubFrame(_("Configuration Articles"), scroll_area, self))
+
+            wl = SelectableWidgetsList(self)
+            wl.item_selected.connect( self.article_activated)
+            self._wl = wl
+            scroll_area = Scroll()
+            self._gefilter = GEFilter()
+            self._gefilter.widget_list = wl
+            self._gefilter.scroll_area = scroll_area
+            scroll_area.installEventFilter( self._gefilter)
+
+            addw = QWidget(self)
+            addw.setLayout( QVBoxLayout())
+            addw.layout().setContentsMargins(0,0,0,0)
+            addw.layout().addWidget( wl)
+            addw.layout().addStretch() # that's the importnat bit
+            scroll_area.setWidget(addw) # wl
+
+            left_layout.addWidget(SubFrame(_("Configuration Articles"), scroll_area, self, right_layout=search_box_hlayout))
         else:
-            left_layout.addWidget(SubFrame( _("Configuration Articles"), self._view_articles, self))
+            left_layout.addWidget(SubFrame( _("Configuration Articles"), self._view_articles, self, right_layout=search_box_hlayout))
 
         content_layout.addLayout( left_layout)
 
@@ -694,7 +814,7 @@ class EditConfiguration(HorsePanel):
 
 
         self._version_config_label = QLabel("Version configuration")
-        self._version_combo_model = ObjectComboModel( parent, "version_status")
+        self._version_combo_model = ObjectComboModel( parent, configuration_version_status)
         self._versions_combo = QComboBox()
         self._versions_combo.activated.connect( self._version_selected_slot)
         self._versions_combo.setModel( self._version_combo_model)
@@ -830,7 +950,7 @@ class OrderPartDetail2( QLabel):
 
     def set_object( self, p):
         # p is an order part like object
-        self.setText("Used in <b>{}</b> : {}".format( p.human_identifier, p.description) )
+        self.setText(_("Used in order part <b>{}</b> : {}").format( p.human_identifier, p.description) )
 
 class OrderPartsWidgetList2( WidgetsList):
     def __init__(self, parent : QWidget):
@@ -1084,82 +1204,12 @@ def test_extended_dto():
 
 
 
-class ObjectComboModel(QAbstractTableModel):
-    def __init__(self,parent,field_name):
-        super(ObjectComboModel,self).__init__(parent)
-        self._objects = []
-        self._field_name = field_name
-
-    def clear(self):
-        self.beginRemoveRows(QModelIndex(),0,self.rowCount()-1)
-        self.beginRemoveColumns(QModelIndex(),0,self.columnCount()-1)
-        self._objects = []
-        self.endRemoveColumns()
-        self.endRemoveRows()
-
-    def parent(self):
-        return QModelIndex()
-
-    def index(self, row, column, parent = QModelIndex()):
-        return self.createIndex(row, column)
-
-    def rowCount(self,parent = None):
-        return len(self._objects)
-
-    def columnCount(self,parent = None):
-        if self.rowCount() == 0:
-            return 0
-        else:
-            return 1
-
-    def data(self, index, role):
-        if index.row() < 0 or index.row() >= self.rowCount():
-            # print "TurboModel.data(). bad index {}".format(index.row())
-            return None
-
-        if role in (Qt.EditRole, Qt.DisplayRole):
-            return getattr( self._objects[index.row()], self._field_name)
-        elif role == Qt.UserRole:
-            return self._objects[index.row()]
-        else:
-            return None
-
-    def flags(self, index):
-        return Qt.ItemIsSelectable | Qt.ItemIsEnabled
-
-
-    def objectAt( self, ndx : int):
-        return self._objects[ndx]
-
-    def objectIndex(self, obj):
-        return self.index( self._objects.index( obj), 0)
-
-    def setObjects(self,objects):
-
-        if self.rowCount() > 0:
-            self.clear()
-
-        if objects is not None:
-            self.beginInsertRows(QModelIndex(),0,len(objects)-1)
-            self.beginInsertColumns(QModelIndex(),0,0)
-
-            self._objects = objects
-
-            self.endInsertColumns()
-            self.endInsertRows()
-
-
 from sqlalchemy.orm import joinedload
 from pyxfer.type_support import SQLADictTypeSupport, ObjectTypeSupport, SQLATypeSupport
 from pyxfer.pyxfer import generated_code, USE, CodeWriter, SKIP, COPY
 from pyxfer.sqla_autogen import SQLAAutoGen
 import logging
 from pprint import pprint
-
-
-
-
-
 from koi.config_mgmt.observer import ChangeTracker
 
 
@@ -1226,11 +1276,8 @@ def store_object( klass, obj):
     chrono_click("DTO to dict")
     d = decode(encoded)
 
-    acid = -1
     with session().no_autoflush:
         sqla_article_configuration = call("serialize_{0}_dict_to_{0}".format(kn), d, None, session(), dict())
-        # sqla_article_configuration = serialize_ArticleConfiguration_dict_to_ArticleConfiguration( d, None, session(), dict())
-        acid = sqla_article_configuration.article_configuration_id
     session().flush() # Don't commit as it empties the session (reloading entities afterwards takes tenth of seconds!)
 
     chrono_click( "from dict to SQLA - and flush")
@@ -1315,17 +1362,18 @@ if __name__ == "__main__":
 
     dao.set_session( session())
 
-    from koi.datalayer.gen_serializers import  write_code, generate_serializers
-    write_code( generate_serializers())
+    # from koi.datalayer.gen_serializers import  write_code, generate_serializers
+    # write_code( generate_serializers())
     from koi.datalayer.serializers import *
 
 
 
     e = serialize_Employee_Employee_to_CopyEmployee( session().query(Employee).first(), None, {})
+    e = session().query(Employee).first()
     user_session.open(e)
 
-    op = session().query(OrderPart).all()[0]
-    serialize_OrderPart_OrderPart_to_CopyOrderPart( op, None, {})
+    # op = session().query(OrderPart).all()[0]
+    # serialize_OrderPart_OrderPart_to_CopyOrderPart( op, None, {})
 
     app = QApplication(sys.argv)
 
@@ -1356,13 +1404,16 @@ if __name__ == "__main__":
     #         c.article_configuration = ac
     #         ac.configurations.append( c )
 
-    configs = widget._change_tracker.wrap_in_change_detector(org_configs)
+    #configs = widget._change_tracker.wrap_in_change_detector(org_configs)
+    configs = org_configs
+
+
 
     # print( type( org_configs[0].configurations))
     # print( type( configs[0].configurations))
     widget.set_configuration_articles( configs)
-    widget.persistent_filter.super_filter_entry.setText("5544A")
-    widget.persistent_filter._emit_apply_filter()
+    #widget.persistent_filter.super_filter_entry.setText("5544A")
+    #widget.persistent_filter._emit_apply_filter()
 
 
 
