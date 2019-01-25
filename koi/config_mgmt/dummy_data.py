@@ -250,6 +250,7 @@ def make_configs_dto( session):
     # op3 = CopyOrderPart()
 
     c = CopyConfiguration()
+    c.configuration_id = 1000
     c.parts = [op,op3]
     c.version = 1
     c.article_configuration = ac
@@ -260,6 +261,24 @@ def make_configs_dto( session):
                 _make_config_line_dto( "Config TN", 2, TypeConfigDoc.PROGRAM, "tige.gcode"),
                 _make_config_line_dto( "Config TN", 1, TypeConfigDoc.PROGRAM, "anti-tige.gcode") ]
     #ac.configurations.append( c)
+
+    ec1 = CopyEffectiveConfiguration()
+    ec1.effective_configuration_id = 1101
+    ec1.lines = [ _make_config_line_dto( "Plan coupe 90°", 1, TypeConfigDoc.PLAN_2D, "90cut-RXC.doc") ]
+    ec1.order_part = op2
+    ec1.parent_configuration = c
+    ec1.parent_configuration_id = c.configuration_id
+
+    ec2 = CopyEffectiveConfiguration()
+    ec2.effective_configuration_id = 1102
+    ec2.lines = [ _make_config_line_dto( "Plan coupe ZULU TANGO 90°", 1, TypeConfigDoc.PLAN_2D, "90cut-RXC.doc") ]
+    ec2.order_part = op3
+    ec2.parent_configuration = c
+    ec2.parent_configuration_id = c.configuration_id
+
+    c.effective_configurations = [ec1, ec2]
+
+
 
     c = CopyConfiguration()
 

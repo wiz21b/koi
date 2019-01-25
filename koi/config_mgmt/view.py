@@ -5,7 +5,7 @@ import sys
 from PySide.QtCore import Qt,Slot,QModelIndex,QAbstractTableModel,Signal, QPoint, QObject, QEvent
 from PySide.QtCore import QTimer
 from PySide.QtGui import QHBoxLayout,QVBoxLayout,QLineEdit,QLabel,QGridLayout, QColor, QDialog, QMessageBox,QHeaderView,QAbstractItemView, \
-    QKeySequence, QStandardItem,QComboBox, QAction,QMenu,QWidget,QCursor, QSizePolicy, QPushButton, QComboBox, QColor, QBrush, QDialogButtonBox, QLineEdit, QAbstractItemView, QMouseEvent, QPalette, QFormLayout
+    QKeySequence, QStandardItem,QComboBox, QAction,QMenu,QWidget,QCursor, QSizePolicy, QPushButton, QComboBox, QColor, QBrush, QDialogButtonBox, QLineEdit, QAbstractItemView, QMouseEvent, QPalette, QFormLayout, QTabWidget
 
 from PySide.QtGui import QTableWidget,QScrollArea, QResizeEvent, QFrame, QApplication
 
@@ -47,7 +47,9 @@ from koi.config_mgmt.dragdrop_widget import DragDropWidget
 from koi.gui.PersistentFilter import PersistentFilter
 from koi.gui.horse_panel import HorsePanel
 from koi.session.UserSession import user_session
-from koi.datalayer.serializers import CopyConfiguration
+from koi.datalayer.serializers import CopyConfiguration, CopyEffectiveConfiguration
+from koi.FindOrder import FindOrderDialog
+
 
 if __name__ != "__main__":
     from koi.datalayer.serializers import *
@@ -55,10 +57,8 @@ if __name__ != "__main__":
 from koi.config_mgmt.dummy_data import _make_quick_doc_dto
 from koi.config_mgmt.service import configuration_management_service
 from koi.config_mgmt.track_item import TrackNewItemDialog
+#from koi.config_mgmt.wire_config_dialog import WireConfigurationToPart
 
-
-def open_impact_documents( ac : ArticleConfiguration):
-    return list( filter( lambda il: il.configuration_id is None, [ c for c in ac.impacts]))
 
 
 class EnumPrototype(Prototype):
@@ -94,7 +94,11 @@ class InstrumentedObject:
         else:
             raise Exception("Forbidden access to _change ! This field is reserved for change tracking")
 
+def open_impact_documents( ac : ArticleConfiguration):
+    return list( filter( lambda il: il.configuration_id is None, [ c for c in ac.impacts]))
 
+def effective_config_part_number( cfg : CopyEffectiveConfiguration):
+    return "{}: {}".format(cfg.order_part.human_identifier, cfg.order_part.description.replace('\n',' ')[0:50].strip())
 
 def configuration_version_status( cfg : CopyConfiguration):
     if cfg.is_baseline:
@@ -340,6 +344,7 @@ class EditConfiguration(HorsePanel):
     def set_configuration_articles( self, cfg_articles : list):
         #print("set_configuration_articles : {}".format(cfg_articles))
         #print("set_configuration_articles : {}".format(type(cfg_articles)))
+
         self._articles = cfg_articles
         self._model_articles.reset_objects( self._articles)
 
@@ -361,7 +366,7 @@ class EditConfiguration(HorsePanel):
         # else:
         #     self._current_article = wrapped
 
-        if self._current_article and self._current_article.article_configuration_id == ca.article_configuration_id:
+        if ca and self._current_article and self._current_article.article_configuration_id == ca.article_configuration_id:
             keep_configuration_open = self._current_config.configuration_id
         else:
             keep_configuration_open = False
@@ -369,10 +374,18 @@ class EditConfiguration(HorsePanel):
         self._current_article = ca
 
         if self._current_article:
-            #print("--- version combo setModel : {}".format( type( self._current_article.configurations)))
             self._version_combo_model.setObjects( self._current_article.configurations)
-            #print("-o- "*10)
-            self._model_impact.reset_objects( self._current_article.impacts )
+
+
+            def impact_line_key(i):
+                # Bring lines with revision attached to them first. The other lines
+                # are sorted by creation time (I use their id to know that order).
+                if i.version:
+                    return i.version
+                else:
+                    return i.impact_line_id + 1000 # There won't be more than 1000 revisions I guess.
+
+            self._model_impact.reset_objects( sorted( self._current_article.impacts, key=impact_line_key) )
 
             if self._view_articles.currentIndex().isValid():
                 ndx = self._view_articles.currentIndex().row()
@@ -386,6 +399,7 @@ class EditConfiguration(HorsePanel):
 
             if keep_configuration_open:
                 for c in reversed( self._current_article.configurations):
+                    mainlog.debug("keep conf open : {} / {}".format(c.configuration_id, keep_configuration_open))
                     if c.configuration_id == keep_configuration_open:
                         self.set_configuration(c)
                         config_set = True
@@ -436,7 +450,7 @@ class EditConfiguration(HorsePanel):
 
         self._freeze_button.setEnabled(True)
         if config.frozen:
-            freeze_msg = "<b><font color = 'green'>FROZEN on {} by {}</font></b>".format( config.frozen, config.freezer.fullname)
+            freeze_msg = "<b><font color = 'green'>FROZEN on {} by {}</font></b>".format( config.frozen, (config.freezer and config.freezer.fullname) or "/bug/" )
 
             self._freeze_button.setText(_("Unfreeze"))
             self._freeze_button.setEnabled( True)
@@ -459,6 +473,8 @@ class EditConfiguration(HorsePanel):
             rev = "Revision {}".format(config.version)
 
         self._version_config_label.setText( "{}, {}".format(rev, freeze_msg))
+
+        mainlog.debug("Setting {} conf lines".format( len(config.lines)))
         self._model.reset_objects( config.lines )
 
         self._versions_combo.setEnabled(True)
@@ -475,6 +491,30 @@ class EditConfiguration(HorsePanel):
                     [ "<a href='{}/{}'>{}</a>".format( part.order_part_id, part.order.customer_id,part.human_identifier) for part in config.parts] ))
             else:
                 self._parts_widget.setText( _("Not used"))
+
+        self.set_effective_configurations( config.effective_configurations)
+
+    def set_effective_configurations( self, configs):
+        if not configs:
+            self._model_effective.reset_objects(None)
+            self._effective_part_model.clear()
+            self._config_tabs.tabBar().setTabEnabled(1,False)
+        else:
+            self._config_tabs.tabBar().setTabEnabled(1,True)
+            first_effective_config = configs[0]
+
+            mainlog.debug("set_effective_configurations : {}".format( configs))
+            mainlog.debug("set_effective_configurations : {}".format( first_effective_config.lines))
+
+            self._set_effective_config( first_effective_config)
+            self._effective_part_model.setObjects( configs)
+
+
+    def _set_effective_config( self, config : CopyEffectiveConfiguration):
+        self._effective_title.setText(_("Effective on {}".format(config.order_part.human_identifier)))
+        self._current_effective_configuration = config
+        self._model_effective.reset_objects( config.lines)
+
 
 
     def _create_configuration( self, impact_documents):
@@ -585,6 +625,44 @@ class EditConfiguration(HorsePanel):
         dialog.deleteLater()
 
     @Slot()
+    def wireToPartClicked( self):
+        assert self._current_config
+
+        dialog = FindOrderDialog( self)
+        dialog.exec_()
+        if dialog.result() == QDialog.Accepted:
+            config = configuration_management_service.wire_effective_configuration_to_order_part( self._current_config, dialog.selected_item())
+
+            config.parent_configuration = self._current_config
+            self._current_config.effective_configurations.append( config)
+
+            self.set_effective_configurations( self._current_config.effective_configurations)
+            self._set_effective_config( config)
+
+    @Slot()
+    def effectiveConfigFilesDropped( self, paths):
+        dialog = AddFileToConfiguration( self, paths[0][1], [], for_impact_doc=False)
+
+        dialog.exec_()
+        if dialog.result() == QDialog.Accepted:
+
+            new_line = CopyConfigurationLine()
+            new_line.description = dialog.description
+            new_line.version = dialog.version
+            new_line.document_type = dialog.type_
+            new_line.document = _make_quick_doc_dto(dialog.filename)
+            new_line.crl = dialog.crl
+            new_line.modify_config = True
+            new_line.effective_configuration_id = self._current_effective_configuration.effective_configuration_id
+
+            ac = configuration_management_service.add_document_to_effective_configuration( new_line)
+            self.set_article_configuration( ac)
+            # self.set_article_configuration( ac)
+
+        dialog.deleteLater()
+
+
+    @Slot()
     def impact_activated(self,selected,deselected):
         if selected and selected.indexes() and len(selected.indexes()) > 0:
             impact = self._model_impact.object_at( selected.indexes()[0])
@@ -659,6 +737,10 @@ class EditConfiguration(HorsePanel):
     def _version_selected_slot(self, ndx : int):
         self.set_configuration( self._version_combo_model.objectAt(ndx))
 
+    @Slot(int)
+    def _effective_part_selected_selected_slot(self, ndx : int):
+        self._set_effective_config( self._effective_part_model.objectAt(ndx))
+
     @Slot(str)
     def apply_filter( self, f : str):
         # self.set_configuration_articles( self._articles)
@@ -677,6 +759,11 @@ class EditConfiguration(HorsePanel):
         self.order_part_selected.emit( order_part_id)
 
         #print(order_part_id)
+
+
+    # @Slot()
+    # def _wire_to_part(self):
+    #     showWarningBox("Wire to part", "???")
 
     def __init__( self, parent):
         super(EditConfiguration,self).__init__(parent)
@@ -709,6 +796,14 @@ class EditConfiguration(HorsePanel):
         config_file_proto.append( DatePrototype('date_upload',_('Date'), editable=False))
         config_file_proto.append( EnumPrototype('crl',_('CRL'), CRL, editable=True))
 
+        config_file_proto2 = []
+        config_file_proto2.append( EnumPrototype('document_type',_('Type'), TypeConfigDoc, editable=False))
+        config_file_proto2.append( TextLinePrototype('description',_('Description'),editable=False))
+        config_file_proto2.append( IntegerNumberPrototype('version',_('Rev.'),editable=False))
+        config_file_proto2.append( TextLinePrototype('document',_('File'), editable=False))
+        config_file_proto2.append( DatePrototype('date_upload',_('Date'), editable=False))
+        config_file_proto2.append( EnumPrototype('crl',_('CRL'), CRL, editable=True))
+
         config_impact_proto = []
         config_impact_proto.append( IntegerNumberPrototype('version',_('Cfg\nRev.'),editable=False))
         config_impact_proto.append( TextLinePrototype('description',_('Description de la modification'),editable=False))
@@ -722,9 +817,6 @@ class EditConfiguration(HorsePanel):
 
         self._title_widget = TitleWidget( "Configurations", self)
         self._title_widget.set_title("Configuration")
-
-
-
 
         top_layout = QVBoxLayout()
         top_layout.addWidget( self._title_widget)
@@ -789,15 +881,101 @@ class EditConfiguration(HorsePanel):
 
         content_layout.addLayout( left_layout)
 
+        self._version_combo_model = ObjectComboModel( self, configuration_version_status)
+        self._versions_combo = QComboBox()
+        self._versions_combo.activated.connect( self._version_selected_slot)
+        self._versions_combo.setModel( self._version_combo_model)
+        self._add_config_button = QPushButton(_("Add revision"))
+        #self._wire_to_order_part = QPushButton(_("Set on order part"))
+
+        hlayout2 = QHBoxLayout()
+        hlayout2.addStretch()
+        hlayout2.addWidget( self._versions_combo)
+        hlayout2.addWidget( self._add_config_button)
+        #hlayout2.addWidget( self._wire_to_order_part)
+
+        vlayout_cfg = self._make_base_config_layout(config_file_proto)
+
+        impact_widget = self._make_impact_widget( config_impact_proto)
+        vlayout_cfg.addWidget( QLabel( _("Changes")))
+        vlayout_cfg.addWidget( impact_widget)
+
+        self._model_effective = ConfigModel( self, config_file_proto2, lambda : None)
+        self._view_effective = PrototypedTableView(None, config_file_proto2)
+        self._view_effective.setModel( self._model_effective)
+        self._view_effective.verticalHeader().hide()
+        self._view_effective.horizontalHeader().setResizeMode( QHeaderView.ResizeToContents)
+        self._view_effective.horizontalHeader().setResizeMode( 1, QHeaderView.Stretch)
+        self._view_effective.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+
+        effective_layout = QVBoxLayout()
+        hlayout  = QHBoxLayout()
+        self._effective_title = QLabel(_("Effective on 4522B"))
+        self._effective_part_list = QComboBox()
+        self._effective_part_model = ObjectComboModel( self, effective_config_part_number)
+        self._effective_part_list.setModel( self._effective_part_model)
+        self._effective_part_list.activated.connect( self._effective_part_selected_selected_slot)
+
+        self._effective_part_list.setSizePolicy( QSizePolicy.Preferred, QSizePolicy.Preferred) # horiz, vert
+
+        hlayout.addWidget(self._effective_title)
+        hlayout.addStretch()
+        hlayout.addWidget(self._effective_part_list)
+        effective_layout.addLayout( hlayout)
+
+        self._effective_config_widget = DragDropWidget(self, self._view_effective)
+        self._effective_config_widget.filesDropped.connect( self.effectiveConfigFilesDropped)
+        effective_layout.addWidget( self._effective_config_widget)
+
+        effective_widget = QWidget()
+        effective_widget.setLayout( effective_layout)
+
+        self._base_config_widget = QWidget()
+        self._base_config_widget.setLayout( vlayout_cfg)
+
+        self._config_tabs = QTabWidget()
+        self._config_tabs.addTab( self._base_config_widget, _("Configurations Definitions"))
+        self._config_tabs.addTab( effective_widget, _("Effective Configurations"))
+
+        self._subframe = SubFrame("Configuration", self._config_tabs, self, right_layout=hlayout2)
+
 
         config_layout = QVBoxLayout()
-
+        config_layout.addWidget(self._subframe)
 
         content_layout.addLayout( config_layout)
         content_layout.setStretch(0,4)
         content_layout.setStretch(1,6)
         # top_layout.addLayout(hlayout2)
 
+
+
+        self.setLayout( top_layout)
+
+        self._freeze_button.clicked.connect( self.freeze_configuration)
+        self._add_config_button.clicked.connect( self.add_configuration)
+        self._wire_to_part_button.clicked.connect( self.wireToPartClicked)
+
+    def _make_impact_widget(self, config_impact_proto):
+        self._model_impact = ImpactsModel( self, config_impact_proto, CopyImpactLine)
+
+        self._view_impacts = PrototypedTableView(None, config_impact_proto)
+        self._view_impacts.setModel( self._model_impact)
+        self._view_impacts.verticalHeader().hide()
+        self._view_impacts.horizontalHeader().setResizeMode( QHeaderView.ResizeToContents)
+        self._view_impacts.horizontalHeader().setResizeMode( 1, QHeaderView.Stretch)
+        self._view_impacts.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self._view_impacts.setSelectionBehavior(QAbstractItemView.SelectRows)
+        #self._view_impacts.activated.connect(self.impact_activated)
+        self._view_impacts.selectionModel().selectionChanged.connect(self.impact_activated)
+
+        z = DragDropWidget(self, self._view_impacts)
+        z.filesDropped.connect( self.impactFilesDropped)
+
+        return z
+
+    def _make_base_config_layout(self, config_file_proto):
         self._view = PrototypedTableView(None, config_file_proto)
 
         # self.headers_view = QHeaderView( Qt.Orientation.Horizontal)
@@ -805,29 +983,21 @@ class EditConfiguration(HorsePanel):
         # self.headers_view.setModel( self.header_model) # qt's doc : The view does *not* take ownership (but there's something with the selecion mode)
 
 
+        self._version_config_label = QLabel("Version configuration")
 
-        self._model = ConfigModel( self, config_file_proto, lambda : None)
+        self._model = ObjectModel( self, config_file_proto, lambda : None)
         self._view.setModel( self._model)
         self._view.verticalHeader().hide()
         self._view.horizontalHeader().setResizeMode( QHeaderView.ResizeToContents)
         self._view.horizontalHeader().setResizeMode( 1, QHeaderView.Stretch)
-
-
-        self._version_config_label = QLabel("Version configuration")
-        self._version_combo_model = ObjectComboModel( parent, configuration_version_status)
-        self._versions_combo = QComboBox()
-        self._versions_combo.activated.connect( self._version_selected_slot)
-        self._versions_combo.setModel( self._version_combo_model)
-        self._freeze_button = QPushButton("Accept && Freeze")
-        self._add_config_button = QPushButton("New revision")
+        self._freeze_button = QPushButton()
+        self._wire_to_part_button = QPushButton(_("Link revision to part"))
 
         hlayout2 = QHBoxLayout()
         hlayout2.addWidget( self._version_config_label)
         hlayout2.addStretch()
-        hlayout2.addWidget( self._versions_combo)
         hlayout2.addWidget( self._freeze_button)
-        hlayout2.addWidget( self._add_config_button)
-
+        hlayout2.addWidget( self._wire_to_part_button)
 
         z = DragDropWidget(self, self._view)
         z.filesDropped.connect( self.configFilesDropped)
@@ -845,33 +1015,8 @@ class EditConfiguration(HorsePanel):
 
         vlayout_cfg.addWidget( self._parts_widget)
 
+        return vlayout_cfg
         #self._parts_widget.setVisible( DEMO_MODE == 1)
-
-        self._subframe = SubFrame("Configuration", vlayout_cfg, self)
-        config_layout.addWidget( self._subframe)
-
-        self._model_impact = ImpactsModel( self, config_impact_proto, CopyImpactLine)
-
-        self._view_impacts = PrototypedTableView(None, config_impact_proto)
-        self._view_impacts.setModel( self._model_impact)
-        self._view_impacts.verticalHeader().hide()
-        self._view_impacts.horizontalHeader().setResizeMode( QHeaderView.ResizeToContents)
-        self._view_impacts.horizontalHeader().setResizeMode( 1, QHeaderView.Stretch)
-        self._view_impacts.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self._view_impacts.setSelectionBehavior(QAbstractItemView.SelectRows)
-        #self._view_impacts.activated.connect(self.impact_activated)
-        self._view_impacts.selectionModel().selectionChanged.connect(self.impact_activated)
-
-        z = DragDropWidget(self, self._view_impacts)
-        z.filesDropped.connect( self.impactFilesDropped)
-        subframe2 = SubFrame("Changes", z, self)
-        config_layout.addWidget( subframe2)
-
-        self.setLayout( top_layout)
-
-        self._freeze_button.clicked.connect( self.freeze_configuration)
-        self._add_config_button.clicked.connect( self.add_configuration)
-
 
 
 class Scroll(QScrollArea):

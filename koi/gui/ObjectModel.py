@@ -442,6 +442,7 @@ class ObjectModel(QAbstractTableModel):
         else:
             self._objects = []
 
+        mainlog.debug("reset objects {}".format( len( self._objects)))
         self.endResetModel()
 
 

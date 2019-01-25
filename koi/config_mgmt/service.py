@@ -54,6 +54,30 @@ class ConfigurationManagementService:
     def __init__(self):
         pass
 
+
+    def wire_effective_configuration_to_order_part( self, base_config : CopyConfiguration, order_part : CopyOrderPart) -> CopyEffectiveConfiguration:
+        assert order_part
+        assert order_part.order_part_id
+
+        # FIXME Check there are no other active configuration for that part !!!
+
+        config = EffectiveConfiguration()
+        config.parent_configuration_id = base_config.configuration_id
+        config.order_part_id = order_part.order_part_id
+        config.creator_id = user_session.user_id
+
+        session().add( config)
+        session().flush()
+
+
+        r = serialize_EffectiveConfiguration_EffectiveConfiguration_to_CopyEffectiveConfiguration( config, None, dict())
+        session().commit()
+        return r
+
+
+
+
+
     def unfreeze_configuration(self, config : CopyConfiguration):
         # One can only unfreeze he last config (that's not as flexible as one might want
         # but thtat'll be enough for now
@@ -169,6 +193,7 @@ class ConfigurationManagementService:
         session().commit()
         return result
 
+
     def add_document_to_configuration( self, document : CopyConfigurationLine):
         # The impact document will be added to the configuration article it refers to.
         # One can add one or more impact documents a to aconfiguration.
@@ -179,16 +204,60 @@ class ConfigurationManagementService:
 
         with session().no_autoflush:
             sqla_config_line = serialize_ConfigurationLine_CopyConfigurationLine_to_ConfigurationLine( document, None, session(), dict())
-            session().flush()
 
-        # I return article cofniguration instead of impact line because the client
+        session().commit()
+        assert sqla_config_line in session()
+        assert sqla_config_line.configuration
+        assert sqla_config_line in sqla_config_line.configuration.lines
+        assert len(sqla_config_line.configuration.lines)
+
+        # I return article configuration instead of impact line because the client
         # side will need to update more on the screen than just this very new impact line.
         # moreover, this allow to simplify the client which doesn't have to fiddle
-        # with reconnecting varioous objects together
+        # with reconnecting various objects together
+
+        assert sqla_config_line.configuration.article_configuration
 
         r = serialize_ArticleConfiguration_ArticleConfiguration_to_CopyArticleConfiguration( sqla_config_line.configuration.article_configuration, None, dict())
+        assert r
+        session().commit()
+        mainlog.debug("add_document_to_configuration : {}, {}".format( sqla_config_line.configuration_line_id, len(sqla_config_line.configuration.lines)))
+        return r
+
+
+    def add_document_to_effective_configuration( self, document : CopyConfigurationLine):
+        # The impact document will be added to the configuration article it refers to.
+        # One can add one or more impact documents a to aconfiguration.
+
+        assert document
+        assert not document.configuration_line_id, "Document was already added"
+        assert document.effective_configuration_id, "The document must be added to an existing effective configuration"
+
+        with session().no_autoflush:
+            sqla_config_line = serialize_ConfigurationLine_CopyConfigurationLine_to_ConfigurationLine( document, None, session(), dict())
+        session().commit()
+
+        cfg = sqla_config_line.effective_configuration
+        assert cfg
+        assert len(cfg.lines) >= 1
+
+        assert sqla_config_line in session()
+        assert sqla_config_line in cfg.lines
+
+        # I return article configuration instead of impact line because the client
+        # side will need to update more on the screen than just this very new impact line.
+        # moreover, this allow to simplify the client which doesn't have to fiddle
+        # with reconnecting various objects together
+
+        assert cfg.parent_configuration.article_configuration
+
+        mainlog.debug("add_document_to_effective_configuration : {}, {}".format( sqla_config_line.configuration_line_id, len(cfg.lines)))
+
+        r = serialize_ArticleConfiguration_ArticleConfiguration_to_CopyArticleConfiguration( cfg.parent_configuration.article_configuration, None, dict())
+        assert r
         session().commit()
         return r
+
 
     def add_impact_document( self, impact : CopyImpactLine):
         # The impact document will be added to the configuration article it refers to.

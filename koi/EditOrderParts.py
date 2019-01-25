@@ -2563,22 +2563,41 @@ class EditOrderPartsWidget(HorsePanel):
             if not selected_row_indices:
                 showWarningBox( _("Nothing selected"), _("You have selected no parts to print."))
 
-            mainlog.debug("print_bill_of_operations_selected {}".format( selected_row_indices))
+            mainlog.debug("print_bill_of_operations_selected selected_row_indices:{}".format( selected_row_indices))
 
             m = self.controller_part.model
-            parts = [m.object_at(n) for n in selected_row_indices]
+            parts = [m.object_at(n) for n in selected_row_indices if m.object_at(n)] # Skipping empty lines
 
-            if sum( [ len(part.operations) for part in parts]) == 0:
+            operations_counts = []
+            # o = dao.order_dao.find_by_id(order_id)
+            # for part in o.parts:
+
+            # Lots of fiddling because when one creates a new operation
+            # it migh be totally blank.
+            for n in selected_row_indices:
+                sm =  self.controller_part.model.submodel(n)
+                if sm:
+                    valid_ops = 0
+                    for i in range(sm.rowCount()):
+                        if sm.object_at(i).operation_definition_id:
+                            valid_ops += 1
+
+                    operations_counts.append( valid_ops )
+                else:
+                    operations_counts.append( 0)
+
+            mainlog.debug("print_bill_of_operations_selected operations_counts={}".format(operations_counts))
+            if sum( operations_counts) == 0:
                 showWarningBox(_("Empty order parts"),_("All the parts you have selected have no operations. There's nothing to print."))
                 return
 
             # The test on 0 operation above must be done firsst.
 
-            bad_state = [ part.label for part in parts if part.state not in (OrderPartState.ready_for_production, OrderPartState.production_paused, OrderPartState.non_conform,)]
+            bad_state = [ part.label for part in parts if part.state not in (OrderPartStateType.ready_for_production, OrderPartStateType.production_paused, OrderPartStateType.non_conform,)]
 
             if bad_state:
                 if not confirmationBox( _("Order part not ready for production"),
-                                        _("Some order parts you selected {} are not ready for prodution. Are you sure you want to print their bill of operatioons ? Are you sure you want to proceed ?").format(",".join(bad_state))):
+                                        _("Some order parts you selected ({}) are not ready for prodution. Are you sure you want to print their bill of operations ? Are you sure you want to proceed ?").format(",".join(sorted(bad_state)))):
                     return
 
             part_ids = [p.order_part_id for p in parts]

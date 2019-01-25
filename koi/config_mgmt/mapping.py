@@ -70,6 +70,34 @@ class Configuration(Base):
         self.version = 0
 
 
+class EffectiveConfiguration(Base):
+    __tablename__ = 'effective_configurations'
+    effective_configuration_id = Column(Integer,id_generator,nullable=False,primary_key=True)
+
+    parent_configuration_id = Column(Integer, ForeignKey( Configuration.configuration_id), nullable=False)
+    parent_configuration = relationship( Configuration, backref="effective_configurations")
+
+    # WARNING ! There can be several effective configurations tied to the same order part.
+    # Why ? Because one can start on a effective configuration EC1 and then realize that
+    # it's wrong, moving to another one EC2. But since things may have happened around EC1
+    # we have to record it for auditing purpose.
+    # SO the rule is : there can be several effective configuration for an order part, but
+    # only one of them is active at any time.
+
+    order_part_id = Column(Integer, ForeignKey( OrderPart.order_part_id))
+    order_part = relationship(OrderPart)
+
+    # See note about order_part relationship.
+    active = Column(Boolean, default=False)
+
+    # We record who created the configuration. The modifications to the confiugration
+    # will be represented by configuraion ines which can have many different authors.
+    # We go this way because we assume that this entity won't change once created
+    # so there's no need to record anyting more than the original author.
+    creator_id = Column(Integer, ForeignKey(Employee.employee_id))
+
+
+
 class ConfigurationLine(Base):
     __tablename__ = 'configuration_lines'
 
@@ -85,19 +113,25 @@ class ConfigurationLine(Base):
     date_upload = Column(Date)
     crl = Column(CRLSQLA)
 
-    document = relationship(Document, uselist=False)
-    configuration_id = Column(Integer, ForeignKey(Configuration.configuration_id))
+    document = relationship(Document, uselist=False) # One-to-one relationship
+
+    configuration_id = Column(Integer, ForeignKey(Configuration.configuration_id), nullable=True)
     configuration = relationship(Configuration, uselist=False, backref="lines" )
 
+    # For the moment I link it this way. It's not clean.
+    effective_configuration_id = Column(Integer, ForeignKey(EffectiveConfiguration.effective_configuration_id), nullable=True)
+    effective_configuration = relationship(EffectiveConfiguration, uselist=False, backref="lines" )
 
-    def __init__(self):
-        self.version = 0
+    # def __init__(self):
+    #     self.version = 0
 
 
 """ solution 1 : muiltiple inheritance
     solution 2 : outside function => won't work with prototype
     solution 3 : add function at code gen time
 """
+
+
 
 
 

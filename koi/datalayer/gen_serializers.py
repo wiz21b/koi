@@ -42,6 +42,9 @@ def _find_subclasses( cls):
 
 
 def generate_serializers():
+    global_cw = CodeWriter()
+    global_cw.append_code("from koi.config_mgmt.mapping import ArticleConfiguration, ImpactLine")
+
     additioanl_code_for_document_dto = """
 def __str__(self):
    return self.filename
@@ -129,8 +132,6 @@ def date_upload(self):
         'article_configuration' : SKIP } #,
 
 
-    global_cw = CodeWriter()
-    global_cw.append_code("from koi.config_mgmt.mapping import ArticleConfiguration, ImpactLine")
 
     autogen = SQLAAutoGen( SQLADictTypeSupport, ObjectTypeSupport)
 

@@ -37,11 +37,13 @@ def alter_structure():
 
     drop_entity( db_engine, session, ConfigurationLine)
     drop_entity( db_engine, session, ImpactLine)
+    drop_entity( db_engine, session, EffectiveConfiguration)
     drop_entity( db_engine, session, Configuration)
     drop_entity( db_engine, session, ArticleConfiguration)
 
     create_entity( session, ArticleConfiguration)
     create_entity( session, Configuration)
+    create_entity( session, EffectiveConfiguration)
     create_entity( session, ImpactLine)
     create_entity( session, ConfigurationLine)
 
